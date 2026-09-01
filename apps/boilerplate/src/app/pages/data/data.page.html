@@ -1,0 +1,34 @@
+<section class="showcase__section">
+  <h2>Values and figures</h2>
+  <div class="showcase__row">
+    <ibid-currency-display [value]="1284.5" [showInfo]="false" />
+    <ibid-currency-display [value]="-320.75" [showInfo]="false" />
+    <ibid-currency-display [value]="0" [showInfo]="false" />
+  </div>
+  <div class="showcase__grid">
+    <ibid-stat-card [data]="incomeStat" />
+    <ibid-stat-card [data]="expenseStat" />
+    <ibid-metric-card title="Savings rate" [value]="42" icon="add" type="percentage" />
+  </div>
+</section>
+
+<section class="showcase__section">
+  <h2>Data table</h2>
+  <ibid-data-table [rows]="movements" caption="August movements" emptyMessage="No movements yet">
+    <ng-template ibidDataColumn="Date" let-row>
+      <ibid-smart-date-cell [value]="row.date" periodStart="2026-08-01" periodEnd="2026-08-31" />
+    </ng-template>
+    <ng-template ibidDataColumn="Description" let-row>
+      <ibid-smart-text-cell [value]="row.description" />
+    </ng-template>
+    <ng-template ibidDataColumn="Note" let-row>
+      <ibid-smart-muted-caption-cell [value]="row.note" />
+    </ng-template>
+    <ng-template ibidDataColumn="Amount" align="end" let-row>
+      <ibid-smart-currency-cell [value]="row.amount" [interactive]="false" />
+    </ng-template>
+    <ng-template ibidDataColumn="" align="end" let-row>
+      <ibid-smart-icon-cell iconName="add" ariaLabel="Row action" />
+    </ng-template>
+  </ibid-data-table>
+</section>

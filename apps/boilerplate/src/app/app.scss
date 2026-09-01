@@ -18,16 +18,15 @@
 }
 
 .boilerplate-nav {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm, 0.5rem);
-  padding: var(--spacing-md, 1rem);
+  display: block;
+  padding-top: var(--spacing-sm, 0.5rem);
 }
 
-.boilerplate-nav a {
-  padding: var(--spacing-xs, 0.4rem) 0;
-  text-decoration: none;
-  color: inherit;
+.boilerplate-nav__footer {
+  margin: 0;
+  padding: var(--spacing-md, 1rem);
+  font-size: 0.8rem;
+  opacity: 0.6;
 }
 
 .boilerplate-page {

@@ -20,9 +20,9 @@
   [closeLabel]="i18n.translate('navCloseLabel')"
   (closeRequested)="closeNav()"
 >
-  <nav class="boilerplate-nav">
-    <a routerLink="/">{{ i18n.translate('navHome') }}</a>
-  </nav>
+  <ibid-nav-menu class="boilerplate-nav" [items]="navItems" (itemSelected)="closeNav()">
+    <p navFooter class="boilerplate-nav__footer">ibid design system</p>
+  </ibid-nav-menu>
 </ibid-header-nav>
 
 <main class="boilerplate-page">

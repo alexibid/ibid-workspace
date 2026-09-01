@@ -33,7 +33,10 @@
     },
     "serve": {
       "executor": "@angular/build:dev-server",
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4300
+      }
     },
     "lint": {
       "executor": "@nx/eslint:lint"

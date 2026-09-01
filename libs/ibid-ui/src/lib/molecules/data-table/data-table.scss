@@ -1,0 +1,32 @@
+.m-data-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.m-data-table__caption {
+  text-align: left;
+  padding-bottom: var(--spacing-xs, 0.4rem);
+  color: var(--color-text-muted);
+  font-size: var(--text-s);
+}
+
+.m-data-table__heading,
+.m-data-table__cell {
+  padding-right: var(--spacing-sm, 0.75rem);
+}
+
+.m-data-table__heading:last-child,
+.m-data-table__cell:last-child {
+  padding-right: 0;
+}
+
+.m-data-table__heading--end,
+.m-data-table__cell--end {
+  text-align: right;
+}
+
+.m-data-table__empty {
+  padding: var(--spacing-md, 1rem) 0;
+  color: var(--color-text-muted);
+  text-align: center;
+}

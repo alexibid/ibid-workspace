@@ -11,7 +11,7 @@ export default defineConfig({
     baseURL: BASE_URL
   },
   webServer: {
-    command: 'npx nx serve boilerplate --port=4300',
+    command: 'npx nx serve boilerplate',
     cwd: '../..',
     url: BASE_URL,
     reuseExistingServer: !process.env['CI'],

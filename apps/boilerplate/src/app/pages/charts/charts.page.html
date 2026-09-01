@@ -1,0 +1,14 @@
+<section class="showcase__section">
+  <h2>Charts</h2>
+  <ibid-chart-headline caption="Spending" [value]="1320" context="August" />
+  <div class="showcase__grid">
+    <ibid-bar-chart [series]="spendingSeries" caption="Monthly spending" context="Last 4 months" />
+    <ibid-line-chart
+      [series]="balanceSeries"
+      [fillArea]="true"
+      caption="Balance"
+      context="Last 4 months"
+    />
+  </div>
+  <ibid-chart-legend [entries]="legendEntries" />
+</section>

@@ -1,0 +1,26 @@
+<section class="showcase__section">
+  <h2>Structure</h2>
+  <ibid-card>
+    <h3>Card</h3>
+    <ibid-summary-row label="Groceries">220 €</ibid-summary-row>
+    <ibid-divider />
+    <ibid-summary-row label="Transport">86 €</ibid-summary-row>
+    <ibid-progress-row label="Budget used" [value]="220" [percentage]="72" color="#2c6a4d" />
+  </ibid-card>
+</section>
+
+<section class="showcase__section">
+  <h2>Indicators</h2>
+  <div class="showcase__row">
+    <ibid-stat-icon icon="add" theme="success" />
+    <ibid-stat-icon icon="add" theme="danger" />
+    <ibid-legend-item label="Essentials" color="#2c6a4d" />
+    <ibid-legend-item label="Lifestyle" color="#8a5712" />
+    <ibid-stack-dots [count]="4" [activeIndex]="1" />
+  </div>
+</section>
+
+<section class="showcase__section">
+  <h2>Empty state</h2>
+  <ibid-empty-state message="Nothing here yet" />
+</section>

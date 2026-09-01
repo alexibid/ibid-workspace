@@ -1,38 +1,44 @@
 import { expect, test } from '@playwright/test';
 import { FlowRecorder } from '@ibid/testing';
 
+const PAGES = [
+  { path: 'actions', headings: ['Buttons', 'Icon buttons and links'] },
+  { path: 'inputs', headings: ['Inputs', 'Segmented control'] },
+  { path: 'data', headings: ['Values and figures', 'Data table'] },
+  { path: 'charts', headings: ['Charts'] },
+  { path: 'layout', headings: ['Structure', 'Indicators', 'Empty state'] },
+  { path: 'overlays', headings: ['Bottom sheet', 'Scrim'] }
+];
+
 test.describe('Design system showcase', () => {
-  test('renders every component section with its states', async ({ page }, testInfo) => {
-    const recorder = new FlowRecorder(page, testInfo, 'design-system');
+  for (const page_ of PAGES) {
+    test(`the ${page_.path} page renders its sections`, async ({ page }, testInfo) => {
+      const recorder = new FlowRecorder(page, testInfo, `design-system-${page_.path}`);
 
+      await page.goto(`/${page_.path}`);
+      for (const heading of page_.headings) {
+        await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+      }
+      await recorder.step(1, `open ${page_.path}`, 'every section is rendered');
+    });
+  }
+
+  test('the root redirects to the first page', async ({ page }) => {
     await page.goto('/');
-    await recorder.step(1, 'open showcase', 'every section is rendered');
+    await expect(page).toHaveURL(/\/actions$/);
+  });
 
-    for (const heading of [
-      'Buttons',
-      'Inputs',
-      'Segmented control',
-      'Values and figures',
-      'Structure',
-      'Indicators',
-      'Empty state',
-      'Charts',
-      'Table cells',
-      'Scrim'
-    ]) {
-      await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
-    }
-
-    await expect(page.locator('ibid-button').first()).toBeVisible();
-    await expect(page.locator('ibid-currency-display').first()).toBeVisible();
-    await expect(page.locator('ibid-bar-chart')).toHaveCount(1);
-    await expect(page.locator('.showcase__table tbody tr')).toHaveCount(3);
+  test('the data table renders one row per movement', async ({ page }) => {
+    await page.goto('/data');
+    await expect(page.locator('ibid-data-table tbody tr')).toHaveCount(3);
+    await expect(page.locator('ibid-data-table th')).toHaveCount(5);
+    await expect(page.locator('ibid-data-table ibid-smart-currency-cell')).toHaveCount(3);
   });
 
   test('inputs report their state back to the page', async ({ page }, testInfo) => {
-    const recorder = new FlowRecorder(page, testInfo, 'design-system-inputs');
+    const recorder = new FlowRecorder(page, testInfo, 'design-system-inputs-state');
 
-    await page.goto('/');
+    await page.goto('/inputs');
     await page.locator('ibid-search-input input').fill('groceries');
     await recorder.step(1, 'type into search', 'state line shows the term');
 
@@ -42,7 +48,7 @@ test.describe('Design system showcase', () => {
   test('the scrim opens and dismisses', async ({ page }, testInfo) => {
     const recorder = new FlowRecorder(page, testInfo, 'design-system-scrim');
 
-    await page.goto('/');
+    await page.goto('/overlays');
     await expect(page.locator('ibid-scrim')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Show scrim' }).click();
@@ -54,7 +60,7 @@ test.describe('Design system showcase', () => {
     await expect(page.locator('ibid-scrim')).toHaveCount(0);
   });
 
-  test('the navigation opens and closes', async ({ page }, testInfo) => {
+  test('the navigation opens, links to every page and closes', async ({ page }, testInfo) => {
     const recorder = new FlowRecorder(page, testInfo, 'design-system-navigation');
 
     await page.goto('/');
@@ -63,10 +69,10 @@ test.describe('Design system showcase', () => {
 
     await page.locator('ibid-header ibid-icon-button button').click();
     await expect(page.locator('.o-header-nav--open')).toHaveCount(1);
-    await recorder.step(2, 'open navigation', 'panel is visible and the toggle stays reachable');
+    await expect(page.locator('ibid-nav-menu .m-nav-menu__link')).toHaveCount(PAGES.length);
+    await recorder.step(2, 'open navigation', 'panel lists every page');
 
-    const toggle = page.locator('ibid-header ibid-icon-button button');
-    const toggleBox = await toggle.boundingBox();
+    const toggleBox = await page.locator('ibid-header ibid-icon-button button').boundingBox();
     const panelBox = await page.locator('.o-header-nav__panel').boundingBox();
     const coversToggle =
       !!toggleBox &&
@@ -77,14 +83,9 @@ test.describe('Design system showcase', () => {
       panelBox.x + panelBox.width > toggleBox.x;
     expect(coversToggle, 'the open panel must not cover the header toggle').toBe(false);
 
-    const viewport = page.viewportSize();
-    const clickX = panelBox ? Math.min(panelBox.x + panelBox.width + 40, viewport!.width - 10) : 10;
-    const clickY = panelBox ? Math.min(panelBox.y + panelBox.height + 40, viewport!.height - 10) : 10;
-    await page.mouse.click(
-      panelBox && panelBox.width >= viewport!.width - 1 ? viewport!.width / 2 : clickX,
-      panelBox && panelBox.width >= viewport!.width - 1 ? clickY : viewport!.height / 2
-    );
+    await page.locator('ibid-nav-menu .m-nav-menu__link').nth(2).click();
+    await expect(page).toHaveURL(/\/data$/);
     await expect(page.locator('.o-header-nav--open')).toHaveCount(0);
-    await recorder.step(3, 'dismiss navigation', 'panel is hidden again');
+    await recorder.step(3, 'follow a link', 'navigation closes on the new page');
   });
 });

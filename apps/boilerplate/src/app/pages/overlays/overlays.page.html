@@ -1,0 +1,20 @@
+<section class="showcase__section">
+  <h2>Bottom sheet</h2>
+  <ibid-button variant="outlined" (clicked)="openSheet()">Open bottom sheet</ibid-button>
+  @if (sheetOpen()) {
+    <ibid-scrim dismissLabel="Close the bottom sheet" (dismissed)="closeSheet()" />
+    <ibid-bottom-sheet-dialog iconName="add" (closeClicked)="closeSheet()">
+      <span sheet-title>Bottom sheet</span>
+      <p>Content projected into the sheet body, above a footer slot.</p>
+      <ibid-button sheet-footer variant="primary" (clicked)="closeSheet()">Confirm</ibid-button>
+    </ibid-bottom-sheet-dialog>
+  }
+</section>
+
+<section class="showcase__section">
+  <h2>Scrim</h2>
+  <ibid-button variant="outlined" (clicked)="openScrim()">Show scrim</ibid-button>
+  @if (scrimOpen()) {
+    <ibid-scrim dismissLabel="Dismiss the scrim" (dismissed)="closeScrim()" />
+  }
+</section>
