@@ -4,7 +4,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { AppIconRegistry } from './icon-registry.service';
 
 @Component({
-  selector: 'app-icon',
+  selector: 'ibid-icon',
   standalone: true,
   imports: [CommonModule],
   template: `<span class="a-icon" [ngClass]="iconClass" [innerHTML]="svgContent()"></span>`,
@@ -13,7 +13,7 @@ import { AppIconRegistry } from './icon-registry.service';
 export class IconComponent implements OnChanges {
   @Input({ required: true }) name!: string;
   @Input() iconClass = '';
-  
+
   private registry = inject(AppIconRegistry);
   readonly svgContent = signal<SafeHtml>('');
 

@@ -1,12 +1,30 @@
+<ibid-header [expanded]="navOpen()">
+  <span headerBrand class="boilerplate-brand">
+    <ibid-icon class="boilerplate-brand__mark" name="ibid"></ibid-icon>
+    <span class="boilerplate-brand__label">{{ i18n.translate('title') }}</span>
+  </span>
+
+  <ibid-icon-button
+    headerActions
+    [ariaLabel]="i18n.translate('navToggleLabel')"
+    (clicked)="toggleNav()"
+  >
+    ≡
+  </ibid-icon-button>
+</ibid-header>
+
+<ibid-header-nav
+  [open]="navOpen()"
+  mode="overlay"
+  [showScrim]="true"
+  [closeLabel]="i18n.translate('navCloseLabel')"
+  (closeRequested)="closeNav()"
+>
+  <nav class="boilerplate-nav">
+    <a routerLink="/">{{ i18n.translate('navHome') }}</a>
+  </nav>
+</ibid-header-nav>
+
 <main class="boilerplate-page">
-  <app-card>
-    <h1>{{ i18n.translate('title') }}</h1>
-    <p>{{ i18n.translate('subtitle') }}</p>
-    <p>
-      {{ i18n.translate('sampleAmountLabel') }}:
-      <app-currency-display [value]="sampleBalance" [showInfo]="false" />
-    </p>
-    <app-button variant="primary">{{ i18n.translate('title') }}</app-button>
-  </app-card>
+  <router-outlet></router-outlet>
 </main>
-<router-outlet></router-outlet>

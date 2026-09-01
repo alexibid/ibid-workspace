@@ -10,7 +10,7 @@ const BALLOON_POSITIONS: ConnectedPosition[] = [
 ];
 
 @Component({
-  selector: 'app-info-balloon',
+  selector: 'ibid-info-balloon',
   standalone: true,
   imports: [CommonModule, OverlayModule, IconComponent, I18N_SHARED],
   templateUrl: './info-balloon.html',

@@ -62,7 +62,7 @@
     @include glass-highlight-surface(-0.8deg, 4px 18px 6px 16px);
     color: var(--color-text, #1e293b);
 
-    span, mat-icon, app-icon {
+    span, mat-icon, ibid-icon {
       position: relative;
       z-index: 1;
     }
@@ -78,7 +78,7 @@
   }
 
   &--open mat-icon,
-  &--open app-icon {
+  &--open ibid-icon {
     transform: rotate(180deg);
   }
 

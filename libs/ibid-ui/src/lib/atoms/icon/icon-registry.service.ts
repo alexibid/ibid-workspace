@@ -30,7 +30,7 @@ export class AppIconRegistry {
     let cleaned = svg.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 
     cleaned = cleaned.replace(/<svg/, '<svg width="100%" height="100%" fill="currentColor"');
-    
+
     return cleaned;
   }
 }

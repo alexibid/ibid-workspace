@@ -2,7 +2,7 @@ import { IconComponent } from '../icon/icon';
 import { Component, EventEmitter, Output, input, signal } from '@angular/core';
 
 @Component({
-  selector: 'app-search-input',
+  selector: 'ibid-search-input',
   standalone: true,
   imports: [IconComponent],
   template: `
@@ -25,10 +25,10 @@ import { Component, EventEmitter, Output, input, signal } from '@angular/core';
           (mousedown)="clear($event)"
           (click)="clear($event)"
         >
-          <app-icon name="close"></app-icon>
+          <ibid-icon name="close"></ibid-icon>
         </button>
       } @else {
-        <app-icon name="search" class="a-search-input__icon"></app-icon>
+        <ibid-icon name="search" class="a-search-input__icon"></ibid-icon>
       }
     </div>
   `,

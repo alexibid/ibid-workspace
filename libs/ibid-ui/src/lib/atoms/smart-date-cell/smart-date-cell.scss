@@ -1,0 +1,63 @@
+:host {
+  line-height: 1;
+}
+
+
+.a-smart-date-cell {
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.2;
+  color: var(--color-text);
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &__popover {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 170px;
+    padding: 10px 12px;
+    background-color: var(--color-ink);
+    border-radius: var(--radius-balloon);
+    box-shadow: 0 8px 20px rgba(44, 44, 42, 0.28);
+  }
+
+  &__full-date {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--text-m);
+    color: var(--color-surface);
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__label {
+    font-family: var(--font-sans);
+    font-size: var(--text-m);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  &__value {
+    font-family: var(--font-sans);
+    font-size: var(--text-m);
+    font-weight: 600;
+    color: var(--color-surface);
+    white-space: nowrap;
+  }
+}

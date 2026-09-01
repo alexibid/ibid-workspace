@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon';
 
 @Component({
-  selector: 'app-bottom-sheet-header',
+  selector: 'ibid-bottom-sheet-header',
   standalone: true,
   imports: [CommonModule, IconComponent],
   templateUrl: './bottom-sheet-header.component.html',

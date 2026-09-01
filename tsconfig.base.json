@@ -2,7 +2,10 @@
   "compilerOptions": {
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["es2022", "dom"],
+    "lib": [
+      "es2022",
+      "dom"
+    ],
     "module": "es2022",
     "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
@@ -13,11 +16,22 @@
     "strict": true,
     "target": "es2022",
     "ignoreDeprecations": "6.0",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "paths": {
-      "ibid-ui": ["./libs/ibid-ui/src/index.ts"],
-      "@ibid/utils": ["./libs/utils/src/index.ts"],
-      "@ibid/services": ["./libs/services/src/index.ts"]
+      "ibid-ui": [
+        "./libs/ibid-ui/src/index.ts"
+      ],
+      "@ibid/utils": [
+        "./libs/utils/src/index.ts"
+      ],
+      "@ibid/services": [
+        "./libs/services/src/index.ts"
+      ],
+      "@ibid/testing": [
+        "./libs/testing/src/index.ts"
+      ]
     }
   }
 }

@@ -62,7 +62,7 @@ function markerStyle(shape: MarkerShape, sparkles: readonly [string, string][]):
 }
 
 @Component({
-  selector: 'app-currency-display',
+  selector: 'ibid-currency-display',
   standalone: true,
   imports: [OverlayModule],
   template: `

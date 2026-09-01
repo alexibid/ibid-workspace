@@ -8,7 +8,7 @@ import { ChartTooltipComponent } from './chart-tooltip';
   imports: [OverlayModule, ChartTooltipComponent],
   template: `
     <div cdkOverlayOrigin #origin="cdkOverlayOrigin"></div>
-    <app-chart-tooltip
+    <ibid-chart-tooltip
       [origin]="origin"
       [isOpen]="isOpen"
       [title]="title"

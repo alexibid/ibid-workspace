@@ -7,7 +7,7 @@
   [attr.aria-label]="title()"
   [attr.aria-expanded]="isOpen()"
 >
-  <app-icon [name]="iconName()" iconClass="m-info-balloon__icon"></app-icon>
+  <ibid-icon [name]="iconName()" iconClass="m-info-balloon__icon"></ibid-icon>
 </button>
 
 <ng-template
@@ -24,7 +24,7 @@
     <div class="m-info-balloon__header">
       <span class="m-info-balloon__title">{{ title() }}</span>
       <button type="button" class="m-info-balloon__close" (click)="close()" [attr.aria-label]="closeLabel()">
-        <app-icon name="close-line" iconClass="m-info-balloon__icon"></app-icon>
+        <ibid-icon name="close-line" iconClass="m-info-balloon__icon"></ibid-icon>
       </button>
     </div>
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
 @Component({
-  selector: 'app-card',
+  selector: 'ibid-card',
   standalone: true,
   imports: [CommonModule, HandDrawnDirective],
   template: `

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-drag-handle',
+  selector: 'ibid-drag-handle',
   standalone: true,
   templateUrl: './drag-handle.component.html',
   styleUrls: ['./drag-handle.component.scss'],

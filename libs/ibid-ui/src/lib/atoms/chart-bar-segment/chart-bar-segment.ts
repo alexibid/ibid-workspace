@@ -4,7 +4,7 @@ export type ChartBarSegmentRole = 'default' | 'first' | 'last' | 'max' | 'min';
 export type ChartBarSegmentOrientation = 'vertical' | 'horizontal';
 
 @Component({
-  selector: 'app-chart-bar-segment',
+  selector: 'ibid-chart-bar-segment',
   standalone: true,
   template: `
     <span

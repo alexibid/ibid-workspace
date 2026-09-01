@@ -7,13 +7,13 @@ export interface ChartLegendEntry {
 }
 
 @Component({
-  selector: 'app-chart-legend',
+  selector: 'ibid-chart-legend',
   standalone: true,
   imports: [LegendItemComponent],
   template: `
     <div class="m-chart-legend">
       @for (entry of entries(); track entry.label) {
-        <app-legend-item [label]="entry.label" [color]="entry.color" />
+        <ibid-legend-item [label]="entry.label" [color]="entry.color" />
       }
     </div>
   `,

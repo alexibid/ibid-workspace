@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { I18N_SHARED } from '@ibid/services';
 
 @Component({
-  selector: 'app-view-more-link',
+  selector: 'ibid-view-more-link',
   standalone: true,
   imports: [IconComponent, ...I18N_SHARED],
   template: `
     <button type="button" class="a-view-more-link" (click)="navigate($event)">
-      <app-icon name="link" class="a-view-more-link__icon"></app-icon>
+      <ibid-icon name="link" class="a-view-more-link__icon"></ibid-icon>
       <span>{{ 'viewMoreBtn' | translate }}</span>
     </button>
   `,

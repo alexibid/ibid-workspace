@@ -1,0 +1,35 @@
+@use 'libs/ibid-ui/src/styles/tools/mixins' as *;
+
+.boilerplate-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.5rem);
+  font-family: var(--font-display, inherit);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.boilerplate-brand__mark {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.boilerplate-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.5rem);
+  padding: var(--spacing-md, 1rem);
+}
+
+.boilerplate-nav a {
+  padding: var(--spacing-xs, 0.4rem) 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.boilerplate-page {
+  padding: var(--spacing-md, 1rem);
+}

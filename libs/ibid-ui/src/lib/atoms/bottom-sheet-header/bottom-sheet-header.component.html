@@ -1,6 +1,6 @@
 <header class="a-bottom-sheet-header">
   @if (iconName) {
-    <app-icon class="a-bottom-sheet-header__icon" [name]="iconName"></app-icon>
+    <ibid-icon class="a-bottom-sheet-header__icon" [name]="iconName"></ibid-icon>
   }
   <h2 class="a-bottom-sheet-header__title"><ng-content></ng-content></h2>
   @if (showClose) {
@@ -9,7 +9,7 @@
       class="a-button a-button--icon a-bottom-sheet-header__close-btn m-bottom-sheet-dialog__close-btn"
       (click)="closeClicked.emit()"
     >
-      <app-icon name="close-line"></app-icon>
+      <ibid-icon name="close-line"></ibid-icon>
     </button>
   }
 </header>

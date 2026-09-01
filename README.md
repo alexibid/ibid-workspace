@@ -1,61 +1,99 @@
 # ibid-workspace
 
-Monorepo Nx que agrupa os produtos Angular da ibid à volta de um design system e de um
-conjunto de bibliotecas partilhadas.
+An Nx monorepo holding ibid's Angular products around a shared design system and a set of
+shared libraries.
 
-A ideia é simples: cada produto é uma aplicação independente em `apps/`, e tudo o que for
-genérico o suficiente para ser reutilizado por mais do que um produto — componentes visuais,
-funções utilitárias, serviços de infraestrutura — vive em `libs/` e é consumido por importação.
+The idea is simple: each product is an independent application under `apps/`, and anything
+generic enough to be reused by more than one product — visual components, utility functions,
+infrastructure services — lives under `libs/` and is consumed through imports.
 
-## Estrutura
+## Structure
 
 ```
 apps/
-  boilerplate/       esqueleto Angular mínimo, ponto de partida para produtos novos
+  boilerplate/       minimal Angular skeleton, the starting point for new products
+  oh-save-me/        personal and family finance assistant (PT: Oh poupa-me!)
 
 libs/
-  ibid-ui/           design system: componentes e estilos globais
-  services/          serviços de infraestrutura (i18n, autenticação, sincronização)
-  utils/             funções puras, sem dependências
+  ibid-ui/           design system: components, global styles, and icons
+  services/          infrastructure services (i18n, authentication, sync)
+  testing/           generic test engines (accessibility, screenshots, flows)
+  utils/             pure functions, no dependencies
+
+tools/
+  builder/           shared compilation base for the apps
+  vitest/            unit test runner configuration
+  playwright/        device matrix and execution policy
+  storybook/         addons, framework, and visual test runner
+  commitlint/        commit message rules
+  husky/             git hooks
+  release/           versioning preset
 ```
 
-### Regra de dependência
+### Dependency rule
 
-- Uma **app** pode importar de qualquer **lib**.
-- Uma **lib** nunca importa de uma **app**.
-- Entre libs, a única dependência permitida é para `utils` — a única sem dependências próprias.
+- An **app** may import from any **lib**.
+- A **lib** never imports from an **app**.
+- Between libs, the only allowed dependency is `utils` — the one with no dependencies of its
+  own.
 
-A regra é validada em lint pelo `@nx/enforce-module-boundaries`, configurado em
+The rule is enforced at lint time by `@nx/enforce-module-boundaries`, configured in
 `eslint.config.mjs`.
 
-## Aplicações
+### Selector prefixes
+
+A selector's prefix says where the element comes from. `app-` is banned across the workspace.
+
+| Origin             | Prefix         |
+| ------------------ | -------------- |
+| `libs/ibid-ui`     | `ibid-`        |
+| `apps/oh-save-me`  | `ohsaveme-`    |
+| `apps/boilerplate` | `boilerplate-` |
+
+## Applications
+
+### `apps/oh-save-me`
+
+The personal and family finance assistant — **Oh Save Me!** in English, **Oh poupa-me!** in
+Portuguese, with the name varying by country through the `appName` translation key. It gives
+direct answers ("can I afford a holiday this month?") instead of spreadsheets, imports bank
+statements, and categorises them automatically. It was called SavvyJar until version 1.6.2.
+
+Layered DDD architecture under `src/app/`:
+
+```
+apps/oh-save-me/
+  src/app/
+    domain/           models, repository interfaces, rules, and domain services
+    application/      use cases, selectors, store, i18n and translations
+    infrastructure/   RxDB, SQLite, Google Drive sync, APIs
+    ui/               pages, templates, components, pipes, and directives
+  e2e/                18 Playwright journeys, including the accessibility audit
+  platforms/
+    desktop/          Tauri v2 (macOS, Windows, Linux)
+    mobile/           Capacitor (iOS, Android)
+  .storybook/         Storybook configuration
+  public/             static assets and manifest
+```
+
+Distribution: web through Firebase Hosting, desktop through Tauri, mobile through Capacitor.
 
 ### `apps/boilerplate`
 
-Aplicação Angular vazia que serve de molde para produtos novos: routing configurado,
-`styles.scss` já a importar o design system e nada mais. Copia-se esta pasta para arrancar
-uma app nova em vez de gerar tudo de raiz.
+An empty Angular application that serves as the mould for new products: routing configured,
+`styles.scss` already importing the design system, and the navigation shell assembled from
+`ibid-header` and `ibid-header-nav`. Copy this folder to start a new app instead of generating
+everything from scratch.
 
-```
-apps/boilerplate/
-  src/
-    app/            componente raiz, rotas e configuração de bootstrap
-    styles.scss     importa os estilos globais de libs/ibid-ui
-    index.html
-    main.ts
-  public/           assets estáticos copiados para o build
-  project.json      targets: build, serve, test, lint, serve-static
-```
+## Libraries
 
-## Bibliotecas
+### `libs/ibid-ui` — imported as `ibid-ui`
 
-### `libs/ibid-ui` — importada como `ibid-ui`
-
-O design system. Os componentes seguem Atomic Design, organizados por nível de composição:
+The design system. Components follow Atomic Design, organised by composition level:
 
 ```
 src/lib/
-  atoms/        button, icon (+ icon-registry), icon-button, divider, select,
+  atoms/        button, icon (+ icon-registry), icon-button, divider, select, scrim,
                 date-input, number-input, search-input, empty-state, drag-handle,
                 stack-dots, stat-icon, view-more-link, legend-item, currency-display,
                 chart-tooltip, chart-marker-dot, chart-bar-segment,
@@ -63,17 +101,17 @@ src/lib/
   molecules/    card, form-field, metric-card, stat-card, summary-row, progress-row,
                 segmented-control, info-balloon, bottom-sheet-dialog,
                 chart-headline, chart-legend
-  organisms/    bar-chart, line-chart, chart
+  organisms/    bar-chart, line-chart, chart, header, header-nav
   directives/   hand-drawn
-  models/       tipos partilhados de UI e de séries de gráficos
+  models/       shared UI and chart series types
 ```
 
-Os estilos globais estão em `src/styles/`, organizados em ITCSS por especificidade crescente:
+Global styles live in `src/styles/`, organised in ITCSS by increasing specificity:
 
 ```
 src/styles/
-  settings/     colors, typography, spacing, elevation, breakpoints (sem output CSS)
-  tools/        mixins (sem output CSS)
+  settings/     colors, typography, spacing, elevation, breakpoints (no CSS output)
+  tools/        mixins (no CSS output)
   generic/      reset, scrollbars
   elements/     base, icons
   objects/      layout, table, hand-drawn, bottom-sheet-dialog
@@ -81,116 +119,253 @@ src/styles/
   trumps/       utilities
 ```
 
-O ponto de entrada é `src/styles.scss`, que faz o `@use` de todas as camadas pela ordem
-correta. Uma app consome tudo com uma linha no seu `styles.scss`:
+The entry point is `src/styles.scss`, which `@use`s every layer in the right order. An app
+consumes all of it with one line in its own `styles.scss`:
 
 ```scss
 @use 'libs/ibid-ui/src/styles';
 ```
 
-### `libs/services` — importada como `@ibid/services`
+**Icons** live in `libs/ibid-ui/assets/icons/` — 132 SVGs at 512x512. They are copied into any
+app's build by the `targetDefaults` and served under `icons/`, which is where
+`IconRegistryService` fetches them. A new app gets them without configuring anything.
 
-Serviços de infraestrutura, sem lógica de negócio de nenhum produto:
+### `libs/services` — imported as `@ibid/services`
 
-- **i18n** — `I18nService` e os pipes `appTranslate`, `appDate`, `appCurrency`. Os dicionários
-  de tradução pertencem a cada app, não à lib.
-- **sync** — `GoogleAuthService` (autenticação via Capacitor) e `ConflictResolverService`
-  (resolução de conflitos em sincronização).
+Infrastructure services, with no product business logic:
 
-### `libs/utils` — importada como `@ibid/utils`
+- **i18n** — `I18nService` and the `appTranslate`, `appDate`, `appCurrency` pipes. Translation
+  dictionaries belong to each app, not to the library.
+- **sync** — `GoogleAuthService` (Capacitor authentication) and `ConflictResolverService`.
 
-Funções puras, sem estado e sem dependências: `date.utils`, `string.utils`, `parsing.utils`,
-`color-contrast.utils`. Cada ficheiro tem o `.spec.ts` correspondente.
+### `libs/testing` — imported as `@ibid/testing`
+
+Test engines that know nothing about any product's domain: `A11yAuditor` (injects axe-core and
+fails on critical or serious WCAG 2.1 AA violations, plus text under 12px), `FlowRecorder`
+(captures a flow step by step), and the per-device screenshot path helpers.
+
+### `libs/utils` — imported as `@ibid/utils`
+
+Pure, stateless functions with no dependencies: `date`, `string`, `parsing`, `color-contrast`.
+Each file has its matching `.spec.ts`.
 
 ### Aliases
 
-Definidos em `tsconfig.base.json`:
+Defined in `tsconfig.base.json`:
 
-| Alias            | Caminho                      |
+| Alias            | Path                         |
 | ---------------- | ---------------------------- |
 | `ibid-ui`        | `libs/ibid-ui/src/index.ts`  |
 | `@ibid/services` | `libs/services/src/index.ts` |
+| `@ibid/testing`  | `libs/testing/src/index.ts`  |
 | `@ibid/utils`    | `libs/utils/src/index.ts`    |
 
-Importa-se sempre pelo alias — nunca por caminho relativo entre projetos.
+Always import through the alias — never through a relative path between projects.
+
+## The shared build engine
+
+A new app copies no configuration: it inherits it. The engine lives in two places, depending on
+what it is.
+
+**Targets live in the `targetDefaults` of `nx.json`** — build, serve, and test for any Angular
+app in the workspace, written with the `{projectRoot}` and `{projectName}` tokens:
+
+```json
+"@angular/build:application": {
+  "options": {
+    "outputPath": "dist/{projectName}",
+    "browser": "{projectRoot}/src/main.ts",
+    "tsConfig": "{projectRoot}/tsconfig.app.json"
+  }
+}
+```
+
+Each app's `project.json` declares only what makes it different — its styles list and its
+bundle budgets.
+
+**Configuration extended by files lives in `tools/`:**
+
+| File                                   | Defines                                                    |
+| -------------------------------------- | ---------------------------------------------------------- |
+| `tools/builder/tsconfig.app.base.json` | Compiler and Angular options common to the apps            |
+| `tools/vitest/runner.config.ts`        | Test isolation and single-threaded execution               |
+| `tools/playwright/playwright.base.ts`  | Device matrix (mobile/tablet/desktop) and execution policy |
+| `tools/storybook/create-config.ts`     | Addons, framework, and alias derivation                    |
+
+`tools/` sits outside the Nx project graph on purpose. The rule that separates the two folders:
+**if a `.spec.ts` imports it, it is a lib; if a configuration file extends it, it is `tools/`.**
+A library enters the graph — gaining an alias, caching, `affected`, and boundary checks; a
+`tools/` folder gains none of that.
 
 ## Stack
 
-- **Angular 22** com componentes standalone e o builder `@angular/build`
-- **Nx 23** para o grafo de projetos, cache e execução de tarefas
-- **TypeScript 6** em modo estrito (`strict`, `noUnusedLocals`, `noImplicitReturns`)
-- **Vitest** + jsdom para testes unitários
-- **ESLint** flat config, com validação das fronteiras entre projetos
-- **ng-packagr** para o empacotamento das libs
-- **Capacitor** para as builds móveis
+- **Angular 22** with standalone components and the `@angular/build` builder
+- **Nx 23** for the project graph, caching, and task execution
+- **TypeScript 6** in strict mode
+- **Vitest** with jsdom for unit tests
+- **Playwright** for E2E journeys and accessibility audits
+- **Storybook** for the component catalogue and visual regression
+- **ESLint** flat config, enforcing project boundaries and selector prefixes
+- **ng-packagr** for packaging the libraries
+- **Capacitor** and **Tauri** for mobile and desktop builds
 
-## Comandos
+## Commands
 
-Instalar dependências:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Servir a aplicação em desenvolvimento:
+Serve the application in development:
 
 ```bash
-npx nx serve boilerplate
+npm start
 ```
 
-Build de produção de um projeto:
+Production build:
 
 ```bash
-npx nx build boilerplate
+npm run build
 ```
 
-Testes e lint de um projeto:
+Tests across every project:
 
 ```bash
-npx nx test ibid-ui
+npm test
+```
+
+Only what your changes affect:
+
+```bash
+npm run affected
+```
+
+Playwright journeys:
+
+```bash
+npm run e2e
+```
+
+Accessibility audit:
+
+```bash
+npm run test:a11y
+```
+
+Storybook — the design system (port 6007):
+
+```bash
+npm run storybook:ui
+```
+
+Storybook — the product, with the design system composed into its sidebar (port 6006):
+
+```bash
+npm run storybook:start
+```
+
+Storybook — the boilerplate showcase (port 6008):
+
+```bash
+npm run storybook:boilerplate
+```
+
+Desktop and mobile:
+
+```bash
+npm run desktop:dev
 ```
 
 ```bash
-npx nx lint ibid-ui
+npm run mobile:ios
 ```
 
-Correr uma tarefa em todos os projetos afetados pelas alterações locais:
+Publish the site:
 
 ```bash
-npx nx affected -t lint test build
+npm run deploy
 ```
 
-Ver os targets disponíveis num projeto:
-
-```bash
-npx nx show project ibid-ui --web
-```
-
-Ver o grafo de dependências entre projetos:
+See the dependency graph:
 
 ```bash
 npx nx graph
 ```
 
-## Convenções de código
+## Build output
 
-- **SCSS** — ITCSS para as camadas e BEM para os nomes de classe (`.block`, `.block__element`,
-  `.block--modifier`). Nenhum override fora da camada `trumps`.
-- **TypeScript** — sem `any`; `unknown` ou generics no lugar. `readonly` para imutabilidade,
-  optional chaining e nullish coalescing para null-safety, type guards em vez de assertions.
-- **Estrutura** — funções pequenas com uma só responsabilidade e um só nível de abstração,
-  ficheiros até 200–300 linhas, nomes que revelam intenção.
-- **Formatação** — Prettier e ESLint são a autoridade; nada de formatação manual contra a
-  configuração do repositório.
+Everything lands in `dist/<project>/`, native artifacts included:
 
-## Integração contínua
-
-O workflow em `.github/workflows/ci.yml` corre em cada push para `main` e em cada pull request.
-Verifica a formatação com `nx format:check` e depois executa, em todos os projetos:
-
-```bash
-npx nx run-many -t lint test build typecheck e2e
+```
+dist/oh-save-me/
+  browser/                    web build
+  oh-save-me.0.0.0.apk        Android, collected from Gradle
+  oh-save-me.0.0.0.dmg        desktop, collected from Tauri
 ```
 
-O workflow assume distribuição de tarefas por Nx Cloud (`nx start-ci-run`), que ainda não está
-ligado a este repositório.
+`tools/builder/collect-artifact.mjs` does the collecting: Gradle and Tauri write generic
+filenames inside `platforms/`, and this step brings each one next to the web builds under a
+name that identifies project and version.
+
+## Code conventions
+
+- **SCSS** — ITCSS for the layers and BEM for class names (`.block`, `.block__element`,
+  `.block--modifier`). No overrides outside the `trumps` layer.
+- **TypeScript** — no `any`; `unknown` or generics instead. `readonly` for immutability,
+  optional chaining and nullish coalescing for null-safety, type guards instead of assertions.
+- **Structure** — small single-responsibility functions with one level of abstraction, files up
+  to 200–300 lines, names that reveal intent.
+- **No comments.** Code explains itself through its names; if a lint rule demands a non-empty
+  block, configure the rule rather than writing a comment.
+- **Formatting** — Prettier and ESLint are the authority.
+
+## Publishing
+
+Three workflows, chained:
+
+| Workflow           | Triggered by                    | Does                                                                                                                                |
+| ------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`           | Pull request and push to `main` | Lint, tests, and build, only on affected projects                                                                                   |
+| `auto-version.yml` | Push to `main`                  | Derives the version from conventional commits, writes the changelog, publishes the tag                                              |
+| `release.yml`      | A `v*` tag                      | Builds web, Android APK, and desktop installers; attaches them to the release, uploads them to Google Drive, and publishes the site |
+
+Installers come out with the version already in the name — `oh-save-me.1.2.3.apk`,
+`oh-save-me.1.2.3.dmg` — because `tools/builder/collect-artifact.mjs` renames them as it
+collects them into `dist/`.
+
+### Secrets and variables to configure on GitHub
+
+| Name                       | Type     | Purpose                                                                                                                             |
+| -------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `RELEASE_TOKEN`            | Secret   | Personal token with `contents:write`. Without it the tag is published with `GITHUB_TOKEN`, which does **not** trigger `release.yml` |
+| `RCLONE_CONF_BASE64`       | Secret   | Base64 rclone configuration, for the Google Drive upload                                                                            |
+| `FIREBASE_SERVICE_ACCOUNT` | Secret   | Firebase service account, for publishing the site                                                                                   |
+| `DRIVE_FOLDER`             | Variable | Destination folder on Drive (defaults to `Builds`)                                                                                  |
+
+Every step depending on a missing secret is skipped with a note in the run summary, rather than
+failing the whole release.
+
+### Preparing the Google Drive upload
+
+`rclone` is used with **your** account, not a service account: a service account has no storage
+in My Drive and the upload would fail. On your machine:
+
+```bash
+rclone config create gdrive drive scope drive
+```
+
+That opens a browser to authorise access. Then encode the configuration and store the result in
+the `RCLONE_CONF_BASE64` secret:
+
+```bash
+base64 -i ~/.config/rclone/rclone.conf | pbcopy
+```
+
+Files land in `<DRIVE_FOLDER>/oh-save-me/v<version>/`, and only the ones carrying the version in
+their name — the web build and Cargo intermediates are left out.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push to `main` and every pull request, executing lint,
+tests, and build across the affected projects.

@@ -1,7 +1,7 @@
 @use '../../../styles/tools/mixins' as *;
 
 .a-legend-item {
-  @include marker-highlight;
+  @include marker-highlight($opacity: 0.38);
 
   &__label {
     font-family: var(--font-sans);

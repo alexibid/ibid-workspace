@@ -21,14 +21,14 @@ const LATEST_SELECTABLE_YEAR = 2100;
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  selector: 'app-date-input',
+  selector: 'ibid-date-input',
   standalone: true,
   imports: [CommonModule, IconComponent, OverlayModule],
   template: `
     <div class="a-date-input-wrapper"
       [class.is-single]="effectiveMode === 'single'"
       [class.is-range]="effectiveMode === 'range'">
-      
+
       <button
         #trigger="cdkOverlayOrigin"
         cdkOverlayOrigin
@@ -50,7 +50,7 @@ const LATEST_SELECTABLE_YEAR = 2100;
             </span>
           }
         </span>
-        <app-icon name="calendar"></app-icon>
+        <ibid-icon name="calendar"></ibid-icon>
       </button>
 
       <ng-template
@@ -66,14 +66,14 @@ const LATEST_SELECTABLE_YEAR = 2100;
         <div class="a-date-input__popover">
           <header class="a-date-input__nav">
             <button type="button" class="a-date-input__nav-btn" (click)="previous()" [disabled]="!canGoPrevious()">
-              <app-icon name="chevron-left"></app-icon>
+              <ibid-icon name="chevron-left"></ibid-icon>
             </button>
             <div class="a-date-input__nav-center">
               <button type="button" class="a-date-input__nav-center-btn" (click)="setPickerView('month')">{{ currentMonthName() }}</button>
               <button type="button" class="a-date-input__nav-center-btn" (click)="setPickerView('year')">{{ currentYearName() }}</button>
             </div>
             <button type="button" class="a-date-input__nav-btn" (click)="next()" [disabled]="!canGoNext()">
-              <app-icon name="chevron-right"></app-icon>
+              <ibid-icon name="chevron-right"></ibid-icon>
             </button>
           </header>
 
@@ -154,7 +154,7 @@ export class DateInputComponent {
 
   @Output() valueChange = new EventEmitter<string>();
   @Output() rangeChange = new EventEmitter<DateRangeValue>();
-  @Output() change = new EventEmitter<string | DateRangeValue>();
+  @Output() dateChange = new EventEmitter<string | DateRangeValue>();
 
   private readonly localValue = signal<string | null>(null);
   private readonly localStart = signal<string | null>(null);
@@ -235,7 +235,7 @@ export class DateInputComponent {
 
     const startYear = min ? min.getFullYear() : EARLIEST_SELECTABLE_YEAR;
     const endYear = max ? max.getFullYear() : LATEST_SELECTABLE_YEAR;
-    
+
     const years: number[] = [];
     for (let y = startYear; y <= endYear; y++) {
       years.push(y);
@@ -248,19 +248,19 @@ export class DateInputComponent {
     const currentYear = this.viewDate().getFullYear();
     const min = this.minDateObj();
     const max = this.maxDateObj();
-    
+
     return Array.from({ length: 12 }, (_, i) => {
       const date = new Date(currentYear, i, 1);
       const name = formatter.format(date).replace('.', '');
       let isDisabled = false;
-      
+
       if (min && (currentYear < min.getFullYear() || (currentYear === min.getFullYear() && i < min.getMonth()))) {
         isDisabled = true;
       }
       if (max && (currentYear > max.getFullYear() || (currentYear === max.getFullYear() && i > max.getMonth()))) {
         isDisabled = true;
       }
-      
+
       return { index: i, name, disabled: isDisabled };
     });
   });
@@ -306,38 +306,38 @@ export class DateInputComponent {
   }
 
   canGoPrevious(): boolean {
-    if (this.pickerView() === 'year') return false; 
-    
+    if (this.pickerView() === 'year') return false;
+
     const min = this.minDateObj();
     if (!min) return true;
-    
+
     const v = this.viewDate();
     if (this.pickerView() === 'date') {
       return v.getFullYear() > min.getFullYear() || (v.getFullYear() === min.getFullYear() && v.getMonth() > min.getMonth());
     }
-    
+
     if (this.pickerView() === 'month') {
       return v.getFullYear() > min.getFullYear();
     }
-    
+
     return true;
   }
 
   canGoNext(): boolean {
     if (this.pickerView() === 'year') return false;
-    
+
     const max = this.maxDateObj();
     if (!max) return true;
-    
+
     const v = this.viewDate();
     if (this.pickerView() === 'date') {
       return v.getFullYear() < max.getFullYear() || (v.getFullYear() === max.getFullYear() && v.getMonth() < max.getMonth());
     }
-    
+
     if (this.pickerView() === 'month') {
       return v.getFullYear() < max.getFullYear();
     }
-    
+
     return true;
   }
 
@@ -394,7 +394,7 @@ export class DateInputComponent {
     if (this.effectiveMode === 'single') {
       this.localValue.set(day.date);
       this.valueChange.emit(day.date);
-      this.change.emit(day.date);
+      this.dateChange.emit(day.date);
       this.close();
       return;
     }
@@ -412,7 +412,7 @@ export class DateInputComponent {
     this.close();
     this.valueChange.emit(start);
     this.rangeChange.emit({ start, end });
-    this.change.emit({ start, end });
+    this.dateChange.emit({ start, end });
   }
 
   isSelected(date: string): boolean {

@@ -8,7 +8,9 @@
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": ["{projectRoot}/dist"],
+      "outputs": [
+        "{workspaceRoot}/dist/{projectName}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "project": "libs/services/ng-package.json",

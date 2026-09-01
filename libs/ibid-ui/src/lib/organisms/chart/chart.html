@@ -1,14 +1,12 @@
 @if (!hasEnoughData()) {
-  <app-empty-state [message]="'ainda sem dados suficientes'" />
+  <ibid-empty-state [message]="'ainda sem dados suficientes'" />
 } @else {
   <div class="o-chart" [class.o-chart--mini]="size() === 'mini'">
     @if (size() === 'default') {
-      <app-chart-headline [caption]="headlineCaption()" [value]="seriesStats()!.last.value" [context]="context()" />
+      <ibid-chart-headline [caption]="headlineCaption()" [value]="seriesStats()!.last.value" [context]="context()" />
       <div class="o-chart__divider"></div>
     }
 
-    <!-- role="img" wraps only the plot: it must not contain focusable content, and the
-         headline above carries an interactive explanation affordance. -->
     <div
       class="o-chart__surface"
       [attr.role]="size() === 'default' ? 'img' : null"
@@ -155,12 +153,12 @@
     </div>
 
     @if (size() === 'default') {
-      <app-chart-legend [entries]="legendEntries()" />
+      <ibid-chart-legend [entries]="legendEntries()" />
     }
   </div>
 
   @if (activeMarker(); as active) {
-    <app-chart-tooltip
+    <ibid-chart-tooltip
       [origin]="activeOrigin()!"
       [isOpen]="true"
       [title]="active.point.label"

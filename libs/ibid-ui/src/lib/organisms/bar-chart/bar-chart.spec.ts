@@ -5,7 +5,7 @@ import { Component, input } from '@angular/core';
 import { ChartComponent } from '../chart/chart';
 
 @Component({
-  selector: 'app-chart',
+  selector: 'ibid-chart',
   standalone: true,
   template: '<div class="fake-chart"></div>'
 })
@@ -51,13 +51,13 @@ describe('BarChartComponent', () => {
     expect(mapped[0].type).toBe('bar');
   });
 
-  it('passes inputs correctly to app-chart', () => {
+  it('passes inputs correctly to ibid-chart', () => {
     fixture.componentRef.setInput('series', series);
     fixture.componentRef.setInput('size', 'mini');
     fixture.componentRef.setInput('caption', 'My Caption');
     fixture.detectChanges();
 
-    const chartEl = fixture.nativeElement.querySelector('app-chart');
+    const chartEl = fixture.nativeElement.querySelector('ibid-chart');
     expect(chartEl).toBeTruthy();
   });
 });

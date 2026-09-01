@@ -15,8 +15,8 @@ describe('IconButtonComponent', () => {
     fixture.detectChanges();
   });
 
-  it('emits onClick with the native MouseEvent when clicked', () => {
-    const emitSpy = vi.spyOn(component.onClick, 'emit');
+  it('emits clicked with the native MouseEvent when clicked', () => {
+    const emitSpy = vi.spyOn(component.clicked, 'emit');
     fixture.nativeElement.querySelector('button').click();
 
     expect(emitSpy).toHaveBeenCalledWith(expect.any(MouseEvent));

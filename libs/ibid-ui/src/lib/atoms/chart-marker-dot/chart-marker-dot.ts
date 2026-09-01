@@ -3,7 +3,7 @@ import { Component, input } from '@angular/core';
 export type ChartMarkerDotRole = 'default' | 'first' | 'last' | 'max' | 'min';
 
 @Component({
-  selector: 'app-chart-marker-dot',
+  selector: 'ibid-chart-marker-dot',
   standalone: true,
   template: `
     <span

@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/libs/ibid-ui",
+  "dest": "../../dist/ibid-ui",
   "lib": {
     "entryFile": "src/index.ts"
   }

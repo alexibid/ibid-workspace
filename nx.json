@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -45,12 +48,20 @@
   "targetDefaults": {
     "@nx/angular:ng-packagr-lite": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "@nx/angular:unit-test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ]
     },
     "@nx/eslint:lint": {
       "cache": true,
@@ -65,12 +76,72 @@
     },
     "@angular/build:application": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ],
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/{projectName}",
+        "browser": "{projectRoot}/src/main.ts",
+        "index": "{projectRoot}/src/index.html",
+        "tsConfig": "{projectRoot}/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "{projectRoot}/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/ibid-ui/assets",
+            "output": "."
+          }
+        ],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "."
+          ]
+        }
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
     },
     "@angular/build:unit-test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "options": {
+        "watch": false,
+        "isolate": true,
+        "runnerConfig": "tools/vitest/runner.config.ts"
+      }
+    },
+    "@angular/build:dev-server": {
+      "continuous": true,
+      "configurations": {
+        "production": {
+          "buildTarget": "{projectName}:build:production"
+        },
+        "development": {
+          "buildTarget": "{projectName}:build:development"
+        }
+      }
     }
   },
   "generators": {

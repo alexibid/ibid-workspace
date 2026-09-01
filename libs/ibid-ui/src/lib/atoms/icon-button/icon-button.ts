@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, input, booleanAttribute } from '@angul
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-icon-button',
+  selector: 'ibid-icon-button',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
       [attr.aria-label]="ariaLabel() || title() || null"
       [attr.title]="title() || ariaLabel() || null"
       [disabled]="disabled()"
-      (click)="onClick.emit($event)"
+      (click)="clicked.emit($event)"
     >
       <ng-content></ng-content>
     </button>
@@ -23,5 +23,5 @@ export class IconButtonComponent {
   readonly ariaLabel = input<string | null>(null);
   readonly title = input<string | null>(null);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
-  @Output() readonly onClick = new EventEmitter<MouseEvent>();
+  @Output() readonly clicked = new EventEmitter<MouseEvent>();
 }

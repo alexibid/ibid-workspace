@@ -5,15 +5,15 @@
 @if (showHeader) {
   <header class="m-bottom-sheet-dialog__header">
     @if (iconName) {
-      <app-icon class="m-bottom-sheet-dialog__icon" [name]="iconName"></app-icon>
+      <ibid-icon class="m-bottom-sheet-dialog__icon" [name]="iconName"></ibid-icon>
     }
     <h2 class="m-bottom-sheet-dialog__title"><ng-content select="[sheet-title]"></ng-content></h2>
     <div class="m-bottom-sheet-dialog__actions">
       <ng-content select="[sheet-actions]"></ng-content>
       @if (showClose) {
-        <app-icon-button class="m-bottom-sheet-dialog__close-btn" ariaLabel="Fechar" (onClick)="closeClicked.emit()">
-          <app-icon name="chevron-down"></app-icon>
-        </app-icon-button>
+        <ibid-icon-button class="m-bottom-sheet-dialog__close-btn" ariaLabel="Fechar" (clicked)="closeClicked.emit()">
+          <ibid-icon name="chevron-down"></ibid-icon>
+        </ibid-icon-button>
       }
     </div>
   </header>

@@ -7,15 +7,15 @@ export interface SegmentOption {
 }
 
 @Component({
-  selector: 'app-segmented-control',
+  selector: 'ibid-segmented-control',
   standalone: true,
   imports: [CommonModule],
   template: `
     <div class="m-segmented-control">
       @for (opt of options; track opt.value) {
-        <button 
+        <button
           type="button"
-          class="m-segmented-control__btn" 
+          class="m-segmented-control__btn"
           [class.m-segmented-control__btn--active]="value === opt.value"
           (click)="onSelect(opt.value)"
         >

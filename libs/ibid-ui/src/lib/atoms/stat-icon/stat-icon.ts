@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { StatTheme } from '../../models/ui.model';
 
 @Component({
-  selector: 'app-stat-icon',
+  selector: 'ibid-stat-icon',
   standalone: true,
   imports: [CommonModule, IconComponent],
   template: `
     <div class="a-stat-icon" [ngClass]="'a-stat-icon--' + theme">
-      <app-icon [name]="icon" class="a-stat-icon__icon"></app-icon>
+      <ibid-icon [name]="icon" class="a-stat-icon__icon"></ibid-icon>
     </div>
   `,
   styleUrl: './stat-icon.scss'

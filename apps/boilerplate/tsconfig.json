@@ -1,24 +1,15 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tools/builder/tsconfig.app.base.json",
   "compilerOptions": {
-    "noPropertyAccessFromIndexSignature": true,
-    "experimentalDecorators": true,
-    "module": "preserve"
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "paths": {
+      "@/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "ibid-ui": ["../../libs/ibid-ui/src/index.ts"],
+      "@ibid/services": ["../../libs/services/src/index.ts"],
+      "@ibid/testing": ["../../libs/testing/src/index.ts"],
+      "@ibid/utils": ["../../libs/utils/src/index.ts"]
+    }
   },
   "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]
 }

@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 
 @Component({
-  selector: 'app-legend-item',
+  selector: 'ibid-legend-item',
   standalone: true,
   template: `
     <span

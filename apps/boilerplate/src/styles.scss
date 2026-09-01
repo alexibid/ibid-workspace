@@ -1,1 +1,25 @@
 @use 'libs/ibid-ui/src/styles';
+
+:root {
+  --header-nav-offset: 57px;
+}
+
+.o-header-shell {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
+  background-color: var(--color-surface, #ffffff);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.o-header-shell__bar {
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm, 0.75rem);
+}
+
+.o-header-shell__navigation {
+  flex: 1;
+  justify-content: space-between;
+}

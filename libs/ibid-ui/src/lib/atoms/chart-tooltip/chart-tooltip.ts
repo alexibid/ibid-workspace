@@ -7,7 +7,7 @@ const TOOLTIP_POSITIONS: ConnectedPosition[] = [
 ];
 
 @Component({
-  selector: 'app-chart-tooltip',
+  selector: 'ibid-chart-tooltip',
   standalone: true,
   imports: [OverlayModule],
   template: `

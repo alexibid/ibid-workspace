@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AppCurrencyPipe } from '@ibid/services';
 
 @Component({
-  selector: 'app-progress-row',
+  selector: 'ibid-progress-row',
   standalone: true,
   imports: [CommonModule, AppCurrencyPipe],
   template: `

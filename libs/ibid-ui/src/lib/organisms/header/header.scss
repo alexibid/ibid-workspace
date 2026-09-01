@@ -1,0 +1,43 @@
+@use '../../../styles/tools/mixins' as *;
+
+.o-header-shell {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.o-header-shell__bar {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.o-header-shell__navigation {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.o-header-shell__brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.o-header-shell__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.25rem);
+  flex-shrink: 0;
+}
+
+.o-header-shell__filters,
+.o-header-shell__context {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.o-header-shell__filters:empty,
+.o-header-shell__context:empty {
+  display: none;
+}

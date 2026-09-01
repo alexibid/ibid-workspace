@@ -10,16 +10,21 @@ export interface I18nConfig {
   readonly defaultCurrency?: string;
 }
 
-/** Each app provides its own dictionary and locale map — the service carries no
- *  domain vocabulary of its own. */
 export const I18N_CONFIG_TOKEN = new InjectionToken<I18nConfig>('ibid-services.i18n-config');
+
+const UNCONFIGURED: I18nConfig = {
+  translations: {},
+  defaultLanguage: 'en',
+  localeByLanguage: {},
+  defaultCurrency: 'EUR'
+};
 
 const LANGUAGE_STORAGE_KEY = 'ibid_lang';
 const CURRENCY_STORAGE_KEY = 'ibid_currency';
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {
-  private readonly config = inject(I18N_CONFIG_TOKEN);
+  private readonly config = inject(I18N_CONFIG_TOKEN, { optional: true }) ?? UNCONFIGURED;
 
   private readonly currentLanguage = signal<string>(
     this.readStored(LANGUAGE_STORAGE_KEY) ?? this.config.defaultLanguage
@@ -84,7 +89,7 @@ export class I18nService {
       maximumFractionDigits: 2
     })
       .format(value)
-      .replace(/[  ]/g, ' ');
+      .replace(/[  ]/g, ' ');
   }
 
   formatDate(isoDate: string): string {
@@ -106,20 +111,17 @@ export class I18nService {
     try {
       localStorage.setItem(key, value);
     } catch {
-      /* storage unavailable (SSR, privacy mode) */
+
     }
   }
 }
 
-/** Usable outside a component's DI context (e.g. inside a plain function called
- *  from a template expression) — falls back to the raw key when no injector is
- *  available. */
 export function translate(key: string, fallback?: string): string {
   try {
     const service = inject(I18nService, { optional: true });
     if (service) return service.translate(key, fallback);
   } catch {
-    /* no active injection context */
+
   }
   return fallback ?? key;
 }

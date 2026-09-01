@@ -15,7 +15,7 @@ const VIEWPORT_EDGE_GUTTER = 8;
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  selector: 'app-select',
+  selector: 'ibid-select',
   standalone: true,
   imports: [CommonModule, MatSelectModule, MatFormFieldModule],
   template: `

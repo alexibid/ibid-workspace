@@ -1,0 +1,72 @@
+name: Automatic versioning
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: auto-version
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    name: Compute and tag the version
+    runs-on: ubuntu-latest
+    # Avoids reacting to the release commit this workflow creates.
+    if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Compute the version from history
+        id: bump
+        env:
+          HUSKY: 0
+        run: |
+          before=$(node -p "require('./package.json').version")
+          npx commit-and-tag-version --config tools/release/.versionrc.json --noBumpWhenEmptyChanges
+          after=$(node -p "require('./package.json').version")
+          echo "before=$before" >> "$GITHUB_OUTPUT"
+          echo "after=$after" >> "$GITHUB_OUTPUT"
+          [ "$before" = "$after" ] && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push the release commit and tag
+        if: steps.bump.outputs.changed == 'true'
+        run: git push --follow-tags origin main
+
+      - name: Summary
+        run: |
+          {
+            if [ "${{ steps.bump.outputs.changed }}" = "true" ]; then
+              echo "### Released v${{ steps.bump.outputs.after }}"
+              echo ""
+              echo "Bumped from \`${{ steps.bump.outputs.before }}\` — tag \`v${{ steps.bump.outputs.after }}\` pushed."
+              if [ -z "${{ secrets.RELEASE_TOKEN }}" ]; then
+                echo ""
+                echo "> **RELEASE_TOKEN is not set.** The tag was pushed with GITHUB_TOKEN,"
+                echo "> which does not start other workflows, so **release.yml did not run**. Add a personal"
+                echo "> token with \`contents:write\` as the \`RELEASE_TOKEN\` secret, or trigger the release manually."
+              fi
+            else
+              echo "### No version change"
+              echo ""
+              echo "No releasable commits since the last tag."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

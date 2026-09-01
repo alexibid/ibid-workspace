@@ -4,7 +4,7 @@ import { IconComponent } from '../../atoms/icon/icon';
 import { IconButtonComponent } from '../../atoms/icon-button/icon-button';
 
 @Component({
-  selector: 'app-bottom-sheet-dialog',
+  selector: 'ibid-bottom-sheet-dialog',
   standalone: true,
   imports: [CommonModule, IconComponent, IconButtonComponent],
   host: { class: 'm-bottom-sheet-dialog' },

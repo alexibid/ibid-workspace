@@ -11,7 +11,11 @@ export default [
       '@nx/dependency-checks': [
         'error',
         {
-          ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
+          ignoredFiles: [
+            '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
+            '{projectRoot}/.storybook/**/*',
+            '{projectRoot}/**/*.stories.ts'
+          ],
         },
       ],
     },
@@ -24,25 +28,22 @@ export default [
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
-        {
-          type: 'attribute',
-          prefix: 'ibid',
-          style: 'camelCase',
-        },
+        { type: 'attribute', prefix: 'ibid', style: 'camelCase' },
       ],
       '@angular-eslint/component-selector': [
         'error',
-        {
-          type: 'element',
-          prefix: 'ibid',
-          style: 'kebab-case',
-        },
+        { type: 'element', prefix: 'ibid', style: 'kebab-case' },
       ],
     },
   },
   {
     files: ['**/*.html'],
-    // Override or add rules here
     rules: {},
+  },
+  {
+    files: ['**/molecules/form-field/**'],
+    rules: {
+      '@angular-eslint/template/label-has-associated-control': 'off',
+    },
   },
 ];

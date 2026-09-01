@@ -9,7 +9,6 @@ export interface GoogleTokenResponse {
   readonly error?: string;
 }
 
-/** Each app provides its own OAuth client id (dev/prod environment, per-app project). */
 export const GOOGLE_CLIENT_ID_TOKEN = new InjectionToken<string>('ibid-services.google-client-id');
 
 declare global {
@@ -30,9 +29,6 @@ declare global {
   }
 }
 
-/**
- * Handles Google OAuth authentication across Native Android (Capacitor) and Web (Desktop).
- */
 @Injectable({
   providedIn: 'root'
 })
@@ -229,7 +225,7 @@ export class GoogleAuthService {
       try {
         this.googleAuthPlugin.signOut();
       } catch {
-        // Clean disconnect
+
       }
     }
 

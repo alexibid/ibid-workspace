@@ -1,0 +1,10 @@
+{
+  "name": "@ibid/testing",
+  "version": "0.0.1",
+  "private": true,
+  "peerDependencies": {
+    "@playwright/test": "^1.62.1",
+    "axe-core": "^4.13.0"
+  },
+  "sideEffects": false
+}

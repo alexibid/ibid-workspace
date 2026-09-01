@@ -1,0 +1,35 @@
+:host {
+  display: inline-flex;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.a-dismiss-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+
+  &--coral { background-color: color-mix(in srgb, var(--color-coral-text) 12%, transparent); color: var(--color-coral-text); }
+  &--amber { background-color: color-mix(in srgb, var(--color-amber-text) 12%, transparent); color: var(--color-amber-text); }
+  &--teal  { background-color: color-mix(in srgb, var(--color-teal-text) 12%, transparent);  color: var(--color-teal-text); }
+  &--pink  { background-color: color-mix(in srgb, var(--color-pink-text) 12%, transparent);  color: var(--color-pink-text); }
+
+  &:hover {
+    filter: brightness(0.95);
+    transform: scale(1.05);
+  }
+
+  ibid-icon {
+    width: 18px;
+    height: 18px;
+  }
+}

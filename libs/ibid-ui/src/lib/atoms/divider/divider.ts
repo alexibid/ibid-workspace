@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-divider',
+  selector: 'ibid-divider',
   standalone: true,
   template: `<hr class="a-divider" />`,
   styleUrl: './divider.scss'

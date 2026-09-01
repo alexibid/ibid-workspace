@@ -2,13 +2,13 @@ import { Component, input } from '@angular/core';
 import { CurrencyDisplayComponent } from '../../atoms/currency-display/currency-display';
 
 @Component({
-  selector: 'app-chart-headline',
+  selector: 'ibid-chart-headline',
   standalone: true,
   imports: [CurrencyDisplayComponent],
   template: `
     <div class="m-chart-headline">
       <div class="m-chart-headline__caption">{{ caption() }}</div>
-      <app-currency-display class="m-chart-headline__value" [value]="value()" size="lg" />
+      <ibid-currency-display class="m-chart-headline__value" [value]="value()" size="lg" />
       <div class="m-chart-headline__context">{{ context() }}</div>
     </div>
   `,

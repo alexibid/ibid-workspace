@@ -37,7 +37,7 @@ const MARGIN_TOP = 15;
 const MARGIN_BOTTOM = 15;
 
 @Component({
-  selector: 'app-chart',
+  selector: 'ibid-chart',
   standalone: true,
   imports: [OverlayModule, ChartHeadlineComponent, ChartLegendComponent, ChartTooltipComponent, EmptyStateComponent],
   templateUrl: './chart.html',
@@ -142,7 +142,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
 
   protected readonly markers = computed<readonly ChartMarker[]>(() => {
     const markersList: ChartMarker[] = [];
-    
+
     for (const plotted of this.plottedSeries()) {
       const isPrimary = plotted.series.name === this.primarySeries()?.name;
       const isBar = plotted.series.type === 'bar';
@@ -154,7 +154,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       } else {
         const stats = computeChartSeriesStats(plotted.series);
         const roleByIndex = new Map<number, ChartMarker['role']>();
-        
+
         if (isPrimary) {
           roleByIndex.set(plotted.series.points.indexOf(stats.max), 'max');
           roleByIndex.set(plotted.series.points.indexOf(stats.min), 'min');
@@ -176,10 +176,10 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     const primary = this.primarySeries();
     if (!primary) return 2;
     const len = primary.points.length;
-    
+
     if (len >= 365) return 2;
     if (len <= 30) return 4;
-    
+
     const t = (len - 30) / (365 - 30);
     return 4 - (t * 2);
   });
@@ -188,13 +188,13 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     if (this.size() === 'mini') return [];
     const primary = this.primarySeries();
     if (!primary || primary.points.length === 0) return [];
-    
+
     const points = primary.points;
     const len = points.length;
     const step = len > 1 ? (this.plotWidth() - 2 * MARGIN_X) / (len - 1) : 0;
-    
+
     const ticks = [];
-    const maxTicks = 31; 
+    const maxTicks = 31;
     const stride = Math.ceil(len / maxTicks);
 
     for (let i = 0; i < len; i += stride) {
@@ -207,13 +207,13 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       const lastIdx = len - 1;
       const rawLabel = points[lastIdx].label;
       const strippedLabel = rawLabel.replace(/\/\d{4}$/, '');
-      
+
       if (ticks.length > 0 && lastIdx - (lastIdx - (lastIdx % stride)) < stride * 0.5) {
         ticks.pop();
       }
       ticks.push({ x: MARGIN_X + lastIdx * step, label: strippedLabel });
     }
-    
+
     return ticks;
   });
 
@@ -232,7 +232,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     const plotHeight = VIEWBOX_HEIGHT - MARGIN_TOP - MARGIN_BOTTOM;
 
     const ticks = [];
-    const numSteps = 5; 
+    const numSteps = 5;
     for (let i = 0; i <= numSteps; i++) {
        const pct = i / numSteps;
        const val = lineMax - (lineRange * pct);

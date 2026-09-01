@@ -1,0 +1,13 @@
+{
+  "header": "# Changelog\n\nTodas as alterações relevantes ficam registadas aqui, geradas a partir das mensagens de commit convencionais.\n",
+  "types": [
+    { "type": "feat", "section": "Funcionalidades" },
+    { "type": "fix", "section": "Correções" },
+    { "type": "perf", "section": "Desempenho" },
+    { "type": "refactor", "section": "Refactor" },
+    { "type": "docs", "hidden": true },
+    { "type": "style", "hidden": true },
+    { "type": "test", "hidden": true },
+    { "type": "chore", "hidden": true }
+  ]
+}

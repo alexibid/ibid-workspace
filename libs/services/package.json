@@ -4,7 +4,6 @@
   "main": "./dist/esm2022/index.js",
   "types": "./dist/index.d.ts",
   "peerDependencies": {
-    "@angular/common": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4"
   },

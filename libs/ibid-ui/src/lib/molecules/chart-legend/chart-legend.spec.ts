@@ -16,7 +16,7 @@ describe('ChartLegendComponent', () => {
     ]);
     fixture.detectChanges();
 
-    const items = fixture.nativeElement.querySelectorAll('app-legend-item');
+    const items = fixture.nativeElement.querySelectorAll('ibid-legend-item');
     expect(items.length).toBe(2);
   });
 
@@ -24,6 +24,6 @@ describe('ChartLegendComponent', () => {
     fixture.componentRef.setInput('entries', []);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelectorAll('app-legend-item').length).toBe(0);
+    expect(fixture.nativeElement.querySelectorAll('ibid-legend-item').length).toBe(0);
   });
 });

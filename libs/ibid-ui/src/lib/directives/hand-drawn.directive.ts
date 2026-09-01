@@ -1,11 +1,12 @@
-import { Directive, ElementRef, OnInit, Renderer2, RendererStyleFlags2 } from '@angular/core';
+import { Directive, ElementRef, OnInit, Renderer2, RendererStyleFlags2, inject } from '@angular/core';
 
 @Directive({
   selector: '[ibidHandDrawn]',
   standalone: true
 })
 export class HandDrawnDirective implements OnInit {
-  constructor(private readonly el: ElementRef, private readonly renderer: Renderer2) {}
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   ngOnInit(): void {
     const r = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);

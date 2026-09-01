@@ -2,14 +2,14 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-number-input',
+  selector: 'ibid-number-input',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <input 
-      type="number" 
-      [min]="min" 
-      [max]="max" 
+    <input
+      type="number"
+      [min]="min"
+      [max]="max"
       [value]="value"
       [attr.aria-label]="ariaLabel || 'Número'"
       (change)="onChange($event)"

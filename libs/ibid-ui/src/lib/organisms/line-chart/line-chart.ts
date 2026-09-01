@@ -5,7 +5,7 @@ import { ChartSeries } from '../../models/chart-series.model';
 export type LineChartSize = ChartSize;
 
 @Component({
-  selector: 'app-line-chart',
+  selector: 'ibid-line-chart',
   standalone: true,
   imports: [ChartComponent],
   templateUrl: './line-chart.html',

@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "ibid-32cbe"
+  },
+  "targets": {
+    "ibid-32cbe": {
+      "hosting": {
+        "oh-save-me": ["savvyjar-app"]
+      }
+    }
+  }
+}

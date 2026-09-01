@@ -5,13 +5,23 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": []
+    "types": [],
+    "composite": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/*.stories.ts",
+    "src/**/*.test.ts"
+  ],
   "references": [
     {
       "path": "../utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../services/tsconfig.lib.json"
     }
   ]
 }

@@ -6,21 +6,21 @@ import { CardComponent } from '../card/card';
 import { I18N_SHARED } from '@ibid/services';
 
 @Component({
-  selector: 'app-stat-card',
+  selector: 'ibid-stat-card',
   standalone: true,
   imports: [I18N_SHARED, StatIconComponent, CardComponent, AppCurrencyPipe],
   template: `
-    <app-card class="m-stat-card">
+    <ibid-card class="m-stat-card">
         <div class="m-stat-card__body">
-          <app-stat-icon 
-            [icon]="data.icon" 
+          <ibid-stat-icon
+            [icon]="data.icon"
             [theme]="data.theme || 'neutral'"
-          ></app-stat-icon>
+          ></ibid-stat-icon>
 
           <div class="m-stat-card__content">
             <span class="m-stat-card__label">{{ data.label | translate }}</span>
-            <strong 
-              class="m-stat-card__value" 
+            <strong
+              class="m-stat-card__value"
               [class]="'m-stat-card__value--' + (data.theme || 'neutral')"
             >
               @if (data.isCurrency && isNumber(data.value)) {
@@ -31,7 +31,7 @@ import { I18N_SHARED } from '@ibid/services';
             </strong>
           </div>
         </div>
-    </app-card>
+    </ibid-card>
   `,
   styleUrl: './stat-card.scss'
 })

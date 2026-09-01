@@ -5,14 +5,14 @@ import { IconComponent } from '../../atoms/icon/icon';
 import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
 @Component({
-  selector: 'app-metric-card',
+  selector: 'ibid-metric-card',
   standalone: true,
   imports: [CommonModule, AppCurrencyPipe, IconComponent, HandDrawnDirective],
   template: `
     <div class="m-metric-card" ibidHandDrawn>
       <div class="m-metric-card__header">
         <span class="m-metric-card__title">{{ title }}</span>
-        <app-icon [name]="icon" [iconClass]="'m-metric-card__icon ' + iconClass"></app-icon>
+        <ibid-icon [name]="icon" [iconClass]="'m-metric-card__icon ' + iconClass"></ibid-icon>
       </div>
       @if (type !== 'custom') {
         <div class="m-metric-card__value" [ngClass]="valueClass">

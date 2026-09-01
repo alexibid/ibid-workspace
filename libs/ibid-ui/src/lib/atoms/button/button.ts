@@ -2,13 +2,13 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-button',
+  selector: 'ibid-button',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <button 
-      [class]="'a-button a-button--' + variant" 
-      (click)="onClick.emit($event)"
+    <button
+      [class]="'a-button a-button--' + variant"
+      (click)="clicked.emit($event)"
       [type]="type"
       [disabled]="disabled"
       [attr.aria-label]="ariaLabel"
@@ -23,5 +23,5 @@ export class ButtonComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() ariaLabel?: string;
-  @Output() onClick = new EventEmitter<MouseEvent>();
+  @Output() clicked = new EventEmitter<MouseEvent>();
 }

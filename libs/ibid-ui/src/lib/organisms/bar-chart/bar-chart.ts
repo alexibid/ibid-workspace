@@ -6,7 +6,7 @@ import { ChartBarSegmentOrientation } from '../../atoms/chart-bar-segment/chart-
 export type BarChartSize = ChartSize;
 
 @Component({
-  selector: 'app-bar-chart',
+  selector: 'ibid-bar-chart',
   standalone: true,
   imports: [ChartComponent],
   templateUrl: './bar-chart.html',

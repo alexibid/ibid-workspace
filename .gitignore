@@ -1,5 +1,5 @@
-# Configurações locais de ferramentas de IA e de editor — nunca commitadas.
-# Padrões não-ancorados para cobrirem também cada apps/* e libs/* do workspace.
+# Local AI and editor tooling configuration — never committed.
+# Unanchored so they cover the workspace root and every apps/* and libs/*.
 AGENTS.md
 CLAUDE.md
 GEMINI.md
@@ -11,24 +11,19 @@ GEMINI.md
 .opencode/
 opencode.json
 
-# Skills/prompts de agentes gerados pelo Nx dentro do .github — o ci.yml fica trackeado.
+# Nx-generated agent skills and prompts under .github — ci.yml stays tracked.
 /.github/agents/
 /.github/prompts/
 /.github/skills/
-
 /.performance/
 
-# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
-# compiled output
+# Build output and dependencies
 dist
 tmp
 out-tsc
-
-# dependencies
 node_modules
 
-# IDEs and editors
+# Editors
 /.idea
 .project
 .classpath
@@ -36,15 +31,13 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
-
-# IDE - VSCode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# misc
+# Misc
 /.sass-cache
 /connect.lock
 /coverage
@@ -53,18 +46,54 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-
-# System Files
 .DS_Store
 Thumbs.db
 
+# Nx and Angular caches
 .nx/cache
 .nx/workspace-data
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs
+.nx/skills
 .angular
-
 __screenshots__/
-
 vitest.config.*.timestamp*
+
+# Environment
+.env
+.env.production
+.env.development
+.env.local
+.env.*.local
+!.env.example
+
+# Test artifacts, distribution output and local data
+test-results/
+.playwright-artifacts/
+playwright-report/
+playwright/.cache/
+.auth/
+user-data/
+*storybook.log
+storybook-static
+documentation.json
+coverage/
+.firebase/
+apps/*/platforms/desktop/src-tauri/target/
+apps/*/platforms/mobile/android/.gradle/
+apps/*/platforms/mobile/android/build/
+apps/*/platforms/mobile/android/app/build/
+apps/*/platforms/mobile/android/local.properties
+apps/*/platforms/mobile/android/app/local.properties
+apps/*/platforms/mobile/android/app/src/main/assets/public/
+apps/*/platforms/mobile/ios/Pods/
+apps/*/platforms/mobile/ios/build/
+apps/*/platforms/mobile/ios/.symlinks/
+apps/*/platforms/mobile/ios/App/public/
+apps/*/uploads/*
+!apps/*/uploads/.gitkeep
+apps/*/imports/*
+!apps/*/imports/.gitkeep
+*.log
+dist/*/desktop/

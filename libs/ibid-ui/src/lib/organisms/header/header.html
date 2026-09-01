@@ -1,0 +1,20 @@
+<header class="o-header-shell" [class.o-header-shell--expanded]="expanded()">
+  <div class="o-header-shell__bar">
+    <div class="o-header-shell__navigation">
+      <div class="o-header-shell__brand">
+        <ng-content select="[headerBrand]"></ng-content>
+      </div>
+      <div class="o-header-shell__actions">
+        <ng-content select="[headerActions]"></ng-content>
+      </div>
+    </div>
+
+    <div class="o-header-shell__filters">
+      <ng-content select="[headerFilters]"></ng-content>
+    </div>
+
+    <div class="o-header-shell__context">
+      <ng-content select="[headerContext]"></ng-content>
+    </div>
+  </div>
+</header>

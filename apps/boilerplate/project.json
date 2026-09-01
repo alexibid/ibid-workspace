@@ -2,29 +2,17 @@
   "name": "boilerplate",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "ibid",
+  "prefix": "boilerplate",
   "sourceRoot": "apps/boilerplate/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/boilerplate",
-        "browser": "apps/boilerplate/src/main.ts",
-        "tsConfig": "apps/boilerplate/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/boilerplate/public"
-          }
-        ],
-        "styles": ["apps/boilerplate/src/styles.scss"],
-        "stylePreprocessorOptions": {
-          "includePaths": ["."]
-        }
+        "styles": [
+          "apps/boilerplate/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
@@ -39,37 +27,19 @@
               "maximumWarning": "8kb",
               "maximumError": "16kb"
             }
-          ],
-          "outputHashing": "all"
-        },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true
+          ]
         }
       }
     },
     "serve": {
-      "continuous": true,
       "executor": "@angular/build:dev-server",
-      "defaultConfiguration": "development",
-      "configurations": {
-        "production": {
-          "buildTarget": "boilerplate:build:production"
-        },
-        "development": {
-          "buildTarget": "boilerplate:build:development"
-        }
-      }
+      "defaultConfiguration": "development"
     },
     "lint": {
       "executor": "@nx/eslint:lint"
     },
     "test": {
-      "executor": "@angular/build:unit-test",
-      "options": {
-        "watch": false
-      }
+      "executor": "@angular/build:unit-test"
     },
     "serve-static": {
       "continuous": true,
@@ -78,6 +48,46 @@
         "buildTarget": "boilerplate:build",
         "staticFilePath": "dist/apps/boilerplate/browser",
         "spa": true
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular-vite:start-storybook",
+      "options": {
+        "configDir": "apps/boilerplate/.storybook",
+        "browserTarget": "boilerplate:build",
+        "port": 6006
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular-vite:build-storybook",
+      "outputs": [
+        "{options.outputDir}"
+      ],
+      "options": {
+        "configDir": "apps/boilerplate/.storybook",
+        "browserTarget": "boilerplate:build",
+        "outputDir": "dist/storybook/boilerplate"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --project=mobile --grep-invert \"Accessibility\"",
+        "cwd": "apps/boilerplate"
+      }
+    },
+    "e2e-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --grep-invert \"Accessibility\"",
+        "cwd": "apps/boilerplate"
+      }
+    },
+    "test-a11y": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --project=mobile --grep \"Accessibility\"",
+        "cwd": "apps/boilerplate"
       }
     }
   }

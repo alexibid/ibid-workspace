@@ -39,9 +39,10 @@ const SHORT_MONTHS: Record<'pt' | 'en', readonly string[]> = {
   en: ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 };
 
-export function formatSmartDate(dateStr: string, previousDateStr: string | undefined, lang: 'pt' | 'en'): string {
+export function formatSmartDate(dateStr: string, previousDateStr: string | undefined, lang: string): string {
   const date = parseLocalDate(dateStr);
-  const dayMonth = `${date.getDate()} ${SHORT_MONTHS[lang][date.getMonth()]}`;
+  const months = SHORT_MONTHS[lang as keyof typeof SHORT_MONTHS] ?? SHORT_MONTHS.en;
+  const dayMonth = `${date.getDate()} ${months[date.getMonth()]}`;
 
   const crossesYearBoundary = previousDateStr !== undefined && parseLocalDate(previousDateStr).getFullYear() !== date.getFullYear();
   if (!crossesYearBoundary) return dayMonth;

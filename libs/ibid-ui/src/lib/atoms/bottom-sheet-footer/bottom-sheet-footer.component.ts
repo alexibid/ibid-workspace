@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-bottom-sheet-footer',
+  selector: 'ibid-bottom-sheet-footer',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './bottom-sheet-footer.component.html',
