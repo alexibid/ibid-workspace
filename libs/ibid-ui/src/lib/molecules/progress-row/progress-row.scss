@@ -1,0 +1,53 @@
+.m-progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-m);
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  &__value {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  &__bg {
+    height: 8px;
+    width: 100%;
+    background-color: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  &__attribution {
+    font-size: var(--text-m);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+}

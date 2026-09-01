@@ -1,0 +1,87 @@
+@use '../../../styles/tools/mixins' as *;
+
+:host {
+  display: inline-flex;
+  height: 38px;
+  vertical-align: middle;
+}
+
+.a-button {
+  background-color: var(--color-surface, #d1cfc7);
+  border: 1px solid var(--color-border, #2c2c2a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 100%;
+  width: 100%;
+  padding: 0 1rem;
+  font-family: inherit;
+  font-size: var(--text-m);
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  @include focus-ring;
+
+  &--primary {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+  }
+
+  &--secondary {
+    background-color: #334155;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #0f172a;
+    }
+  }
+
+  &--outlined {
+    background-color: transparent;
+    border-color: #334155;
+    color: var(--color-text);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+      border-color: #0f172a;
+    }
+  }
+
+  &--highlight {
+    @include glass-highlight-surface(-0.8deg, 4px 18px 6px 16px);
+    color: var(--color-text, #1e293b);
+
+    span, mat-icon, app-icon {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  &:hover {
+    box-shadow: inset 0px 3px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  mat-icon {
+    min-width: 24px;
+    transition: transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  &--open mat-icon,
+  &--open app-icon {
+    transform: rotate(180deg);
+  }
+
+  
+}
+

@@ -1,0 +1,24 @@
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --header-elem-height: 42px;
+  --header-gap: 8px;
+  --header-row: 26px;
+  --header-padding-top: 8px;
+  --header-padding-bottom: 16px;
+  --header-logo-size: calc((var(--header-elem-height) * 2) + var(--header-gap));
+  --header-height: calc(var(--header-logo-size) + var(--header-padding-top) + var(--header-padding-bottom));
+  --header-total-height: calc(var(--header-logo-size) + var(--header-padding-top) + var(--header-padding-bottom) + var(--header-row));
+
+  @media (min-width: 640px) {
+    --header-logo-size: 48px;
+    --header-height: calc(var(--header-elem-height) + var(--header-padding-top) + var(--header-padding-bottom) + 8px);
+    --header-total-height: calc(var(--header-height) + var(--header-row));
+  }
+}

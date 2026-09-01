@@ -1,0 +1,41 @@
+:root {
+  --color-bg: #F1EFE8;
+  --color-bg-opacity80: #F1EFE8cc;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8FAFC;
+  --color-border: #E5E3DC;
+  --color-text: #2C2C2A;
+  --color-text-muted: #57534E;
+  --color-ink: #2C2C2A;
+
+  --color-primary: #2C2C2A;
+  --color-primary-hover: #424240;
+
+  --color-coral-bg: #FAECE7;
+  --color-coral-mid: #F0997B;
+  --color-coral-text: #712B13;
+
+  --color-amber-bg: #FAEEDA;
+  --color-amber-mid: #EF9F27;
+  --color-amber-text: #633806;
+
+  --color-teal-bg: #E1F5EE;
+  --color-teal-mid: #5DCAA5;
+  --color-teal-text: #085041;
+
+  --color-pink-bg: #FBEAF0;
+  --color-pink-mid: #ED93B1;
+  --color-pink-text: #72243E;
+
+  --color-success: #065F46;
+  --color-danger: #B91C1C;
+  --color-info: #1D4ED8;
+
+  --color-glass-surface: rgb(238 244 242 / 85%);
+  --color-glass-surface-hover: rgb(238 244 242 / 95%);
+  --color-glass-surface-opaque: rgb(238 244 242);
+  --color-glass-surface-strong: rgb(238 244 242 / 98%);
+
+  --mat-sys-primary: var(--color-ink);
+  --mat-button-protected-label-text-color: var(--color-text);
+}

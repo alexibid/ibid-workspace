@@ -1,0 +1,24 @@
+.a-chart-marker-dot {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-amber-text);
+
+  &--first {
+    background-color: var(--color-amber-bg);
+    border: 1.3px dashed var(--color-text-muted);
+  }
+
+  &--max,
+  &--min {
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-amber-text);
+  }
+
+  &--last {
+    background-color: var(--color-amber-text);
+    border: 2px solid var(--color-surface);
+  }
+}

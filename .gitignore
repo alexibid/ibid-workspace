@@ -1,0 +1,70 @@
+# Configurações locais de ferramentas de IA e de editor — nunca commitadas.
+# Padrões não-ancorados para cobrirem também cada apps/* e libs/* do workspace.
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.opencode/
+opencode.json
+
+# Skills/prompts de agentes gerados pelo Nx dentro do .github — o ci.yml fica trackeado.
+/.github/agents/
+/.github/prompts/
+/.github/skills/
+
+/.performance/
+
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# compiled output
+dist
+tmp
+out-tsc
+
+# dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.nx/cache
+.nx/workspace-data
+.nx/polygraph
+.nx/self-healing
+.nx/migrate-runs
+.angular
+
+__screenshots__/
+
+vitest.config.*.timestamp*

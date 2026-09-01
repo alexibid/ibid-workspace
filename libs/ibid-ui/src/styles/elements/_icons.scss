@@ -1,0 +1,34 @@
+.a-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size, 20px);
+  height: var(--icon-size, 20px);
+  flex-shrink: 0;
+  vertical-align: middle;
+  fill: currentColor;
+  color: inherit;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: currentColor;
+  }
+
+  &--sm {
+    --icon-size: 16px;
+  }
+
+  &--md {
+    --icon-size: 20px;
+  }
+
+  &--lg {
+    --icon-size: 24px;
+  }
+
+  &--xl {
+    --icon-size: 32px;
+  }
+}

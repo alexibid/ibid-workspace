@@ -1,0 +1,41 @@
+.a-chart-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+  padding: 10px 12px;
+  background-color: var(--color-ink);
+  border-radius: var(--radius-balloon);
+
+  &__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--text-m);
+    color: var(--color-surface);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__label {
+    font-family: var(--font-sans);
+    font-size: var(--text-m);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  &__value {
+    font-family: var(--font-ui);
+    font-size: var(--text-m);
+    color: var(--color-surface);
+  }
+
+  &__context {
+    font-family: var(--font-ui);
+    font-size: var(--text-m);
+    color: rgba(255, 255, 255, 0.6);
+  }
+}

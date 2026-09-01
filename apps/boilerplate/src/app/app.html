@@ -1,0 +1,12 @@
+<main class="boilerplate-page">
+  <app-card>
+    <h1>{{ i18n.translate('title') }}</h1>
+    <p>{{ i18n.translate('subtitle') }}</p>
+    <p>
+      {{ i18n.translate('sampleAmountLabel') }}:
+      <app-currency-display [value]="sampleBalance" [showInfo]="false" />
+    </p>
+    <app-button variant="primary">{{ i18n.translate('title') }}</app-button>
+  </app-card>
+</main>
+<router-outlet></router-outlet>

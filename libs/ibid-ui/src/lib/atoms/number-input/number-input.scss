@@ -1,0 +1,24 @@
+.a-number-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--text-m);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: 8px;
+  box-sizing: border-box;
+  height: 38px;
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+
+  &:focus {
+    border-color: var(--color-primary);
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

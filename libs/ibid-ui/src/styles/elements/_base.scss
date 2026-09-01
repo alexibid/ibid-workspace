@@ -1,0 +1,47 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+p, span, div, a, li, label {
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-m);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6,
+.u-title,
+[class*="__title"] {
+  font-family: var(--font-editorial);
+  font-weight: var(--weight-bold, 700);
+}
+
+table, th, td,
+.u-number,
+[class*="--numeric"],
+[class*="--value"],
+[class*="__value"],
+[class*="__amount"],
+[class*="--number"],
+[class*="--big"] {
+  font-family: var(--font-ui);
+}

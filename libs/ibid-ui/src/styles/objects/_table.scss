@@ -1,0 +1,25 @@
+.o-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--text-m);
+
+  th {
+    padding: 8px 0;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 0;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-bg);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}

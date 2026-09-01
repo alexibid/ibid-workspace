@@ -1,0 +1,40 @@
+.a-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    flex-shrink: 0;
+
+    mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+    }
+
+    &--danger {
+        background-color: #fef2f2;
+        color: var(--color-danger);
+    }
+
+    &--success {
+        background-color: #ecfdf5;
+        color: var(--color-success);
+    }
+
+    &--primary {
+        background-color: #eff6ff;
+        color: var(--color-info);
+    }
+
+    &--warning {
+        background-color: #fffbeb;
+        color: #f59e0b;
+    }
+
+    &--neutral {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+}

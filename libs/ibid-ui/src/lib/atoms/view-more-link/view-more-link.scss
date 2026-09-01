@@ -1,0 +1,35 @@
+.a-view-more-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  
+  background: color-mix(in srgb, var(--color-amber-mid) 22%, transparent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px; 
+  cursor: pointer;
+  font-family: var(--font-editorial);
+  font-size: var(--text-m);
+  font-weight: 600;
+  color: var(--color-amber-text);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--color-amber-mid) 38%, transparent);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-amber-mid);
+    outline-offset: 2px;
+  }
+
+  &__icon {
+    font-size: 0.85rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    opacity: 0.8;
+  }
+}

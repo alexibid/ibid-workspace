@@ -1,0 +1,22 @@
+@use '../../../styles/tools/mixins' as *;
+
+.m-card {
+  @include card-surface;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  &--full-bleed-mobile {
+    @media (max-width: 1023px) {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+  }
+}

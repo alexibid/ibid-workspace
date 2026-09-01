@@ -1,0 +1,152 @@
+@use '../../../styles/tools/mixins' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+@include respond-to('tablet') {
+  :host {
+    display: inline-block;
+    width: max-content;
+  }
+
+  :host(.a-select--full) {
+    display: block;
+    width: 100%;
+  }
+
+  :host(.a-select--fixed) {
+    width: 240px;
+  }
+}
+
+.a-select-field {
+  width: 100%;
+
+  .mdc-text-field--outlined {
+    --mdc-shape-small: 10px;
+    height: 36px;
+    padding-left: 12px;
+    padding-right: 8px;
+    @include glass-highlight-surface;
+    @include transition-standard;
+
+    .mat-mdc-form-field-infix,
+    .mat-mdc-select-value,
+    .a-select-field__custom-arrow {
+      position: relative;
+      z-index: 1;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 6px;
+      padding-bottom: 6px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    &:hover::before {
+      border-color: var(--color-primary-hover, #424240);
+    }
+  }
+
+  .mdc-notched-outline {
+    &__leading, &__notch, &__trailing {
+      border: none;
+      border-radius: 0;
+    }
+  }
+
+  .mat-mdc-select-value {
+    font-family: var(--font-ui);
+    font-size: var(--text-m);
+    font-weight: var(--weight-medium, 500);
+    color: var(--color-text, #2C2C2A);
+  }
+
+  .mat-mdc-select-arrow {
+    display: none;
+  }
+
+}
+
+div.m-dropdown-panel.mat-mdc-select-panel {
+  padding: 6px;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(320px, 90vw);
+  overflow-x: hidden;
+  filter: drop-shadow(0 12px 24px rgba(44, 44, 42, 0.16));
+  border-radius: 8px 30px 10px 26px;
+  background: var(--color-glass-surface);
+  border: 1px solid var(--color-border, #E5E3DC);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--color-glass-surface-opaque);
+  }
+  .mat-mdc-option {
+    position: relative;
+    z-index: 1;
+    min-height: 40px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-teal-text, #085041);
+
+    .mdc-list-item__primary-text {
+      color: inherit;
+    }
+
+    &:hover:not(.mdc-list-item--selected) {
+      background: var(--color-glass-surface-hover);
+    }
+
+    &.mdc-list-item--selected {
+      background: var(--color-glass-surface-hover);
+      color: var(--color-primary);
+      font-weight: var(--weight-semibold);
+
+      .mdc-list-item__primary-text {
+        color: inherit;
+      }
+    }
+
+    .mat-pseudo-checkbox {
+      --mat-pseudo-checkbox-minimal-selected-checkmark-color: var(--color-primary);
+    }
+  }
+}
+
+.a-select-field {
+  .mat-mdc-select-arrow-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    padding-right: 2px;
+    display: flex;
+    align-items: center;
+  }
+
+  .a-select-field__custom-arrow {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 2px;
+    pointer-events: none;
+    background-color: var(--color-text-muted, #8A8A85);
+    
+    mask: url("/icons/chevron-down.svg") no-repeat center / contain;
+    -webkit-mask: url("/icons/chevron-down.svg") no-repeat center / contain;
+
+    &.is-open {
+      mask: url("/icons/chevron-up.svg") no-repeat center / contain;
+      -webkit-mask: url("/icons/chevron-up.svg") no-repeat center / contain;
+    }
+  }
+}
