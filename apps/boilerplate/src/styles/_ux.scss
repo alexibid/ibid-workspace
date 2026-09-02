@@ -1,0 +1,64 @@
+/// App-level overrides that hold the boilerplate to the accessibility floor.
+///
+/// These belong in `ibid-ui` next to the atoms they correct, but moving them there would resize
+/// every control and change the focus behaviour in the products that already consume the
+/// library. They live here until each product can absorb the change.
+///
+/// Specificity is the whole game. An Angular component stylesheet resolves to
+/// `.a-button[_ngcontent-x]` (0,2,0) and, for focus, `.a-button:focus-visible[_ngcontent-x]`
+/// (0,3,0) — and it is injected after this sheet, so ties are lost. Leading with
+/// `body.boilerplate` buys one element and one class, which wins both on merit rather than order.
+
+/// WCAG 2.5.5 asks for 44x44 CSS pixels; 2.5.8 makes 24x24 the floor. The audit found the
+/// navigation toggle at 10x24 and the language toggle at 20px tall, failing even the floor.
+@use 'sass:list';
+
+$min-touch-target: 44px;
+$focus-ring-width: 2px;
+$focus-ring-offset: 2px;
+
+$pressable-controls:
+  '.a-button',
+  '.a-icon-button',
+  '.a-view-more-link',
+  '.a-dismiss-button',
+  '.m-segmented-control__btn',
+  '.m-nav-menu__link';
+
+$text-controls:
+  '.a-number-input',
+  '.a-date-input',
+  '.a-search-input input';
+
+body.boilerplate {
+  @each $control in $pressable-controls {
+    #{$control} {
+      min-width: $min-touch-target;
+      min-height: $min-touch-target;
+    }
+  }
+
+  @each $control in $text-controls {
+    #{$control} {
+      min-height: $min-touch-target;
+    }
+  }
+
+  .a-select-field .mat-mdc-text-field-wrapper,
+  .a-select-field .mat-mdc-form-field-flex {
+    align-items: center;
+    min-height: $min-touch-target;
+  }
+
+  @each $control in list.join($pressable-controls, $text-controls) {
+    #{$control}:focus-visible {
+      outline: $focus-ring-width solid var(--color-ink);
+      outline-offset: $focus-ring-offset;
+    }
+  }
+
+  :focus-visible {
+    outline: $focus-ring-width solid var(--color-ink);
+    outline-offset: $focus-ring-offset;
+  }
+}

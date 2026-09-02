@@ -1,0 +1,11 @@
+/// glass-surface — organic glass. The page itself stays quiet: the colour lives in the glow each
+/// pane casts, drifting through the palette, and in the light breaking across the feature values.
+///
+/// This file is the stylesheet an app points at: it pulls in the generic ibid stack and then the
+/// pieces that make the theme. Add `class="glass-surface"` to the body to switch it on.
+
+@use '../styles';
+
+@use 'glass-surface/tokens';
+@use 'glass-surface/surfaces';
+@use 'glass-surface/feature-display';

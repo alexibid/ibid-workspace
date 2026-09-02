@@ -1,0 +1,65 @@
+@use '../shared' as *;
+@use 'pane' as *;
+
+body.glass-surface {
+  .a-feature-display-hit-area {
+    position: relative;
+    @include glass-pane;
+    border-radius: var(--radius-sm, 8px);
+    border: 1px solid var(--glass-edge);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  }
+
+  .a-feature-display__balloon {
+    @include glass-pane;
+    border-radius: var(--radius-balloon, 12px);
+    border: 1px solid var(--glass-edge);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .a-feature-display__balloon-title {
+    color: var(--color-text);
+  }
+
+  .a-feature-display__balloon-label {
+    color: var(--color-text-muted);
+  }
+
+  .a-feature-display__balloon-value {
+    color: var(--color-text);
+  }
+
+  .a-feature-display {
+    background-image: linear-gradient(
+      100deg,
+      currentColor 0%,
+      currentColor 42%,
+      var(--color-coral-text) 45.5%,
+      var(--color-amber-text) 48%,
+      var(--color-teal-text) 50%,
+      var(--color-pink-text) 52%,
+      var(--color-coral-text) 54.5%,
+      currentColor 58%,
+      currentColor 100%
+    );
+    background-size: 420% 100%;
+    background-position: 130% 0;
+    background-clip: text;
+    -webkit-background-clip: text;
+
+    @include motion {
+      -webkit-text-fill-color: transparent;
+      animation: glass-surface-spectrum var(--glass-sheen-duration) ease-in-out infinite;
+      animation-delay: var(--feature-delay, 0s);
+    }
+  }
+}
+
+@keyframes glass-surface-spectrum {
+  0% {
+    background-position: 130% 0;
+  }
+  70%, 100% {
+    background-position: -30% 0;
+  }
+}

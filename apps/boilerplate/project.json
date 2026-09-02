@@ -19,7 +19,7 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
+              "maximumWarning": "700kb",
               "maximumError": "1mb"
             },
             {
@@ -36,6 +36,13 @@
       "defaultConfiguration": "development",
       "options": {
         "port": 4300
+      }
+    },
+    "serve-e2e": {
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4301
       }
     },
     "lint": {

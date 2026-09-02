@@ -1,0 +1,38 @@
+/// Building blocks every theme uses to decorate a surface without touching its content.
+///
+/// A theme only ever paints behind the content. `decorated-surface` turns the element into its
+/// own stacking context so that `decorative-layer` can sit at `z-index: -1`: below every child,
+/// text nodes included, yet above the element's own background. Nothing in the layout moves and
+/// nothing intercepts a click, so tables, text and controls keep exactly what the base
+/// stylesheet gave them.
+///
+/// It deliberately leaves `position` alone. The decorated element has to be positioned for the
+/// layer to resolve against it, but a theme must never turn a sticky header or a fixed sheet
+/// into a relative box: static surfaces declare `position: relative` where they are listed.
+
+@mixin decorated-surface {
+  isolation: isolate;
+}
+
+@mixin decorative-layer {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+@mixin page-layer {
+  content: '';
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@mixin motion {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}

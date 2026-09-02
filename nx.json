@@ -47,7 +47,7 @@
   "analytics": false,
   "targetDefaults": {
     "@nx/angular:ng-packagr-lite": {
-      "cache": true,
+      "cache": false,
       "dependsOn": [
         "^build"
       ],
@@ -57,14 +57,14 @@
       ]
     },
     "@nx/angular:unit-test": {
-      "cache": true,
+      "cache": false,
       "inputs": [
         "default",
         "^production"
       ]
     },
     "@nx/eslint:lint": {
-      "cache": true,
+      "cache": false,
       "inputs": [
         "default",
         "^default",
@@ -75,7 +75,7 @@
       ]
     },
     "@angular/build:application": {
-      "cache": true,
+      "cache": false,
       "dependsOn": [
         "^build"
       ],
@@ -121,7 +121,7 @@
       }
     },
     "@angular/build:unit-test": {
-      "cache": true,
+      "cache": false,
       "inputs": [
         "default",
         "^production"

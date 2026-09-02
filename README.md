@@ -9,26 +9,21 @@ infrastructure services — lives under `libs/` and is consumed through imports.
 
 ## Structure
 
-```
-apps/
-  boilerplate/       minimal Angular skeleton, the starting point for new products
-  oh-save-me/        personal and family finance assistant (PT: Oh poupa-me!)
-
-libs/
-  ibid-ui/           design system: components, global styles, and icons
-  services/          infrastructure services (i18n, authentication, sync)
-  testing/           generic test engines (accessibility, screenshots, flows)
-  utils/             pure functions, no dependencies
-
-tools/
-  builder/           shared compilation base for the apps
-  vitest/            unit test runner configuration
-  playwright/        device matrix and execution policy
-  storybook/         addons, framework, and visual test runner
-  commitlint/        commit message rules
-  husky/             git hooks
-  release/           versioning preset
-```
+| Projeto / Ferramenta                  |  Tipo  | Descrição                                                      |
+| :------------------------------------ | :----: | :------------------------------------------------------------- |
+| **[boilerplate](./apps/boilerplate)** | `app`  | Minimal Angular skeleton, the starting point for new products. |
+| **[oh-save-me](./apps/oh-save-me)**   | `app`  | Personal and family finance assistant (PT: Oh poupa-me!).      |
+| **[ibid-ui](./libs/ibid-ui)**         | `lib`  | Design system: components, global styles, and icons.           |
+| **[services](./libs/services)**       | `lib`  | Infrastructure services (i18n, authentication, sync).          |
+| **[testing](./libs/testing)**         | `lib`  | Generic test engines (accessibility, screenshots, flows).      |
+| **[utils](./libs/utils)**             | `lib`  | Pure functions, no dependencies.                               |
+| **[builder](./tools/builder)**        | `tool` | Shared compilation base for the apps.                          |
+| **[vitest](./tools/vitest)**          | `tool` | Unit test runner configuration.                                |
+| **[playwright](./tools/playwright)**  | `tool` | Device matrix and execution policy.                            |
+| **[storybook](./tools/storybook)**    | `tool` | Addons, framework, and visual test runner.                     |
+| **[commitlint](./tools/commitlint)**  | `tool` | Commit message rules.                                          |
+| **[husky](./tools/husky)**            | `tool` | Git hooks.                                                     |
+| **[release](./tools/release)**        | `tool` | Versioning preset.                                             |
 
 ### Dependency rule
 

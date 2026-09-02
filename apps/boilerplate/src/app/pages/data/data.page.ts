@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {
-  CurrencyDisplayComponent,
+  FeatureDisplayComponent,
   DataColumnDirective,
   DataTableComponent,
   MetricCardComponent,
@@ -11,19 +11,18 @@ import {
   SmartTextCellComponent,
   StatCardComponent
 } from 'ibid-ui';
-
-interface MovementRow {
-  readonly date: string;
-  readonly description: string;
-  readonly note: string;
-  readonly amount: number;
-}
+import {
+  MOCK_BALANCE_EXPLANATION,
+  MOCK_EXPENSE_STAT,
+  MOCK_INCOME_STAT,
+  MOCK_MOVEMENTS
+} from './data.page.mock';
 
 @Component({
   selector: 'boilerplate-data-page',
   standalone: true,
   imports: [
-    CurrencyDisplayComponent,
+    FeatureDisplayComponent,
     DataColumnDirective,
     DataTableComponent,
     MetricCardComponent,
@@ -37,25 +36,8 @@ interface MovementRow {
   templateUrl: './data.page.html'
 })
 export class DataPage {
-  protected readonly incomeStat = {
-    label: 'Income',
-    value: 3200,
-    isCurrency: true,
-    icon: 'add',
-    theme: 'success' as const
-  };
-
-  protected readonly expenseStat = {
-    label: 'Expenses',
-    value: -1840,
-    isCurrency: true,
-    icon: 'add',
-    theme: 'danger' as const
-  };
-
-  protected readonly movements: readonly MovementRow[] = [
-    { date: '2026-08-02', description: 'Lidl', note: 'Groceries', amount: -42.18 },
-    { date: '2026-08-05', description: 'Salary', note: 'Monthly income', amount: 2400 },
-    { date: '2026-08-11', description: 'Netflix', note: 'Subscription', amount: -13.99 }
-  ];
+  protected readonly incomeStat = MOCK_INCOME_STAT;
+  protected readonly expenseStat = MOCK_EXPENSE_STAT;
+  protected readonly featureExplanation = MOCK_BALANCE_EXPLANATION;
+  protected readonly movements = MOCK_MOVEMENTS;
 }

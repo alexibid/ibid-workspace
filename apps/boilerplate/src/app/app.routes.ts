@@ -1,7 +1,12 @@
 import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
-  { path: '', pathMatch: 'full', redirectTo: 'actions' },
+  {
+    path: '',
+    pathMatch: 'full',
+    title: 'ibid boilerplate',
+    loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage)
+  },
   {
     path: 'actions',
     title: 'Actions',
@@ -31,5 +36,10 @@ export const appRoutes: Route[] = [
     path: 'overlays',
     title: 'Overlays',
     loadComponent: () => import('./pages/overlays/overlays.page').then(m => m.OverlaysPage)
+  },
+  {
+    path: 'hand-drawn',
+    title: 'Hand-Drawn & Sea Glass',
+    loadComponent: () => import('./pages/hand-drawn/hand-drawn.page').then(m => m.HandDrawnPage)
   }
 ];

@@ -1,8 +1,12 @@
-@use '../../../styles/tools/mixins' as *;
+:host {
+  display: block;
+  width: 100%;
+}
 
 .o-header-shell {
   width: 100%;
   box-sizing: border-box;
+  z-index: 30;
 }
 
 .o-header-shell__bar {

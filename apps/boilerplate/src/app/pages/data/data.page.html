@@ -1,9 +1,14 @@
 <section class="showcase__section">
   <h2>Values and figures</h2>
   <div class="showcase__row">
-    <ibid-currency-display [value]="1284.5" [showInfo]="false" />
-    <ibid-currency-display [value]="-320.75" [showInfo]="false" />
-    <ibid-currency-display [value]="0" [showInfo]="false" />
+    <ibid-feature-display
+      [value]="1284.5"
+      [showInfo]="true"
+      explanationTitle="August Overview"
+      [explanation]="featureExplanation"
+    />
+    <ibid-feature-display [value]="-320.75" [showInfo]="false" />
+    <ibid-feature-display [value]="0" [showInfo]="false" />
   </div>
   <div class="showcase__grid">
     <ibid-stat-card [data]="incomeStat" />

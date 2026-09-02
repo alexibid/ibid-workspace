@@ -1,20 +1,28 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CurrencyDisplayComponent } from './currency-display';
+import { FeatureDisplayComponent } from './feature-display';
 import { I18nService } from '@ibid/services';
 import { createMockI18nService } from '../../../testing/i18n.mock';
 
-describe('CurrencyDisplayComponent', () => {
-  let fixture: ComponentFixture<CurrencyDisplayComponent>;
+@Component({
+  standalone: true,
+  imports: [FeatureDisplayComponent],
+  template: `<ibid-currency-display [value]="1284.5" [showInfo]="false" />`
+})
+class DeprecatedSelectorHostComponent {}
 
-  const element = (): HTMLElement => fixture.nativeElement.querySelector('.a-currency-display');
+describe('FeatureDisplayComponent', () => {
+  let fixture: ComponentFixture<FeatureDisplayComponent>;
+
+  const element = (): HTMLElement => fixture.nativeElement.querySelector('.a-feature-display');
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CurrencyDisplayComponent],
+      imports: [FeatureDisplayComponent],
       providers: [{ provide: I18nService, useValue: createMockI18nService() }]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CurrencyDisplayComponent);
+    fixture = TestBed.createComponent(FeatureDisplayComponent);
   });
 
   it('formats the value through the i18n service', () => {
@@ -36,14 +44,14 @@ describe('CurrencyDisplayComponent', () => {
     fixture.componentRef.setInput('size', 'xl');
     fixture.detectChanges();
 
-    expect(element().classList.contains('a-currency-display--xl')).toBe(true);
+    expect(element().classList.contains('a-feature-display--xl')).toBe(true);
   });
 
   it('leaves the value unstyled by sign unless sign colouring is asked for', () => {
     fixture.componentRef.setInput('value', -84.2);
     fixture.detectChanges();
 
-    expect(element().classList.contains('a-currency-display--negative')).toBe(false);
+    expect(element().classList.contains('a-feature-display--negative')).toBe(false);
   });
 
   it('prefixes a plus on positive values when an explicit sign is asked for', () => {
@@ -78,21 +86,21 @@ describe('CurrencyDisplayComponent', () => {
     fixture.componentRef.setInput('signed', true);
     fixture.detectChanges();
 
-    expect(element().classList.contains('a-currency-display--positive')).toBe(false);
-    expect(element().classList.contains('a-currency-display--negative')).toBe(false);
+    expect(element().classList.contains('a-feature-display--positive')).toBe(false);
+    expect(element().classList.contains('a-feature-display--negative')).toBe(false);
   });
 
   it('always offers the explanation affordance, even with no rows supplied', () => {
     fixture.componentRef.setInput('value', 10);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.a-currency-display__info')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.a-feature-display__info')).not.toBeNull();
   });
 
   it('falls back to showing the figure itself when no rows are supplied', () => {
     fixture.componentRef.setInput('value', 10);
     fixture.detectChanges();
-    fixture.nativeElement.querySelector('.a-currency-display__info').click();
+    fixture.nativeElement.querySelector('.a-feature-display__info').click();
     fixture.detectChanges();
 
     expect(fixture.componentInstance['balloonRows']().length).toBe(1);
@@ -104,11 +112,11 @@ describe('CurrencyDisplayComponent', () => {
     fixture.componentRef.setInput('explanation', [{ label: 'Receitas', value: '+30,00 €' }]);
     fixture.detectChanges();
 
-    const hitArea: HTMLElement = fixture.nativeElement.querySelector('.a-currency-display-hit-area');
+    const hitArea: HTMLElement = fixture.nativeElement.querySelector('.a-feature-display-hit-area');
     expect(hitArea).not.toBeNull();
     expect(hitArea.getAttribute('role')).toBe('button');
     expect(hitArea.getAttribute('aria-label')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('.a-currency-display__info')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.a-feature-display__info')).not.toBeNull();
   });
 
   it('toggles the explanation balloon open and closed', () => {
@@ -117,10 +125,10 @@ describe('CurrencyDisplayComponent', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance['isOpen']()).toBe(false);
 
-    fixture.nativeElement.querySelector('.a-currency-display__info').click();
+    fixture.nativeElement.querySelector('.a-feature-display__info').click();
     expect(fixture.componentInstance['isOpen']()).toBe(true);
 
-    fixture.nativeElement.querySelector('.a-currency-display__info').click();
+    fixture.nativeElement.querySelector('.a-feature-display__info').click();
     expect(fixture.componentInstance['isOpen']()).toBe(false);
   });
 
@@ -129,11 +137,33 @@ describe('CurrencyDisplayComponent', () => {
     fixture.componentRef.setInput('signed', true);
     fixture.detectChanges();
 
-    expect(element().classList.contains('a-currency-display--negative')).toBe(true);
+    expect(element().classList.contains('a-feature-display--negative')).toBe(true);
 
     fixture.componentRef.setInput('value', 84.2);
     fixture.detectChanges();
 
-    expect(element().classList.contains('a-currency-display--positive')).toBe(true);
+    expect(element().classList.contains('a-feature-display--positive')).toBe(true);
+  });
+
+  describe('deprecated selector', () => {
+    let host: ComponentFixture<DeprecatedSelectorHostComponent>;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [DeprecatedSelectorHostComponent],
+        providers: [{ provide: I18nService, useValue: createMockI18nService() }]
+      }).compileComponents();
+
+      host = TestBed.createComponent(DeprecatedSelectorHostComponent);
+      host.detectChanges();
+    });
+
+    it('still answers to ibid-currency-display so products can migrate on their own schedule', () => {
+      const value: HTMLElement = host.nativeElement.querySelector('.a-feature-display');
+
+      expect(value).not.toBeNull();
+      expect(value.textContent?.trim()).toBe('1284.50 €');
+    });
   });
 });

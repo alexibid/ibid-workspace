@@ -22,6 +22,7 @@ dist
 tmp
 out-tsc
 node_modules
+*.tsbuildinfo
 
 # Editors
 /.idea

@@ -1,0 +1,105 @@
+@use '../shared' as *;
+
+/// Every raised surface is a sheet of cut paper laid under the content: an irregular scissor
+/// edge, the drop shadow that edge casts, and a fold creasing across it. The sheet is only ever
+/// a background, so the table, the text and the controls on top are untouched.
+///
+/// `drop-shadow` rather than `box-shadow`, because only a filter follows the cut edge instead of
+/// tracing the rectangle the element still occupies.
+///
+/// Cards are plain white paper. A coloured sheet is something an author opts into with a `u-bg-*`
+/// class, never something the theme assigns by position.
+
+@mixin cut-paper($shape: var(--kirigami-cut)) {
+  @include decorated-surface;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+
+  &::before {
+    @include decorative-layer;
+    border-radius: 0;
+    background-color: var(--color-surface, #ffffff);
+    clip-path: $shape;
+  }
+
+  &::after {
+    @include decorative-layer;
+    border-radius: 0;
+    clip-path: $shape;
+    background-image: linear-gradient(
+      105deg,
+      transparent 43%,
+      var(--kirigami-fold-light) 48%,
+      var(--kirigami-fold-shade) 52%,
+      transparent 57%
+    );
+    mix-blend-mode: multiply;
+  }
+}
+
+/// The sheets: what a card, a header or a sample is cut out of.
+body.kirigami {
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+  }
+
+  .o-header-shell {
+    position: fixed;
+    @include cut-paper(var(--kirigami-snip));
+    border-bottom: 1px dashed var(--kirigami-paper-edge);
+  }
+
+  .o-hand-drawn {
+    border-radius: 0 !important;
+    position: relative;
+    clip-path: var(--kirigami-cut-2) !important;
+
+    &[style*="--hand-drawn-intensity: 1"] {
+      clip-path: var(--kirigami-cut-1) !important;
+    }
+    &[style*="--hand-drawn-intensity: 2"] {
+      clip-path: var(--kirigami-cut-2) !important;
+    }
+    &[style*="--hand-drawn-intensity: 3"] {
+      clip-path: var(--kirigami-cut-3) !important;
+    }
+    &[style*="--hand-drawn-intensity: 4"] {
+      clip-path: var(--kirigami-cut-4) !important;
+    }
+    &[style*="--hand-drawn-intensity: 5"] {
+      clip-path: var(--kirigami-cut-5) !important;
+    }
+  }
+
+  .hand-drawn-sample {
+    position: relative;
+    @include cut-paper;
+  }
+
+  .m-card,
+  .m-metric-card,
+  .m-stat-card {
+    position: relative;
+    @include cut-paper;
+
+    &.u-bg-teal::before {
+      background-color: var(--kirigami-blue-bg);
+    }
+
+    &.u-bg-coral::before {
+      background-color: var(--kirigami-red-bg);
+    }
+
+    &.u-bg-amber::before {
+      background-color: var(--kirigami-yellow-bg);
+    }
+
+    &.u-bg-pink::before {
+      background-color: var(--kirigami-green-bg);
+    }
+  }
+
+}

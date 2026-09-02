@@ -1,42 +1,54 @@
 @use '../../../styles/tools/mixins' as *;
 
+:host {
+  display: block;
+}
+
 .m-stat-card {
   @include card-surface;
-  padding: 1rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  box-sizing: border-box;
 
   &__body {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: var(--text-m);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+
+    &--danger {
+      color: var(--color-danger);
     }
 
-    &__content {
-        display: flex;
-        flex-direction: column;
+    &--success {
+      color: var(--color-success);
     }
 
-    &__label {
-        font-size: var(--text-m);
-        font-weight: 500;
-        color: var(--mat-sys-on-surface-variant, #64748b);
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
+    &--primary {
+      color: var(--color-info);
     }
-
-    &__value {
-        font-size: 1.25rem;
-        font-weight: 700;
-
-        &--danger {
-            color: var(--color-danger);
-        }
-
-        &--success {
-            color: var(--color-success);
-        }
-
-        &--primary {
-            color: var(--color-info);
-        }
-    }
+  }
 }

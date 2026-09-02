@@ -1,0 +1,103 @@
+@use 'paper' as *;
+
+/// The things you press, choose from, or read a row in.
+body.kirigami {
+  .a-select-field .mdc-text-field--outlined {
+    position: relative;
+    background-color: var(--kirigami-yellow-bg);
+    color: var(--kirigami-yellow-text);
+    clip-path: var(--kirigami-snip);
+    border: 1px solid var(--kirigami-yellow-mid);
+    filter: drop-shadow(0 2px 4px var(--kirigami-paper-shadow));
+
+    .mat-mdc-select-value {
+      color: var(--kirigami-yellow-text);
+      font-weight: 600;
+    }
+
+    .mat-mdc-select-arrow svg {
+      fill: var(--kirigami-yellow-text);
+    }
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .a-button,
+  .a-icon-button,
+  .a-dismiss-button {
+    clip-path: var(--kirigami-snip);
+    filter: drop-shadow(0 2px 4px var(--kirigami-paper-shadow));
+    font-weight: 600;
+  }
+
+  .a-button,
+  ibid-button button {
+    &:nth-of-type(4n + 1),
+    &.a-button--primary {
+      background-color: var(--kirigami-blue-solid);
+      color: #ffffff;
+      border-color: var(--kirigami-blue-mid);
+    }
+
+    &:nth-of-type(4n + 2),
+    &.a-button--secondary {
+      background-color: var(--kirigami-green-solid);
+      color: #ffffff;
+      border-color: var(--kirigami-green-mid);
+    }
+
+    &:nth-of-type(4n + 3),
+    &.a-button--outlined {
+      background-color: var(--kirigami-yellow-solid);
+      color: var(--kirigami-yellow-text);
+      border-color: var(--kirigami-yellow-mid);
+    }
+
+    &:nth-of-type(4n + 4),
+    &.a-button--highlight {
+      background-color: var(--kirigami-red-solid);
+      color: #ffffff;
+      border-color: var(--kirigami-red-mid);
+    }
+  }
+
+  div.m-dropdown-panel.mat-mdc-select-panel {
+    @include cut-paper(var(--kirigami-snip));
+  }
+
+  .m-bottom-sheet-dialog {
+    @include cut-paper(var(--kirigami-snip));
+  }
+
+  .m-bottom-sheet-dialog__footer {
+    background-color: transparent;
+    border-top: 1px dashed var(--kirigami-paper-edge);
+  }
+
+  .o-header-nav__panel {
+    @include cut-paper(var(--kirigami-cut));
+
+    .m-nav-menu__link--active {
+      background-color: var(--color-ink, #2c2c2a);
+      color: var(--color-surface, #ffffff);
+    }
+
+    .m-nav-menu__link:hover:not(.m-nav-menu__link--active) {
+      background-color: rgba(44, 44, 42, 0.08);
+    }
+  }
+
+  .m-nav-menu {
+    background: transparent;
+  }
+
+  .o-table th {
+    border-bottom: 1px dashed var(--kirigami-paper-edge);
+  }
+
+  .o-table td {
+    border-bottom-color: var(--kirigami-paper-edge);
+  }
+}

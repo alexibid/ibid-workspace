@@ -32,7 +32,7 @@ export type NavMenuItem = NavMenuLink | NavMenuGroup;
   standalone: true,
   imports: [CommonModule, RouterModule, IconComponent],
   templateUrl: './nav-menu.html',
-  styleUrl: './nav-menu.scss'
+  styleUrl: './nav-menu.scss',
 })
 export class NavMenuComponent {
   readonly items = input.required<readonly NavMenuItem[]>();

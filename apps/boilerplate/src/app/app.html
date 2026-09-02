@@ -1,11 +1,30 @@
-<ibid-header [expanded]="navOpen()">
+<ibid-header #headerHost [expanded]="navOpen()">
   <span headerBrand class="boilerplate-brand">
     <ibid-icon class="boilerplate-brand__mark" name="ibid"></ibid-icon>
     <span class="boilerplate-brand__label">{{ i18n.translate('title') }}</span>
   </span>
 
+  <ibid-select
+    headerActions
+    class="boilerplate-theme-select"
+    [options]="themeOptions"
+    [value]="themes.theme()"
+    (valueChange)="selectTheme($event)"
+  />
+
   <ibid-icon-button
     headerActions
+    class="boilerplate-language-toggle"
+    [ariaLabel]="i18n.translate('languageToggleLabel')"
+    (clicked)="toggleLanguage()"
+  >
+    <ibid-icon class="boilerplate-language-toggle__mark" name="language"></ibid-icon>
+    <span class="boilerplate-language-toggle__code">{{ languageCode() }}</span>
+  </ibid-icon-button>
+
+  <ibid-icon-button
+    headerActions
+    class="boilerplate-nav-toggle"
     [ariaLabel]="i18n.translate('navToggleLabel')"
     (clicked)="toggleNav()"
   >

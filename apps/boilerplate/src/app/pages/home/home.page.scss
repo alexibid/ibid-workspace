@@ -1,0 +1,116 @@
+@use 'libs/ibid-ui/src/styles/tools/mixins' as *;
+
+.boilerplate-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.boilerplate-hero__title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+
+  @include respond-to('tablet') {
+    font-size: var(--text-5xl);
+  }
+}
+
+.boilerplate-hero__subtitle {
+  margin: 0;
+  max-width: 48ch;
+  font-size: var(--text-l);
+  color: var(--color-text-muted);
+}
+
+.boilerplate-hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.boilerplate-tokens__group {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--text-l);
+  color: var(--color-text-muted);
+}
+
+.boilerplate-tokens {
+  @include grid-auto-fit(15rem, var(--space-4));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.boilerplate-swatch,
+.boilerplate-specimen,
+.boilerplate-scale__step {
+  @include card-surface;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  min-width: 0;
+}
+
+.boilerplate-swatch__chip {
+  display: block;
+  height: 56px;
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+}
+
+.boilerplate-swatch__label {
+  font-size: var(--text-s);
+  font-weight: var(--weight-semibold);
+}
+
+.boilerplate-swatch__variable,
+.boilerplate-swatch__value,
+.boilerplate-specimen__variable,
+.boilerplate-specimen__value,
+.boilerplate-scale__variable,
+.boilerplate-scale__value {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.boilerplate-specimen__sample {
+  margin: 0;
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+}
+
+.boilerplate-specimen__paragraph {
+  margin: 0;
+  font-size: var(--text-s);
+}
+
+.boilerplate-scale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.boilerplate-scale__step {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.boilerplate-scale__sample {
+  flex: 0 1 auto;
+  min-width: 12rem;
+  margin: 0;
+  line-height: var(--leading-tight);
+}

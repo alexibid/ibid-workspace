@@ -1,0 +1,53 @@
+@use '../shared' as *;
+
+/// The four glasses the theme is cut from, each with the angle its gleam falls at, so no two
+/// colours catch the light the same way.
+$glass-variants: (teal: 124deg, amber: 142deg, coral: 108deg, pink: 136deg);
+
+/// Selects one of them. It only sets custom properties, which is what lets a variant be declared
+/// on a component host and still reach the pane rendered inside it.
+@mixin glass-variant($name, $angle: null) {
+  --glass-tint: var(--glass-tint-#{$name});
+  --glass-edge: var(--glass-edge-#{$name});
+  --glass-wash: var(--glass-wash-#{$name});
+  @if $angle {
+    --glass-gleam-angle: #{$angle};
+  }
+}
+
+/// The pane every glass surface is cut from. Emits nothing on its own: both the page surfaces and
+/// the feature value pull it in, so a card and a figure are the same material.
+///
+/// Sea glass, not frosted white: the tint is translucent enough that the ground still reads
+/// through it, and it carries a green cast of its own rather than washing everything out.
+
+@mixin glass-pane {
+  @include decorated-surface;
+  background-color: transparent;
+  border-color: var(--glass-edge);
+  box-shadow: none;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  &::after {
+    @include decorative-layer;
+    border-radius: inherit;
+    background-color: var(--glass-tint);
+    background-image:
+      linear-gradient(
+        var(--glass-gleam-angle, 118deg),
+        transparent 32%,
+        rgb(255 255 255 / var(--glass-gleam-opacity, 42%)) 46%,
+        rgb(255 255 255 / 12%) 54%,
+        transparent 68%
+      ),
+      var(--glass-wash);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 65%),
+      inset 0 0 0 1px rgb(255 255 255 / 25%);
+
+    @supports not (backdrop-filter: blur(1px)) {
+      background-color: var(--color-glass-surface-opaque);
+    }
+  }
+}

@@ -1,0 +1,89 @@
+<header class="boilerplate-hero">
+  <h1 class="boilerplate-hero__title">{{ i18n.translate('title') }}</h1>
+  <p class="boilerplate-hero__subtitle">{{ i18n.translate('subtitle') }}</p>
+  <div class="boilerplate-hero__badges">
+    <ibid-badge label="Angular" />
+    <ibid-badge label="Nx" />
+    <ibid-badge label="ibid-ui" />
+  </div>
+</header>
+
+<section class="showcase__section">
+  <h2>Colors</h2>
+  @for (group of palette(); track group.id) {
+    <h3 class="boilerplate-tokens__group">{{ group.title }}</h3>
+    <ul class="boilerplate-tokens">
+      @for (token of group.tokens; track token.variable) {
+        <li class="boilerplate-swatch">
+          <span class="boilerplate-swatch__chip" [style.background]="token.reference"></span>
+          <span class="boilerplate-swatch__label">{{ token.label }}</span>
+          <code class="boilerplate-swatch__variable">{{ token.variable }}</code>
+          @if (token.value) {
+            <code class="boilerplate-swatch__value">{{ token.value }}</code>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+<section class="showcase__section">
+  <h2>Typography</h2>
+
+  <h3 class="boilerplate-tokens__group">Families</h3>
+  <ul class="boilerplate-tokens">
+    @for (family of families(); track family.variable) {
+      <li class="boilerplate-specimen">
+        <p class="boilerplate-specimen__sample" [style.fontFamily]="family.reference">
+          Ag — {{ family.label }}
+        </p>
+        <code class="boilerplate-specimen__variable">{{ family.variable }}</code>
+        @if (family.value) {
+          <code class="boilerplate-specimen__value">{{ family.value }}</code>
+        }
+      </li>
+    }
+  </ul>
+
+  <h3 class="boilerplate-tokens__group">Scale</h3>
+  <ul class="boilerplate-scale">
+    @for (step of scale(); track step.variable) {
+      <li class="boilerplate-scale__step">
+        <p class="boilerplate-scale__sample" [style.fontSize]="step.reference">{{ step.label }}</p>
+        <code class="boilerplate-scale__variable">{{ step.variable }}</code>
+        @if (step.value) {
+          <code class="boilerplate-scale__value">{{ step.value }}</code>
+        }
+      </li>
+    }
+  </ul>
+
+  <h3 class="boilerplate-tokens__group">Weights</h3>
+  <ul class="boilerplate-scale">
+    @for (weight of weights(); track weight.variable) {
+      <li class="boilerplate-scale__step">
+        <p class="boilerplate-scale__sample" [style.fontWeight]="weight.reference">{{ weight.label }}</p>
+        <code class="boilerplate-scale__variable">{{ weight.variable }}</code>
+        @if (weight.value) {
+          <code class="boilerplate-scale__value">{{ weight.value }}</code>
+        }
+      </li>
+    }
+  </ul>
+
+  <h3 class="boilerplate-tokens__group">Line heights</h3>
+  <ul class="boilerplate-tokens">
+    @for (leading of leadings(); track leading.variable) {
+      <li class="boilerplate-specimen">
+        <p class="boilerplate-specimen__paragraph" [style.lineHeight]="leading.reference">
+          The quick brown fox jumps over the lazy dog while the design system keeps every line
+          exactly where the token says it belongs.
+        </p>
+        <code class="boilerplate-specimen__variable">{{ leading.variable }}</code>
+        @if (leading.value) {
+          <code class="boilerplate-specimen__value">{{ leading.value }}</code>
+        }
+      </li>
+    }
+  </ul>
+</section>

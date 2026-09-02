@@ -26,11 +26,13 @@
   width: 100%;
 
   .mdc-text-field--outlined {
-    --mdc-shape-small: 10px;
+    --mdc-shape-small: inherit;
+    border-radius: inherit;
     height: 36px;
     padding-left: 12px;
     padding-right: 8px;
-    @include glass-highlight-surface;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border, #e5e3dc);
     @include transition-standard;
 
     .mat-mdc-form-field-infix,
@@ -49,13 +51,15 @@
       width: 100%;
     }
 
-    &:hover::before {
+    &:hover {
       border-color: var(--color-primary-hover, #424240);
     }
   }
 
   .mdc-notched-outline {
-    &__leading, &__notch, &__trailing {
+    &__leading,
+    &__notch,
+    &__trailing {
       border: none;
       border-radius: 0;
     }
@@ -65,49 +69,62 @@
     font-family: var(--font-ui);
     font-size: var(--text-m);
     font-weight: var(--weight-medium, 500);
-    color: var(--color-text, #2C2C2A);
+    color: var(--color-text, #2c2c2a);
   }
 
   .mat-mdc-select-arrow {
     display: none;
   }
+}
 
+.cdk-overlay-pane:has(div.m-dropdown-panel) {
+  min-width: max-content !important;
+  width: max-content !important;
+  max-width: 80vw !important;
 }
 
 div.m-dropdown-panel.mat-mdc-select-panel {
-  padding: 6px;
+  padding: 6px 8px;
   width: max-content;
-  min-width: 100%;
-  max-width: min(320px, 90vw);
+  min-width: max-content;
+  max-width: 80vw;
+  box-sizing: border-box;
   overflow-x: hidden;
-  filter: drop-shadow(0 12px 24px rgba(44, 44, 42, 0.16));
-  border-radius: 8px 30px 10px 26px;
-  background: var(--color-glass-surface);
-  border: 1px solid var(--color-border, #E5E3DC);
+  filter: drop-shadow(0 8px 20px rgba(44, 44, 42, 0.12));
+  border-radius: 4px 10px 5px 12px / 10px 4px 12px 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border, #e5e3dc);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
   @supports not (backdrop-filter: blur(1px)) {
-    background: var(--color-glass-surface-opaque);
+    background: var(--color-surface-opaque, #ffffff);
   }
+
   .mat-mdc-option {
     position: relative;
     z-index: 1;
-    min-height: 40px;
-    border-radius: 8px;
+    min-height: 38px;
+    padding-left: 14px;
+    padding-right: 14px;
+    border-radius: 4px;
     background: transparent;
     color: var(--color-teal-text, #085041);
+    white-space: nowrap;
 
     .mdc-list-item__primary-text {
       color: inherit;
+      white-space: nowrap;
+      display: inline-block;
+      width: auto;
     }
 
     &:hover:not(.mdc-list-item--selected) {
-      background: var(--color-glass-surface-hover);
+      background: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
     }
 
     &.mdc-list-item--selected {
-      background: var(--color-glass-surface-hover);
+      background: var(--color-surface-hover, rgba(0, 0, 0, 0.06));
       color: var(--color-primary);
       font-weight: var(--weight-semibold);
 
@@ -139,14 +156,14 @@ div.m-dropdown-panel.mat-mdc-select-panel {
     height: 10px;
     margin-right: 2px;
     pointer-events: none;
-    background-color: var(--color-text-muted, #8A8A85);
-    
-    mask: url("/icons/chevron-down.svg") no-repeat center / contain;
-    -webkit-mask: url("/icons/chevron-down.svg") no-repeat center / contain;
+    background-color: var(--color-text-muted, #8a8a85);
+
+    mask: url('/icons/chevron-down.svg') no-repeat center / contain;
+    -webkit-mask: url('/icons/chevron-down.svg') no-repeat center / contain;
 
     &.is-open {
-      mask: url("/icons/chevron-up.svg") no-repeat center / contain;
-      -webkit-mask: url("/icons/chevron-up.svg") no-repeat center / contain;
+      mask: url('/icons/chevron-up.svg') no-repeat center / contain;
+      -webkit-mask: url('/icons/chevron-up.svg') no-repeat center / contain;
     }
   }
 }

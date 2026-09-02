@@ -1,14 +1,14 @@
 import { Component, input } from '@angular/core';
-import { CurrencyDisplayComponent } from '../../atoms/currency-display/currency-display';
+import { FeatureDisplayComponent } from '../../atoms/feature-display/feature-display';
 
 @Component({
   selector: 'ibid-chart-headline',
   standalone: true,
-  imports: [CurrencyDisplayComponent],
+  imports: [FeatureDisplayComponent],
   template: `
     <div class="m-chart-headline">
       <div class="m-chart-headline__caption">{{ caption() }}</div>
-      <ibid-currency-display class="m-chart-headline__value" [value]="value()" size="lg" />
+      <ibid-feature-display class="m-chart-headline__value" [value]="value()" size="lg" />
       <div class="m-chart-headline__context">{{ context() }}</div>
     </div>
   `,

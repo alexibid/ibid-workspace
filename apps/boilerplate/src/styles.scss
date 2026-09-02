@@ -1,12 +1,17 @@
-@use 'libs/ibid-ui/src/styles';
+@use 'libs/ibid-ui/src/themes/glass-surface';
+@use 'libs/ibid-ui/src/themes/kirigami';
+
+@use 'styles/ux';
 
 :root {
   --header-nav-offset: 57px;
 }
 
+ibid-header {
+  display: block;
+}
+
 .o-header-shell {
-  position: sticky;
-  top: 0;
   z-index: 30;
   padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
   background-color: var(--color-surface, #ffffff);

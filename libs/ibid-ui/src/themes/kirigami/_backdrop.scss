@@ -1,0 +1,43 @@
+@use '../shared' as *;
+
+/// Wide washes of nursery paint drift behind the page, with a sheet of cut paper pinned over
+/// them. The layer is fixed and inert, so scrolling never repaints it and nothing in the app can
+/// be covered by it.
+
+body.kirigami {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    @include page-layer;
+    background-image:
+      radial-gradient(var(--kirigami-wash-size) var(--kirigami-wash-size) at 12% 18%, var(--color-coral-mid), transparent 62%),
+      radial-gradient(var(--kirigami-wash-size) var(--kirigami-wash-size) at 84% 8%, var(--color-teal-mid), transparent 60%),
+      radial-gradient(var(--kirigami-wash-size) var(--kirigami-wash-size) at 74% 76%, var(--color-amber-mid), transparent 64%),
+      radial-gradient(var(--kirigami-wash-size) var(--kirigami-wash-size) at 22% 88%, var(--color-pink-mid), transparent 62%);
+    background-repeat: no-repeat;
+    opacity: var(--kirigami-wash-opacity);
+    filter: blur(40px);
+
+    @include motion {
+      animation: kirigami-drift var(--kirigami-drift-duration) ease-in-out infinite alternate;
+    }
+  }
+
+  &::after {
+    @include page-layer;
+    background-color: var(--color-pink-bg);
+    clip-path: polygon(74% 4%, 99% 12%, 96% 34%, 71% 27%);
+    opacity: 0.55;
+    filter: drop-shadow(0 6px 10px var(--kirigami-paper-shadow));
+  }
+}
+
+@keyframes kirigami-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 3%, 0) scale(1.08);
+  }
+}

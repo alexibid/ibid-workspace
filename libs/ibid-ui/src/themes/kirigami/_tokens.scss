@@ -1,0 +1,123 @@
+/// kirigami swaps the palette for the paints of a nursery wall: warm cream paper, and accents
+/// that stay soft without letting the text lose its contrast against them.
+///
+/// The snips are measured in pixels, not percentages: a scissor cut is the same size whatever the
+/// sheet, so a short wide card has to read as cut just as much as a tall one does.
+
+body.kirigami {
+  --color-bg: #FFF8EF;
+  --color-bg-opacity80: #FFF8EFcc;
+  --color-surface: #FFFDF9;
+  --color-surface-hover: #FFF4E4;
+  --color-border: #E8DAC6;
+  --color-text: #38332C;
+  --color-text-muted: #6B6154;
+  --color-ink: #38332C;
+
+  --color-primary: #1E40AF;
+  --color-primary-hover: #1D4ED8;
+
+  --kirigami-blue-bg: #DBEAFE;
+  --kirigami-blue-mid: #2563EB;
+  --kirigami-blue-text: #1E3A8A;
+  --kirigami-blue-solid: #2563EB;
+
+  --kirigami-red-bg: #FEE2E2;
+  --kirigami-red-mid: #DC2626;
+  --kirigami-red-text: #991B1B;
+  --kirigami-red-solid: #DC2626;
+
+  --kirigami-yellow-bg: #FEF3C7;
+  --kirigami-yellow-mid: #D97706;
+  --kirigami-yellow-text: #78350F;
+  --kirigami-yellow-solid: #D97706;
+
+  --kirigami-green-bg: #D1FAE5;
+  --kirigami-green-mid: #059669;
+  --kirigami-green-text: #064E3B;
+  --kirigami-green-solid: #059669;
+
+  --kirigami-purple-bg: #EDE9FE;
+  --kirigami-purple-mid: #7C3AED;
+  --kirigami-purple-text: #5B21B6;
+  --kirigami-purple-solid: #7C3AED;
+
+  --color-coral-bg: var(--kirigami-red-bg);
+  --color-coral-mid: var(--kirigami-red-mid);
+  --color-coral-text: var(--kirigami-red-text);
+
+  --color-amber-bg: var(--kirigami-yellow-bg);
+  --color-amber-mid: var(--kirigami-yellow-mid);
+  --color-amber-text: var(--kirigami-yellow-text);
+
+  --color-teal-bg: var(--kirigami-green-bg);
+  --color-teal-mid: var(--kirigami-green-mid);
+  --color-teal-text: var(--kirigami-green-text);
+
+  --color-pink-bg: var(--kirigami-purple-bg);
+  --color-pink-mid: var(--kirigami-purple-mid);
+  --color-pink-text: var(--kirigami-purple-text);
+
+  --color-success: #059669;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+
+  --kirigami-paper-edge: #EFE1CE;
+  --kirigami-paper-shadow: rgb(56 51 44 / 16%);
+  --kirigami-fold-light: rgb(255 255 255 / 95%);
+  --kirigami-fold-shade: rgb(56 51 44 / 22%);
+  --kirigami-fold-ridge: #8A7C66;
+  --kirigami-fold-duration: 7s;
+
+  --kirigami-wash-size: 46vmax;
+  --kirigami-wash-opacity: 0.5;
+  --kirigami-drift-duration: 46s;
+
+  --kirigami-cut: polygon(
+    4px 6px, 21% 0, 46% 7px, 70% 1px, calc(100% - 5px) 4px,
+    100% 26%, calc(100% - 6px) 58%, calc(100% - 1px) calc(100% - 6px),
+    77% 100%, 51% calc(100% - 7px), 26% 100%, 6px calc(100% - 3px),
+    0 63%, 5px 31%
+  );
+
+  --kirigami-snip: polygon(
+    3px 3px, 30% 0, 62% 4px, calc(100% - 3px) 1px,
+    100% 52%, calc(100% - 2px) calc(100% - 3px),
+    64% 100%, 31% calc(100% - 4px), 2px 100%, 0 46%
+  );
+
+  --kirigami-cut-1: polygon(
+    2px 2px, 25% 0, 50% 2px, 75% 0, calc(100% - 2px) 2px,
+    100% 50%, calc(100% - 2px) calc(100% - 2px),
+    75% 100%, 50% calc(100% - 2px), 25% 100%, 2px calc(100% - 2px),
+    0 50%
+  );
+
+  --kirigami-cut-2: polygon(
+    3px 4px, 22% 0, 48% 5px, 72% 1px, calc(100% - 4px) 3px,
+    100% 30%, calc(100% - 4px) 62%, calc(100% - 1px) calc(100% - 4px),
+    76% 100%, 50% calc(100% - 5px), 24% 100%, 4px calc(100% - 2px),
+    0 60%, 4px 28%
+  );
+
+  --kirigami-cut-3: polygon(
+    5px 7px, 20% 0, 45% 8px, 70% 2px, calc(100% - 6px) 5px,
+    100% 25%, calc(100% - 7px) 55%, calc(100% - 2px) calc(100% - 7px),
+    78% 100%, 52% calc(100% - 8px), 25% 100%, 7px calc(100% - 4px),
+    0 65%, 6px 30%
+  );
+
+  --kirigami-cut-4: polygon(
+    8px 10px, 18% 0, 42% 12px, 68% 3px, calc(100% - 9px) 7px,
+    100% 20%, calc(100% - 10px) 50%, calc(100% - 3px) calc(100% - 10px),
+    80% 100%, 54% calc(100% - 12px), 22% 100%, 10px calc(100% - 6px),
+    0 70%, 8px 32%
+  );
+
+  --kirigami-cut-5: polygon(
+    12px 14px, 15% 0, 40% 16px, 65% 4px, calc(100% - 14px) 10px,
+    100% 15%, calc(100% - 14px) 45%, calc(100% - 4px) calc(100% - 14px),
+    82% 100%, 56% calc(100% - 16px), 20% 100%, 14px calc(100% - 8px),
+    0 75%, 12px 35%
+  );
+}

@@ -1,0 +1,55 @@
+body.glass-surface {
+  --glass-blur: 16px;
+  --glass-sheen-duration: 5.5s;
+
+  --glass-white: rgb(255 255 255 / 58%);
+  --glass-edge-white: rgb(255 255 255 / 62%);
+  --glass-wash-opacity: 0.12;
+
+  --glass-radius-sm: 8px;
+  --glass-radius-md: 14px;
+  --glass-radius-lg: 18px;
+  --glass-radius-sheet: 24px;
+
+  --glass-tint-teal: rgb(228 245 240 / 64%);
+  --glass-edge-teal: rgb(93 202 165 / 64%);
+  --glass-wash-teal: linear-gradient(
+    var(--glass-angle, 138deg),
+    rgb(93 202 165 / 0.24),
+    rgb(225 245 238 / 0.36) 48%,
+    rgb(8 80 65 / 0.14)
+  );
+
+  --glass-tint-amber: rgb(253 247 235 / 66%);
+  --glass-edge-amber: rgb(239 159 39 / 60%);
+  --glass-wash-amber: linear-gradient(
+    var(--glass-angle, 126deg),
+    rgb(239 159 39 / 0.22),
+    rgb(250 238 218 / 0.39) 52%,
+    rgb(240 153 123 / 0.15)
+  );
+
+  --glass-tint-coral: rgb(254 243 239 / 66%);
+  --glass-edge-coral: rgb(240 153 123 / 61%);
+  --glass-wash-coral: linear-gradient(
+    var(--glass-angle, 152deg),
+    rgb(240 153 123 / 0.24),
+    rgb(250 236 231 / 0.36) 50%,
+    rgb(237 147 177 / 0.18)
+  );
+
+  --glass-tint-pink: rgb(254 242 246 / 66%);
+  --glass-edge-pink: rgb(237 147 177 / 61%);
+  --glass-wash-pink: linear-gradient(
+    var(--glass-angle, 114deg),
+    rgb(237 147 177 / 0.22),
+    rgb(251 234 240 / 0.36) 48%,
+    rgb(93 202 165 / 0.14)
+  );
+
+  --glass-tint: var(--glass-tint-teal);
+  --glass-edge: var(--glass-edge-teal);
+  --glass-wash: var(--glass-wash-teal);
+  --glass-gleam-angle: 118deg;
+  --glass-gleam-opacity: 44%;
+}

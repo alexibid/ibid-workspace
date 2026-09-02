@@ -14,7 +14,11 @@
             (click)="selectLink(asLink(item))"
           >
             @if (item.icon) {
-              <ibid-icon class="m-nav-menu__icon" [name]="item.icon" [style.color]="asLink(item).color"></ibid-icon>
+              <ibid-icon
+                class="m-nav-menu__icon"
+                [name]="item.icon"
+                [style.color]="asLink(item).color"
+              ></ibid-icon>
             }
             <span class="m-nav-menu__text">{{ item.label }}</span>
           </a>
@@ -49,7 +53,11 @@
                     (click)="selectLink(child)"
                   >
                     @if (child.icon) {
-                      <ibid-icon class="m-nav-menu__icon" [name]="child.icon" [style.color]="child.color"></ibid-icon>
+                      <ibid-icon
+                        class="m-nav-menu__icon"
+                        [name]="child.icon"
+                        [style.color]="child.color"
+                      ></ibid-icon>
                     }
                     <span class="m-nav-menu__text">{{ child.label }}</span>
                   </a>

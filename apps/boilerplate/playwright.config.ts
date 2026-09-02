@@ -1,7 +1,11 @@
 import { defineConfig } from '@playwright/test';
 import { basePlaywrightConfig } from '../../tools/playwright/playwright.base';
 
-const BASE_URL = 'http://localhost:4300';
+/**
+ * The suite runs its own server through its own Nx target: Nx serialises a target with itself, so
+ * borrowing `serve` would queue the test server behind an open dev server until it timed out.
+ */
+const BASE_URL = 'http://localhost:4301';
 
 export default defineConfig({
   ...basePlaywrightConfig,
@@ -11,7 +15,7 @@ export default defineConfig({
     baseURL: BASE_URL
   },
   webServer: {
-    command: 'npx nx serve boilerplate',
+    command: 'npx nx run boilerplate:serve-e2e',
     cwd: '../..',
     url: BASE_URL,
     reuseExistingServer: !process.env['CI'],

@@ -1,0 +1,175 @@
+@use 'pane' as *;
+
+/// Every raised surface becomes a pane of frosted glass: it blurs whatever passes under it,
+/// carries a faint wash of the palette, and takes a diagonal gleam across the face. The layer
+/// sits behind the content and never spills past the edges.
+///
+/// The selectors lead with `body` on purpose. An Angular component stylesheet resolves to
+/// `.m-card[_ngcontent-x]` and is injected after the global sheet, so a plain `.glass-surface
+/// .m-card` would tie on specificity and lose on order. `body.glass-surface .m-card` outranks it.
+
+body.glass-surface {
+  .o-header-shell {
+    position: fixed;
+    @include glass-pane;
+    @include glass-variant(amber, 112deg);
+    border-bottom-color: var(--glass-edge);
+  }
+
+  .m-card,
+  .m-stat-card,
+  .m-metric-card {
+    position: relative;
+    @include glass-pane;
+  }
+
+  .hand-drawn-sample {
+    position: relative;
+    @include glass-pane;
+
+    @each $name, $angle in $glass-variants {
+      &:nth-of-type(4n + #{index(map-keys($glass-variants), $name)}) {
+        @include glass-variant($name, $angle);
+      }
+    }
+  }
+
+  @each $name, $angle in $glass-variants {
+    .u-bg-#{$name} {
+      @include glass-variant($name, $angle);
+      background-color: transparent;
+    }
+  }
+
+  .a-select-field .mdc-text-field--outlined {
+    position: relative;
+    @include glass-pane;
+    @include glass-variant(teal);
+    border-color: var(--glass-edge);
+  }
+
+  .m-bottom-sheet-dialog {
+    @include glass-pane;
+    @include glass-variant(pink, 120deg);
+  }
+
+  .m-bottom-sheet-dialog__footer {
+    background-color: transparent;
+    border-top-color: var(--glass-edge);
+  }
+
+  div.m-dropdown-panel.mat-mdc-select-panel {
+    position: relative;
+    @include glass-pane;
+    @include glass-variant(amber);
+    border-color: var(--glass-edge);
+
+    .mat-mdc-option {
+      &.mdc-list-item--selected {
+        background: var(--glass-white, rgba(255, 255, 255, 0.44));
+        color: var(--color-primary);
+      }
+
+      &:hover:not(.mdc-list-item--selected) {
+        background: rgba(255, 255, 255, 0.22);
+      }
+    }
+  }
+
+  .o-header-nav__panel {
+    @include glass-pane;
+    @include glass-variant(coral, 128deg);
+    border-right-color: var(--glass-edge);
+    border-bottom-color: var(--glass-edge);
+
+    .m-nav-menu__link--active {
+      background: var(--glass-white, rgba(255, 255, 255, 0.44));
+      color: var(--color-primary);
+    }
+
+    .m-nav-menu__link:hover:not(.m-nav-menu__link--active) {
+      background: rgba(255, 255, 255, 0.22);
+    }
+  }
+
+  .m-nav-menu {
+    background: transparent;
+  }
+
+  .a-button,
+  ibid-button button {
+    position: relative;
+    @include glass-pane;
+    box-shadow: 0 4px 14px rgba(44, 44, 42, 0.1), 0 1px 3px rgba(44, 44, 42, 0.06);
+
+    &:nth-of-type(4n + 1) {
+      --glass-tint: var(--glass-tint-teal);
+      --glass-edge: var(--glass-edge-teal);
+      --glass-wash: var(--glass-wash-teal);
+      color: var(--color-teal-text);
+    }
+
+    &:nth-of-type(4n + 2) {
+      --glass-tint: var(--glass-tint-amber);
+      --glass-edge: var(--glass-edge-amber);
+      --glass-wash: var(--glass-wash-amber);
+      color: var(--color-amber-text);
+    }
+
+    &:nth-of-type(4n + 3) {
+      --glass-tint: var(--glass-tint-coral);
+      --glass-edge: var(--glass-edge-coral);
+      --glass-wash: var(--glass-wash-coral);
+      color: var(--color-coral-text);
+    }
+
+    &:nth-of-type(4n + 4) {
+      --glass-tint: var(--glass-tint-pink);
+      --glass-edge: var(--glass-edge-pink);
+      --glass-wash: var(--glass-wash-pink);
+      color: var(--color-pink-text);
+    }
+
+    &.a-button--primary {
+      background-color: var(--color-primary);
+      color: var(--color-on-primary, #ffffff);
+      --glass-tint: rgba(12, 107, 88, 0.2);
+      --glass-edge: var(--glass-edge-teal);
+      --glass-wash: var(--glass-wash-teal);
+      box-shadow: 0 4px 16px rgba(12, 107, 88, 0.25), 0 1px 3px rgba(12, 107, 88, 0.15);
+    }
+
+    &.a-button--secondary {
+      --glass-tint: var(--glass-tint-teal);
+      --glass-edge: var(--glass-edge-teal);
+      --glass-wash: var(--glass-wash-teal);
+      color: var(--color-teal-text);
+    }
+
+    &.a-button--outlined {
+      --glass-tint: rgba(255, 255, 255, 0.25);
+      --glass-edge: var(--color-border);
+      color: var(--color-text);
+    }
+
+    &.a-button--highlight {
+      --glass-tint: var(--glass-tint-amber);
+      --glass-edge: var(--glass-edge-amber);
+      --glass-wash: var(--glass-wash-amber);
+      color: var(--color-amber-text);
+      box-shadow: 0 2px 8px rgba(239, 155, 39, 0.25);
+    }
+  }
+
+  .a-icon-button,
+  ibid-icon-button button {
+    position: relative;
+    @include glass-pane;
+    @include glass-variant(teal);
+    box-shadow: 0 2px 8px rgba(44, 44, 42, 0.08);
+  }
+
+  .o-table th {
+    border-bottom-color: var(--glass-edge);
+  }
+}

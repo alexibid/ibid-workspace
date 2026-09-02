@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
 @Component({
   selector: 'ibid-button',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HandDrawnDirective],
   template: `
     <button
+      ibidHandDrawn
       [class]="'a-button a-button--' + variant"
       (click)="clicked.emit($event)"
       [type]="type"

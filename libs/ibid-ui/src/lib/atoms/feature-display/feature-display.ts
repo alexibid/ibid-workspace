@@ -1,77 +1,40 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { I18nService } from '@ibid/services';
+import { FeatureExplanationRow } from '../../models/ui.model';
+import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
-export type CurrencyDisplaySize = 'sm' | 'md' | 'lg' | 'xl';
-
-export interface CurrencyExplanationRow {
-  readonly label: string;
-  readonly value: string;
-}
+export type FeatureDisplaySize = 'sm' | 'md' | 'lg' | 'xl';
 
 const BALLOON_POSITIONS: ConnectedPosition[] = [
   { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 6 },
   { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -6 }
 ];
 
-interface MarkerShape {
-  readonly transform: string;
-  readonly left: string;
-  readonly right: string;
-  readonly borderRadius: string;
-}
-
 function randomBetween(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
 
-function randomCornerRadius(): string {
-  return `${Math.round(randomBetween(2, 8))}px`;
-}
-
-function randomMarkerShape(): MarkerShape {
+function decorationStyle(): Record<string, string> {
   return {
-    transform: `rotate(${randomBetween(-2.5, 2.5).toFixed(2)}deg)`,
-    left: `${Math.round(randomBetween(-6, -3))}px`,
-    right: `${Math.round(randomBetween(-6, -3))}px`,
-    borderRadius: `${randomCornerRadius()} ${randomCornerRadius()} ${randomCornerRadius()} ${randomCornerRadius()}`
-  };
-}
-
-function randomSparkleWaypoints(): readonly [string, string][] {
-  return Array.from({ length: 3 }, () => [
-    `${Math.round(randomBetween(15, 85))}%`,
-    `${Math.round(randomBetween(15, 85))}%`
-  ]);
-}
-
-function markerStyle(shape: MarkerShape, sparkles: readonly [string, string][]): Record<string, string> {
-  return {
-    left: shape.left,
-    right: shape.right,
-    'border-radius': shape.borderRadius,
-    transform: shape.transform,
-    '--sparkle-1-top': sparkles[0][0],
-    '--sparkle-1-left': sparkles[0][1],
-    '--sparkle-2-top': sparkles[1][0],
-    '--sparkle-2-left': sparkles[1][1],
-    '--sparkle-3-top': sparkles[2][0],
-    '--sparkle-3-left': sparkles[2][1],
-    'animation-delay': `${randomBetween(0, 6).toFixed(2)}s`
+    '--feature-delay': `${randomBetween(0, 6).toFixed(2)}s`,
+    '--feature-lean': `${randomBetween(-1.6, 1.6).toFixed(2)}deg`
   };
 }
 
 @Component({
-  selector: 'ibid-currency-display',
+  selector: 'ibid-feature-display, ibid-currency-display',
   standalone: true,
-  imports: [OverlayModule],
+  imports: [OverlayModule, HandDrawnDirective],
   template: `
-    <span class="a-currency-display-wrapper">
+    <span class="a-feature-display-wrapper">
       <span
         #trigger="cdkOverlayOrigin"
         cdkOverlayOrigin
-        class="a-currency-display-hit-area"
-        [class.a-currency-display-hit-area--interactive]="showInfo()"
+        class="a-feature-display-hit-area"
+        [class.a-feature-display-hit-area--interactive]="showInfo()"
+        ibidHandDrawn
+        [style]="decorStyle"
         [attr.role]="showInfo() ? 'button' : null"
         [attr.tabindex]="showInfo() ? 0 : null"
         [attr.aria-label]="showInfo() ? explanationLabel() : null"
@@ -80,26 +43,18 @@ function markerStyle(shape: MarkerShape, sparkles: readonly [string, string][]):
         (keydown.enter)="showInfo() && toggle()"
         (keydown.space)="onSpaceKey($event)"
       >
-        @if (showInfo()) {
-          <span
-            class="a-currency-display-hit-area__mark"
-            aria-hidden="true"
-            [style]="markStyle"
-          ></span>
-        }
-
         <span
-          class="a-currency-display"
-          [class.a-currency-display--sm]="size() === 'sm'"
-          [class.a-currency-display--md]="size() === 'md'"
-          [class.a-currency-display--lg]="size() === 'lg'"
-          [class.a-currency-display--xl]="size() === 'xl'"
-          [class.a-currency-display--positive]="isPositive()"
-          [class.a-currency-display--negative]="isNegative()"
+          class="a-feature-display"
+          [class.a-feature-display--sm]="size() === 'sm'"
+          [class.a-feature-display--md]="size() === 'md'"
+          [class.a-feature-display--lg]="size() === 'lg'"
+          [class.a-feature-display--xl]="size() === 'xl'"
+          [class.a-feature-display--positive]="isPositive()"
+          [class.a-feature-display--negative]="isNegative()"
         >{{ display() }}</span>
 
         @if (showInfo()) {
-          <span class="a-currency-display__info" aria-hidden="true">i</span>
+          <span class="a-feature-display__info" aria-hidden="true">i</span>
         }
       </span>
 
@@ -112,14 +67,14 @@ function markerStyle(shape: MarkerShape, sparkles: readonly [string, string][]):
           [cdkConnectedOverlayHasBackdrop]="false"
           (overlayOutsideClick)="close()"
         >
-          <div class="a-currency-display__balloon" role="dialog" [attr.aria-label]="explanationLabel()">
+          <div class="a-feature-display__balloon" role="dialog" [attr.aria-label]="explanationLabel()">
             @if (explanationTitle()) {
-              <span class="a-currency-display__balloon-title">{{ explanationTitle() }}</span>
+              <span class="a-feature-display__balloon-title">{{ explanationTitle() }}</span>
             }
             @for (row of balloonRows(); track row.label) {
-              <div class="a-currency-display__balloon-row">
-                <span class="a-currency-display__balloon-label">{{ row.label }}</span>
-                <span class="a-currency-display__balloon-value">{{ row.value }}</span>
+              <div class="a-feature-display__balloon-row">
+                <span class="a-feature-display__balloon-label">{{ row.label }}</span>
+                <span class="a-feature-display__balloon-value">{{ row.value }}</span>
               </div>
             }
           </div>
@@ -127,16 +82,16 @@ function markerStyle(shape: MarkerShape, sparkles: readonly [string, string][]):
       }
     </span>
   `,
-  styleUrl: './currency-display.scss'
+  styleUrl: './feature-display.scss'
 })
-export class CurrencyDisplayComponent {
+export class FeatureDisplayComponent {
   private readonly i18n = inject(I18nService);
 
   protected readonly positions = BALLOON_POSITIONS;
-  protected readonly markStyle = markerStyle(randomMarkerShape(), randomSparkleWaypoints());
+  protected readonly decorStyle = decorationStyle();
 
   readonly value = input.required<number | undefined>();
-  readonly size = input<CurrencyDisplaySize>('lg');
+  readonly size = input<FeatureDisplaySize>('lg');
 
   readonly signed = input(false);
 
@@ -146,14 +101,14 @@ export class CurrencyDisplayComponent {
 
   readonly showInfo = input(true);
 
-  readonly explanation = input<readonly CurrencyExplanationRow[]>([]);
+  readonly explanation = input<readonly FeatureExplanationRow[]>([]);
   readonly explanationTitle = input('');
 
   protected readonly isOpen = signal(false);
 
   protected readonly hasOpened = signal(false);
 
-  protected readonly balloonRows = computed<readonly CurrencyExplanationRow[]>(() => {
+  protected readonly balloonRows = computed<readonly FeatureExplanationRow[]>(() => {
     const rows = this.explanation();
     if (rows.length > 0) return rows;
     return [{ label: this.i18n.translate('smartCurrencyCellAmountLabel'), value: this.display() }];
@@ -190,3 +145,11 @@ export class CurrencyDisplayComponent {
     this.isOpen.set(false);
   }
 }
+
+/**
+ * @deprecated `ibid-currency-display` is the former name of this component. The selector and
+ * these aliases keep the products compiling until each one migrates to `ibid-feature-display`.
+ */
+export { FeatureDisplayComponent as CurrencyDisplayComponent };
+export type CurrencyDisplaySize = FeatureDisplaySize;
+export type CurrencyExplanationRow = FeatureExplanationRow;

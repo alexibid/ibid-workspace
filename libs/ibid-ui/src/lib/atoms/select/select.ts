@@ -1,14 +1,23 @@
-import { ViewEncapsulation, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
+import {
+  Component,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
 export interface SelectOption<T = string> {
   value: T;
   label: string;
 }
 
-export type DropdownPosition = 'top-center' | 'top-left' | 'top-right' | 'bottom-center' | 'bottom-left' | 'bottom-right';
+export type DropdownPosition =
+  'top-center' | 'top-left' | 'top-right' | 'bottom-center' | 'bottom-left' | 'bottom-right';
 export type DropdownWidth = 'match-button' | 'content' | number;
 
 const VIEWPORT_EDGE_GUTTER = 8;
@@ -17,10 +26,23 @@ const VIEWPORT_EDGE_GUTTER = 8;
   encapsulation: ViewEncapsulation.None,
   selector: 'ibid-select',
   standalone: true,
-  imports: [CommonModule, MatSelectModule, MatFormFieldModule],
+  imports: [CommonModule, MatSelectModule, MatFormFieldModule, HandDrawnDirective],
   template: `
-    <mat-form-field appearance="outline" class="a-select-field" subscriptSizing="dynamic">
-      <mat-select [value]="value" (selectionChange)="onSelectionChange($event)" (opened)="onOpened()" disableOptionCentering [disabled]="disabled" [placeholder]="placeholder" [panelClass]="panelClasses">
+    <mat-form-field
+      appearance="outline"
+      class="a-select-field"
+      subscriptSizing="dynamic"
+      [ibidHandDrawn]="1"
+    >
+      <mat-select
+        [value]="value"
+        (selectionChange)="onSelectionChange($event)"
+        (opened)="onOpened()"
+        disableOptionCentering
+        [disabled]="disabled"
+        [placeholder]="placeholder"
+        [panelClass]="panelClasses"
+      >
         @for (opt of options; track opt.value) {
           <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
         }
@@ -28,7 +50,7 @@ const VIEWPORT_EDGE_GUTTER = 8;
       <div matSuffix class="a-select-field__custom-arrow" [class.is-open]="isOpen"></div>
     </mat-form-field>
   `,
-  styleUrl: './select.scss'
+  styleUrl: './select.scss',
 })
 export class SelectComponent<T = string> {
   @Input() value: T | '' = '';
@@ -37,7 +59,7 @@ export class SelectComponent<T = string> {
   @Input() disabled = false;
   @Input() isOpen = false;
   @Input() size: 'full' | 'fixed' | 'content' | number = 'content';
-  @Input() dropdownWidth: DropdownWidth = 'match-button';
+  @Input() dropdownWidth: DropdownWidth = 'content';
   @Input() dropdownPosition: DropdownPosition = 'bottom-left';
 
   protected uniqueId = `select-panel-${Math.random().toString(36).substring(2, 9)}`;
@@ -55,20 +77,30 @@ export class SelectComponent<T = string> {
   }
 
   get panelClasses() {
-    return ['m-dropdown-panel', this.uniqueId, `pos-${this.dropdownPosition}`, `width-${this.dropdownWidth}`];
+    return [
+      'm-dropdown-panel',
+      this.uniqueId,
+      `pos-${this.dropdownPosition}`,
+      `width-${this.dropdownWidth}`,
+    ];
   }
 
   @Output() valueChange = new EventEmitter<T>();
 
-  protected onSelectionChange(event: any): void {
-    const val = event.value as T;
-    this.valueChange.emit(val);
+  protected onSelectionChange(event: MatSelectChange<T>): void {
+    this.valueChange.emit(event.value);
   }
 
   protected onOpened(): void {
     setTimeout(() => {
       const panel = document.querySelector(`.${this.uniqueId}`) as HTMLElement | null;
       if (!panel) return;
+      const pane = panel.closest('.cdk-overlay-pane') as HTMLElement | null;
+      if (pane) {
+        pane.style.width = 'max-content';
+        pane.style.minWidth = 'max-content';
+        pane.style.maxWidth = '80vw';
+      }
       this.applyPanelWidth(panel);
       this.applyHorizontalAlignment(panel);
     });
@@ -79,13 +111,19 @@ export class SelectComponent<T = string> {
       const width = `${this.dropdownWidth}px`;
       panel.style.minWidth = width;
       panel.style.width = width;
-      panel.style.maxWidth = width;
+      panel.style.maxWidth = '80vw';
       return;
     }
     if (this.dropdownWidth === 'content') {
       panel.style.minWidth = 'max-content';
       panel.style.width = 'max-content';
-      panel.style.maxWidth = 'max-content';
+      panel.style.maxWidth = '80vw';
+      return;
+    }
+    if (this.dropdownWidth === 'match-button') {
+      panel.style.minWidth = '100%';
+      panel.style.width = '100%';
+      panel.style.maxWidth = '80vw';
     }
   }
 
@@ -103,9 +141,8 @@ export class SelectComponent<T = string> {
 
     const shift = alignment === 'right' ? overhang : overhang / 2;
     const resultingLeft = paneBox.left - shift;
-    const clampedShift = resultingLeft < VIEWPORT_EDGE_GUTTER
-      ? paneBox.left - VIEWPORT_EDGE_GUTTER
-      : shift;
+    const clampedShift =
+      resultingLeft < VIEWPORT_EDGE_GUTTER ? paneBox.left - VIEWPORT_EDGE_GUTTER : shift;
 
     panel.style.marginLeft = `-${Math.max(0, clampedShift)}px`;
   }

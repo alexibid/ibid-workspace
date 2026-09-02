@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Page, TestInfo } from '@playwright/test';
 import { AppShellSelectors, DEFAULT_APP_SHELL } from './app-shell-selectors';
 import { getDeviceFolder } from './screenshot';
@@ -27,6 +29,8 @@ export class FlowRecorder {
     const filePath_ = await this.captureFullPage(filePath);
     await this.waitForAnimationsToSettle();
 
+    this.recordStepLog(stepNumber, action, expectedResult, filePath_);
+
     return filePath_;
   }
 
@@ -34,6 +38,43 @@ export class FlowRecorder {
     const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
     const filename = `step-${stepNumber}-[${slug(action)}]-[${slug(expectedResult)}].png`;
     return `test-results/flows/${getDeviceFolder(this.testInfo)}/${this.flowName}/${filename}`;
+  }
+
+  private recordStepLog(
+    stepNumber: number,
+    action: string,
+    expectedResult: string,
+    screenshotPath: string
+  ): void {
+    try {
+      const dir = path.dirname(screenshotPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const logFile = path.join(dir, 'flow-log.json');
+      const entry = {
+        flow: this.flowName,
+        step: stepNumber,
+        action,
+        expectedResult,
+        screenshot: screenshotPath,
+        url: this.page.url(),
+        viewport: this.page.viewportSize(),
+        timestamp: new Date().toISOString()
+      };
+
+      let entries: unknown[] = [];
+      if (fs.existsSync(logFile)) {
+        try {
+          entries = JSON.parse(fs.readFileSync(logFile, 'utf-8'));
+        } catch {
+          entries = [];
+        }
+      }
+      entries.push(entry);
+      fs.writeFileSync(logFile, JSON.stringify(entries, null, 2), 'utf-8');
+    } catch {
+    }
   }
 
   private async waitForContentToLoad(): Promise<void> {

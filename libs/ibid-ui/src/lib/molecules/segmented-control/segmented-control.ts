@@ -27,7 +27,7 @@ export interface SegmentOption {
   styleUrl: './segmented-control.scss'
 })
 export class SegmentedControlComponent {
-  @Input({ required: true }) options!: SegmentOption[];
+  @Input({ required: true }) options!: readonly SegmentOption[];
   @Input({ required: true }) value!: string;
   @Output() valueChange = new EventEmitter<string>();
 

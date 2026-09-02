@@ -1,5 +1,6 @@
 import { Component, ViewEncapsulation, booleanAttribute, input, output } from '@angular/core';
 import { ScrimComponent } from '../../atoms/scrim/scrim';
+import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
 export type HeaderNavMode = 'inline' | 'overlay';
 
@@ -7,9 +8,9 @@ export type HeaderNavMode = 'inline' | 'overlay';
   encapsulation: ViewEncapsulation.None,
   selector: 'ibid-header-nav',
   standalone: true,
-  imports: [ScrimComponent],
+  imports: [ScrimComponent, HandDrawnDirective],
   templateUrl: './header-nav.html',
-  styleUrl: './header-nav.scss'
+  styleUrl: './header-nav.scss',
 })
 export class HeaderNavComponent {
   readonly open = input(false, { transform: booleanAttribute });

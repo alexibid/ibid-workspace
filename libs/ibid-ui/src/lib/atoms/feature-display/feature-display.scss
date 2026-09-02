@@ -1,31 +1,22 @@
 @use '../../../styles/tools/mixins' as *;
 
-.a-currency-display-wrapper {
+.a-feature-display-wrapper {
   position: relative;
   display: inline-flex;
-  align-items: flex-start;
+  align-items: center;
 }
 
-.a-currency-display-hit-area {
-  @include marker-highlight('--color-glass-surface-opaque');
-  gap: 2px;
-  padding: 3px 6px;
-  margin: -2px -4px;
-  align-items: flex-start;
-
-  &__mark::after {
-    content: '';
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background-color: var(--color-surface);
-    clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
-    top: var(--sparkle-1-top);
-    left: var(--sparkle-1-left);
-    opacity: 0;
-    pointer-events: none;
-    animation: a-currency-display-sparkle-twinkle 6s ease-in-out infinite;
-  }
+.a-feature-display-hit-area {
+  @include card-surface;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  margin: -2px 0;
+  border-radius: var(--radius-sm, 8px);
+  box-sizing: border-box;
+  text-decoration: none;
 
   &--interactive {
     cursor: pointer;
@@ -36,49 +27,10 @@
   }
 }
 
-@keyframes a-currency-display-sparkle-twinkle {
-  0% {
-    top: var(--sparkle-1-top);
-    left: var(--sparkle-1-left);
-    opacity: 0;
-  }
-  6% {
-    opacity: 1;
-  }
-  13%, 14% {
-    opacity: 0;
-  }
-  15% {
-    top: var(--sparkle-2-top);
-    left: var(--sparkle-2-left);
-  }
-  46% {
-    opacity: 0;
-  }
-  53% {
-    opacity: 1;
-  }
-  60%, 61% {
-    opacity: 0;
-  }
-  62% {
-    top: var(--sparkle-3-top);
-    left: var(--sparkle-3-left);
-  }
-  86% {
-    opacity: 0;
-  }
-  93% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-.a-currency-display {
+.a-feature-display {
   position: relative;
   z-index: 1;
+  isolation: isolate;
   display: inline-block;
   font-family: var(--font-ui);
   font-size: var(--text-m);

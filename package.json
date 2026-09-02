@@ -10,9 +10,13 @@
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
     "affected": "nx affected -t lint test build",
+    "check": "node tools/qa/check.mjs",
     "e2e": "nx e2e oh-save-me",
     "e2e:all": "nx e2e-all oh-save-me",
+    "e2e:boilerplate": "nx e2e boilerplate",
+    "e2e:boilerplate:all": "nx e2e-all boilerplate",
     "test:a11y": "nx test-a11y oh-save-me",
+    "test:a11y:boilerplate": "nx test-a11y boilerplate",
     "storybook:start": "nx storybook boilerplate",
     "storybook:build": "nx build-storybook boilerplate",
     "desktop": "nx desktop oh-save-me",
@@ -25,7 +29,9 @@
     "prepare": "husky tools/husky",
     "mobile:apk": "nx mobile-apk oh-save-me",
     "storybook:product": "nx storybook oh-save-me",
-    "storybook:product:build": "nx build-storybook oh-save-me"
+    "storybook:product:build": "nx build-storybook oh-save-me",
+    "clean": "nx reset && rm -rf dist .angular/cache .nx/cache",
+    "reset": "nx reset && rm -rf dist .angular/cache .nx/cache"
   },
   "workspaces": [
     "apps/*",

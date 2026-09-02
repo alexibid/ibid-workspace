@@ -1,11 +1,7 @@
 {
   "extends": "./tsconfig.lib.json",
   "compilerOptions": {
-    "declarationMap": false,
-    "paths": {
-      "@ibid/utils": ["../utils/dist/index.d.ts"],
-      "@ibid/services": ["../services/dist/index.d.ts"]
-    }
+    "declarationMap": false
   },
   "angularCompilerOptions": {}
 }
