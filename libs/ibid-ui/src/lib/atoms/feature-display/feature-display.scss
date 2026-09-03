@@ -60,11 +60,11 @@
   }
 
   &--positive {
-    color: var(--color-teal-text);
+    color: var(--color-green-text);
   }
 
   &--negative {
-    color: var(--color-coral-text);
+    color: var(--color-red-text);
   }
 
   &__info {
@@ -142,23 +142,23 @@ body.glass-surface {
     background-color: transparent;
     border: none;
     @include glass-pane;
-    --glass-tint: var(--ibid-feature-display-tint, var(--glass-tint-teal));
-    --glass-edge: var(--ibid-feature-display-edge, var(--glass-edge-teal));
-    --glass-wash: var(--ibid-feature-display-wash, var(--glass-wash-teal));
+    --glass-tint: var(--ibid-feature-display-tint, var(--glass-tint-blue));
+    --glass-edge: var(--ibid-feature-display-edge, var(--glass-edge-blue));
+    --glass-wash: var(--ibid-feature-display-wash, var(--glass-wash-blue));
     border-radius: var(--ibid-feature-display-contour-edges, var(--ibid-contour-edges, var(--radius-sm, 8px)));
     clip-path: var(--ibid-feature-display-contour-corners, var(--ibid-contour-corners, none));
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 
     &:has(.a-feature-display--positive) {
-      --glass-tint: var(--glass-tint-teal);
-      --glass-edge: var(--glass-edge-teal);
-      --glass-wash: var(--glass-wash-teal);
+      --glass-tint: var(--glass-tint-green);
+      --glass-edge: var(--glass-edge-green);
+      --glass-wash: var(--glass-wash-green);
     }
 
     &:has(.a-feature-display--negative) {
-      --glass-tint: var(--glass-tint-coral);
-      --glass-edge: var(--glass-edge-coral);
-      --glass-wash: var(--glass-wash-coral);
+      --glass-tint: var(--glass-tint-red);
+      --glass-edge: var(--glass-edge-red);
+      --glass-wash: var(--glass-wash-red);
     }
   }
 

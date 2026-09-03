@@ -147,10 +147,6 @@ export class FeatureDisplayComponent {
   }
 }
 
-/**
- * @deprecated `ibid-currency-display` is the former name of this component. The selector and
- * these aliases keep the products compiling until each one migrates to `ibid-feature-display`.
- */
 export { FeatureDisplayComponent as CurrencyDisplayComponent };
 export type CurrencyDisplaySize = FeatureDisplaySize;
 export type CurrencyExplanationRow = FeatureExplanationRow;

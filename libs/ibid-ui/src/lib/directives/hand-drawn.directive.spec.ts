@@ -47,9 +47,9 @@ describe('HandDrawnDirective', () => {
     fixture.detectChanges();
   });
 
-  it('adds o-hand-drawn class to elements', () => {
-    const el = fixture.nativeElement.querySelector('.test-default');
-    expect(el.classList.contains('o-hand-drawn')).toBe(true);
+  it('applies border-radius style to elements', () => {
+    const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
+    expect(el.style.borderRadius).toContain('%');
   });
 
   it('applies border-radius style on default intensity', () => {

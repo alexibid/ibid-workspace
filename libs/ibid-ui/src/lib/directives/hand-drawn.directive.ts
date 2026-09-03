@@ -25,17 +25,12 @@ interface IntensityPreset {
   readonly maxCorner: number;
 }
 
-/**
- * Every measure is a range, never a single number: two elements at the same intensity read as the
- * same hand drawing twice, not as one shape stamped twice. The corner bands stay clear of one
- * another so the five intensities remain distinguishable.
- */
 const INTENSITY_PRESETS: Record<HandDrawnIntensity, IntensityPreset> = {
-  1: { minH: 97, maxH: 99, minL: 1, maxL: 3, minCorner: 7, maxCorner: 10 },
-  2: { minH: 94, maxH: 96, minL: 4, maxL: 6, minCorner: 12, maxCorner: 16 },
-  3: { minH: 90, maxH: 93, minL: 7, maxL: 10, minCorner: 18, maxCorner: 22 },
-  4: { minH: 85, maxH: 89, minL: 11, maxL: 15, minCorner: 24, maxCorner: 29 },
-  5: { minH: 75, maxH: 84, minL: 16, maxL: 25, minCorner: 31, maxCorner: 38 }
+  1: { minH: 97, maxH: 99, minL: 1, maxL: 3, minCorner: 10, maxCorner: 14 },
+  2: { minH: 94, maxH: 96, minL: 4, maxL: 6, minCorner: 15, maxCorner: 20 },
+  3: { minH: 90, maxH: 93, minL: 7, maxL: 10, minCorner: 21, maxCorner: 26 },
+  4: { minH: 85, maxH: 89, minL: 11, maxL: 15, minCorner: 27, maxCorner: 34 },
+  5: { minH: 75, maxH: 84, minL: 16, maxL: 25, minCorner: 35, maxCorner: 46 }
 };
 
 const ALL_EDGES: readonly HandDrawnEdge[] = ['top', 'bottom', 'left', 'right'];
@@ -161,7 +156,6 @@ export class HandDrawnDirective implements OnInit {
     const gleamAngle = r(106, 148);
     const washAngle = r(110, 152);
 
-    this.renderer.addClass(this.el.nativeElement, 'o-hand-drawn');
     this.renderer.setStyle(
       this.el.nativeElement,
       'border-radius',

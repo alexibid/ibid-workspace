@@ -11,6 +11,8 @@ const DEFAULT_PARALLEL = 3;
 
 export function parseOptions(argv) {
   const flags = toFlagMap(argv);
+  const positional = argv.filter((argument) => !argument.startsWith('--'));
+  const spec = flags.spec ?? flags.journey ?? flags.flow ?? positional[0];
   const requested = flags.tier ?? flags.tiers ?? flags.target ?? flags.targets;
 
   return {
@@ -20,6 +22,7 @@ export function parseOptions(argv) {
     tiers: resolveTiers(requested, has(flags, 'e2e')),
     stopOnFailure: !has(flags, 'full'),
     parallel: Number(flags.parallel ?? DEFAULT_PARALLEL),
+    spec,
   };
 }
 

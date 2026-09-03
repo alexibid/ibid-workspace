@@ -64,6 +64,7 @@ async function runTier(tier, options, runDirectory) {
       projects,
       parallel: tier.serial ? 1 : options.parallel,
       directory: runDirectory,
+      spec: options.spec,
     });
 
     const statusIcon = outcome.failed.length === 0 ? '✔' : '✖';

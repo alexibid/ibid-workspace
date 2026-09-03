@@ -6,7 +6,10 @@
 }
 
 .a-select {
-  @include form-control-base;
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
 }
 
 .m-dropdown-panel,

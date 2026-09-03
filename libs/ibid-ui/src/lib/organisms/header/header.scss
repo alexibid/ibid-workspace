@@ -47,6 +47,15 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm, 0.5rem);
+
+  .a-button,
+  .a-icon-button,
+  .a-select-field .mdc-text-field--outlined,
+  .a-date-input__trigger {
+    height: var(--header-elem-height, 38px);
+    min-height: var(--header-elem-height, 38px);
+    box-sizing: border-box;
+  }
 }
 
 .o-header-shell__filters:empty,

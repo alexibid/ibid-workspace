@@ -1,11 +1,11 @@
 import { HandDrawnIntensity } from './hand-drawn.directive';
 
 export const MOCK_CORNER_BANDS: Readonly<Record<HandDrawnIntensity, readonly [number, number]>> = {
-  1: [7, 10],
-  2: [12, 16],
-  3: [18, 22],
-  4: [24, 29],
-  5: [31, 38]
+  1: [10, 14],
+  2: [15, 20],
+  3: [21, 26],
+  4: [27, 34],
+  5: [35, 46]
 };
 
 const SAMPLES_PER_INTENSITY = 12;

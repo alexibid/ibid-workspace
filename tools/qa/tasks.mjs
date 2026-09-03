@@ -7,6 +7,8 @@ import { readLines, splitByProject } from './logs.mjs';
 const BROWSER_TARGETS = ['e2e', 'e2e-all', 'test-a11y'];
 const FAILED_TASK = /^\s*-\s+([A-Za-z0-9._-]+):[A-Za-z0-9._:-]+\s*$/;
 
+import { existsSync, readdirSync } from 'node:fs';
+
 export function discoverProjects(target, scope) {
   const args = ['nx', 'show', 'projects', '--with-target', target, '--json'];
 
@@ -15,13 +17,32 @@ export function discoverProjects(target, scope) {
   if (scope.base) args.push('--base', scope.base);
 
   const output = execFileSync('npx', args, { encoding: 'utf8', env: cleanEnv() });
-  return JSON.parse(lastJsonLine(output));
+  let projects = JSON.parse(lastJsonLine(output));
+
+  if (scope.spec && (target === 'e2e' || target === 'e2e-all' || target === 'test-a11y')) {
+    projects = projects.filter((project) => {
+      const e2eDir = `apps/${project}/e2e`;
+      if (!existsSync(e2eDir)) return false;
+      return hasMatchingSpec(e2eDir, scope.spec);
+    });
+  }
+
+  return projects;
 }
 
-export async function runTarget({ target, projects, parallel, directory }) {
+function hasMatchingSpec(dir, spec) {
+  try {
+    const entries = readdirSync(dir, { recursive: true });
+    return entries.some((entry) => typeof entry === 'string' && entry.includes(spec));
+  } catch {
+    return false;
+  }
+}
+
+export async function runTarget({ target, projects, parallel, directory, spec }) {
   const rawLogPath = join(directory, `${target}.raw.log`);
   const startedAt = Date.now();
-  const exitCode = await streamToLog(commandFor(target, projects, parallel), target, projects, rawLogPath);
+  const exitCode = await streamToLog(commandFor(target, projects, parallel, spec), target, projects, rawLogPath);
   const logs = splitByProject(rawLogPath, target, projects, directory);
 
   return {
@@ -34,8 +55,8 @@ export async function runTarget({ target, projects, parallel, directory }) {
   };
 }
 
-function commandFor(target, projects, parallel) {
-  return [
+function commandFor(target, projects, parallel, spec) {
+  const cmd = [
     'nx',
     'run-many',
     '--target',
@@ -45,6 +66,10 @@ function commandFor(target, projects, parallel) {
     '--output-style=stream',
     `--parallel=${parallel}`,
   ];
+  if (spec && (target === 'e2e' || target === 'e2e-all' || target === 'test-a11y' || target === 'test')) {
+    cmd.push(`--args=${spec}`);
+  }
+  return cmd;
 }
 
 function streamToLog(args, target, projects, logPath) {

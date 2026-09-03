@@ -52,6 +52,78 @@ body.glass-surface {
     rgb(93 202 165 / 0.14)
   );
 
+  --glass-tint-blue: rgb(235 244 255 / 66%);
+  --glass-edge-blue: rgb(125 185 255 / 62%);
+  --glass-wash-blue: linear-gradient(
+    var(--glass-angle, 132deg),
+    rgb(147 197 253 / 0.24),
+    rgb(224 242 254 / 0.38) 48%,
+    rgb(37 99 235 / 0.14)
+  );
+
+  --glass-tint-green: rgb(236 253 245 / 66%);
+  --glass-edge-green: rgb(110 231 183 / 62%);
+  --glass-wash-green: linear-gradient(
+    var(--glass-angle, 140deg),
+    rgb(110 231 183 / 0.24),
+    rgb(209 250 229 / 0.38) 50%,
+    rgb(16 185 129 / 0.14)
+  );
+
+  --glass-tint-red: rgb(255 241 242 / 66%);
+  --glass-edge-red: rgb(253 164 175 / 62%);
+  --glass-wash-red: linear-gradient(
+    var(--glass-angle, 118deg),
+    rgb(253 164 175 / 0.24),
+    rgb(255 228 230 / 0.38) 48%,
+    rgb(225 29 72 / 0.14)
+  );
+
+  --glass-tint-purple: rgb(245 243 255 / 66%);
+  --glass-edge-purple: rgb(196 181 253 / 62%);
+  --glass-wash-purple: linear-gradient(
+    var(--glass-angle, 126deg),
+    rgb(196 181 253 / 0.24),
+    rgb(237 233 254 / 0.38) 50%,
+    rgb(109 40 217 / 0.14)
+  );
+
+  --glass-tint-indigo: rgb(238 242 255 / 66%);
+  --glass-edge-indigo: rgb(165 180 252 / 62%);
+  --glass-wash-indigo: linear-gradient(
+    var(--glass-angle, 130deg),
+    rgb(165 180 252 / 0.24),
+    rgb(224 231 255 / 0.38) 48%,
+    rgb(67 56 202 / 0.14)
+  );
+
+  --glass-tint-cyan: rgb(236 254 255 / 66%);
+  --glass-edge-cyan: rgb(103 232 249 / 62%);
+  --glass-wash-cyan: linear-gradient(
+    var(--glass-angle, 122deg),
+    rgb(103 232 249 / 0.24),
+    rgb(207 250 254 / 0.38) 48%,
+    rgb(14 116 144 / 0.14)
+  );
+
+  --glass-tint-lime: rgb(247 254 231 / 66%);
+  --glass-edge-lime: rgb(190 242 100 / 62%);
+  --glass-wash-lime: linear-gradient(
+    var(--glass-angle, 138deg),
+    rgb(190 242 100 / 0.24),
+    rgb(236 252 203 / 0.38) 48%,
+    rgb(77 124 15 / 0.14)
+  );
+
+  --glass-tint-gray: rgb(243 244 246 / 66%);
+  --glass-edge-gray: rgb(209 213 219 / 62%);
+  --glass-wash-gray: linear-gradient(
+    var(--glass-angle, 116deg),
+    rgb(209 213 219 / 0.24),
+    rgb(243 244 246 / 0.38) 48%,
+    rgb(75 85 99 / 0.14)
+  );
+
   --glass-tint: var(--glass-tint-teal);
   --glass-edge: var(--glass-edge-teal);
   --glass-wash: var(--glass-wash-teal);
