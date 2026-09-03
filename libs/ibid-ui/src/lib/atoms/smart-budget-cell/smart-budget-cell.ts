@@ -1,18 +1,19 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { I18nService } from '@ibid/services';
-import { pickAccessibleTextColor } from '@ibid/utils';
+import { HandDrawnDirective, HandDrawnIntensity } from '../../directives/hand-drawn.directive';
 import { IconComponent } from '../icon/icon';
 
 @Component({
   selector: 'ibid-smart-budget-cell',
   standalone: true,
-  imports: [IconComponent],
+  imports: [HandDrawnDirective, IconComponent],
   template: `
     <span class="a-smart-budget-cell"
+      [ibidHandDrawn]="handDrawn()"
       [class.a-smart-budget-cell--project]="!!projectName()"
-      [class.a-smart-budget-cell--uncategorized]="!projectName() && !categoryColor()"
-      [style.--category-color]="projectName() ? null : categoryColor()"
-      [style.color]="textColor()"
+      [class.a-smart-budget-cell--uncategorized]="!projectName() && !effectiveColor()"
+      [style.--category-color]="projectName() ? null : effectiveColor()"
+      [style.--glass-tint]="glassColor() || effectiveColor()"
     >
       @if (projectName()) {
         <ibid-icon name="piggy-bank" class="a-smart-budget-cell__project-icon"></ibid-icon>
@@ -33,15 +34,13 @@ export class SmartBudgetCellComponent {
 
   readonly categoryId = input<string | undefined>(undefined);
   readonly categoryColor = input<string | undefined>(undefined);
+  readonly glassColor = input<string | undefined>(undefined);
+  readonly handDrawn = input<HandDrawnIntensity>(1);
   readonly projectName = input<string | undefined>(undefined);
   readonly showChevron = input(false);
   readonly categoryName = input('');
 
-  protected readonly textColor = computed(() => {
-    if (this.projectName()) return null;
-    const color = this.categoryColor();
-    return color ? pickAccessibleTextColor(color) : null;
-  });
+  protected readonly effectiveColor = computed(() => this.glassColor() || this.categoryColor());
 
   protected readonly categoryLabel = computed(
     () => this.categoryName() || this.i18n.translate('categoryUncategorizedLabel', 'Sem categoria')

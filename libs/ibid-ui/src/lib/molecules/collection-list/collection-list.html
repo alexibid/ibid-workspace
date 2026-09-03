@@ -1,0 +1,12 @@
+<div
+  class="m-collection-list"
+  [class.m-collection-list--gap-none]="gap === 'none'"
+  [class.m-collection-list--gap-xs]="gap === 'xs'"
+  [class.m-collection-list--gap-sm]="gap === 'sm'"
+  [class.m-collection-list--gap-md]="gap === 'md'"
+  [class.m-collection-list--gap-lg]="gap === 'lg'"
+  [ngClass]="customClass"
+  role="list"
+>
+  <ng-content></ng-content>
+</div>

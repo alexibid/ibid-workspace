@@ -18,22 +18,83 @@
 </section>
 
 <section class="showcase__section">
-  <h2>Data table</h2>
-  <ibid-data-table [rows]="movements" caption="August movements" emptyMessage="No movements yet">
-    <ng-template ibidDataColumn="Date" let-row>
-      <ibid-smart-date-cell [value]="row.date" periodStart="2026-08-01" periodEnd="2026-08-31" />
-    </ng-template>
-    <ng-template ibidDataColumn="Description" let-row>
-      <ibid-smart-text-cell [value]="row.description" />
-    </ng-template>
-    <ng-template ibidDataColumn="Note" let-row>
-      <ibid-smart-muted-caption-cell [value]="row.note" />
-    </ng-template>
-    <ng-template ibidDataColumn="Amount" align="end" let-row>
-      <ibid-smart-currency-cell [value]="row.amount" [interactive]="false" />
-    </ng-template>
-    <ng-template ibidDataColumn="" align="end" let-row>
-      <ibid-smart-icon-cell iconName="add" ariaLabel="Row action" />
-    </ng-template>
-  </ibid-data-table>
+  <h2>Transactions collection</h2>
+  <ibid-collection-header
+    title="August Movements"
+    [showTitle]="true"
+    [showSearch]="true"
+    [searchQuery]="searchQuery()"
+    searchPlaceholder="Search movements..."
+    clearLabel="Clear"
+    [showTabs]="true"
+    [activeTab]="activeTab()"
+    [tabOptions]="tabOptions"
+    (searchQueryChange)="searchQuery.set($event)"
+    (tabChange)="activeTab.set($event)"
+  >
+    <ibid-icon-toggle
+      collection-toggle
+      [checked]="sumEnabled()"
+      icon="sum"
+      label="Sum mode"
+      (checkedChange)="sumEnabled.set($event)"
+    ></ibid-icon-toggle>
+
+    <div collection-sort class="m-collection-header__controls-end">
+      <ibid-sort-button
+        label="Date"
+        [active]="sortField() === 'date'"
+        [direction]="sortDirection()"
+        (clicked)="toggleSort('date')"
+      ></ibid-sort-button>
+      <ibid-sort-button
+        label="Amount"
+        [active]="sortField() === 'amount'"
+        [direction]="sortDirection()"
+        (clicked)="toggleSort('amount')"
+      ></ibid-sort-button>
+    </div>
+  </ibid-collection-header>
+
+  <div class="boilerplate-data-page__views">
+    <div class="boilerplate-data-page__view-group">
+      <h3 class="boilerplate-data-page__view-title">1. List view (ibid-collection-list)</h3>
+      <ibid-collection-list gap="xs">
+        @for (m of displayedMovements(); track m.description + m.date) {
+          <div class="boilerplate-data-page__list-row" [ibidHandDrawn]="1">
+            <ibid-smart-icon-cell [iconName]="m.amount >= 0 ? 'add' : 'sync-alt'"></ibid-smart-icon-cell>
+            <div class="boilerplate-data-page__list-main">
+              <ibid-smart-text-cell [value]="m.description"></ibid-smart-text-cell>
+              <ibid-smart-muted-caption-cell [value]="m.note"></ibid-smart-muted-caption-cell>
+            </div>
+            <ibid-smart-date-cell [value]="m.date" periodStart="2026-08-01" periodEnd="2026-08-31"></ibid-smart-date-cell>
+            <ibid-smart-currency-cell [value]="m.amount" [interactive]="false"></ibid-smart-currency-cell>
+          </div>
+        } @empty {
+          <ibid-empty-state message="No movements found matching filter"></ibid-empty-state>
+        }
+      </ibid-collection-list>
+    </div>
+
+    <div class="boilerplate-data-page__view-group">
+      <h3 class="boilerplate-data-page__view-title">2. Table view (ibid-data-table)</h3>
+      <ibid-data-table [rows]="displayedMovements()" caption="August movements (20 records)" emptyMessage="No movements found">
+        <ng-template ibidDataColumn="Date" let-row>
+          <ibid-smart-date-cell [value]="row.date" periodStart="2026-08-01" periodEnd="2026-08-31" />
+        </ng-template>
+        <ng-template ibidDataColumn="Description" let-row>
+          <ibid-smart-text-cell [value]="row.description" />
+        </ng-template>
+        <ng-template ibidDataColumn="Note" let-row>
+          <ibid-smart-muted-caption-cell [value]="row.note" />
+        </ng-template>
+        <ng-template ibidDataColumn="Amount" align="end" let-row>
+          <ibid-smart-currency-cell [value]="row.amount" [interactive]="false" />
+        </ng-template>
+        <ng-template ibidDataColumn="" align="end" let-row>
+          <ibid-smart-icon-cell iconName="add" ariaLabel="Row action" />
+        </ng-template>
+      </ibid-data-table>
+    </div>
+  </div>
 </section>

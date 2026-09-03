@@ -1,0 +1,49 @@
+@use '../../../styles/tools/mixins' as *;
+
+.a-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--text-m);
+  color: var(--color-text-muted);
+  outline: none;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  &--active {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  &__label {
+    white-space: nowrap;
+  }
+
+  &__icon {
+    display: inline-block;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    opacity: 0.4;
+    transition: opacity 150ms ease-out, transform 150ms ease-out;
+
+    &--active {
+      opacity: 1;
+    }
+
+    &--asc {
+      transform: rotate(180deg);
+    }
+  }
+}

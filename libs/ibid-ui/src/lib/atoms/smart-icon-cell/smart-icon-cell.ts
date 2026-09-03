@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Output, input } from '@angular/core';
+import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 import { IconComponent } from '../icon/icon';
 export type SmartIconCellMode = 'icon' | 'checkbox';
 
 @Component({
   selector: 'ibid-smart-icon-cell',
   standalone: true,
-  imports: [IconComponent],
+  imports: [HandDrawnDirective, IconComponent],
   template: `
-    <div class="a-smart-icon-cell">
+    <div class="a-smart-icon-cell" [ibidHandDrawn]="1">
       @if (mode() === 'checkbox') {
         <input
           type="checkbox"
