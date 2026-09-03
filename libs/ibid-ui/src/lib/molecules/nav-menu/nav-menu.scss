@@ -79,3 +79,8 @@
     transition: none;
   }
 }
+
+:host-context(body.glass-surface) .m-nav-menu,
+body.glass-surface .m-nav-menu {
+  background: transparent;
+}

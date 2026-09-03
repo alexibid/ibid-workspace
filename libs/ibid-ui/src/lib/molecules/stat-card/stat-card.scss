@@ -1,4 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/glass-surface/pane' as *;
 
 :host {
   display: block;
@@ -51,4 +52,14 @@
       color: var(--color-info);
     }
   }
+}
+
+:host-context(body.glass-surface) .m-stat-card,
+body.glass-surface .m-stat-card {
+  position: relative;
+  @include glass-pane;
+  @include glass-gleam-scatter;
+  --glass-tint: var(--ibid-stat-card-surface-tint, var(--glass-tint-teal));
+  --glass-edge: var(--ibid-card-surface-edge, var(--glass-edge-teal));
+  --glass-wash: var(--ibid-card-surface-wash, var(--glass-wash-teal));
 }

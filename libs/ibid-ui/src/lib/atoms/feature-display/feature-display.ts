@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal, ViewEncapsulation } from '@angular/core';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { I18nService } from '@ibid/services';
 import { FeatureExplanationRow } from '../../models/ui.model';
@@ -23,6 +23,7 @@ function decorationStyle(): Record<string, string> {
 }
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   selector: 'ibid-feature-display, ibid-currency-display',
   standalone: true,
   imports: [OverlayModule, HandDrawnDirective],
@@ -33,7 +34,7 @@ function decorationStyle(): Record<string, string> {
         cdkOverlayOrigin
         class="a-feature-display-hit-area"
         [class.a-feature-display-hit-area--interactive]="showInfo()"
-        ibidHandDrawn
+        [ibidHandDrawn]="2"
         [style]="decorStyle"
         [attr.role]="showInfo() ? 'button' : null"
         [attr.tabindex]="showInfo() ? 0 : null"

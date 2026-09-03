@@ -44,6 +44,18 @@
   padding: calc(var(--header-nav-offset, 57px) + var(--spacing-md, 1rem)) var(--spacing-md, 1rem) var(--spacing-md, 1rem);
 }
 
+.boilerplate-language-toggle {
+  width: auto;
+  min-width: 54px;
+
+  .a-icon-button {
+    width: auto;
+    min-width: 54px;
+    padding: 0 8px;
+    gap: 4px;
+  }
+}
+
 .boilerplate-language-toggle__mark {
   display: block;
   width: 20px;

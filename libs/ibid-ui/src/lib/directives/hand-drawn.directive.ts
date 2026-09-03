@@ -158,7 +158,22 @@ export class HandDrawnDirective implements OnInit {
       clipPathValue = `inset(0 round ${ctl} ${ctr} ${cbr} ${cbl})`;
     }
 
+    const gleamAngle = r(106, 148);
+    const washAngle = r(110, 152);
+
     this.renderer.addClass(this.el.nativeElement, 'o-hand-drawn');
+    this.renderer.setStyle(
+      this.el.nativeElement,
+      'border-radius',
+      value,
+      RendererStyleFlags2.DashCase
+    );
+    this.renderer.setStyle(
+      this.el.nativeElement,
+      'clip-path',
+      clipPathValue,
+      RendererStyleFlags2.DashCase
+    );
     this.renderer.setStyle(
       this.el.nativeElement,
       '--ibid-contour-edges',
@@ -175,6 +190,18 @@ export class HandDrawnDirective implements OnInit {
       this.el.nativeElement,
       '--hand-drawn-intensity',
       `${activeConfig.intensity}`,
+      RendererStyleFlags2.DashCase
+    );
+    this.renderer.setStyle(
+      this.el.nativeElement,
+      '--glass-gleam-angle',
+      `${gleamAngle}deg`,
+      RendererStyleFlags2.DashCase
+    );
+    this.renderer.setStyle(
+      this.el.nativeElement,
+      '--glass-angle',
+      `${washAngle}deg`,
       RendererStyleFlags2.DashCase
     );
   }

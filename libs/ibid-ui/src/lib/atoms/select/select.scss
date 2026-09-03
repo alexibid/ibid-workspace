@@ -1,4 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/glass-surface/pane' as *;
 
 :host {
   display: block;
@@ -27,8 +28,8 @@
 
   .mdc-text-field--outlined {
     --mdc-shape-small: inherit;
-    border-radius: var(--ibid-select-contour-edges, inherit);
-    clip-path: var(--ibid-select-contour-corners, none);
+    border-radius: var(--ibid-select-contour-edges, var(--ibid-contour-edges, var(--ibid-select-radius, var(--radius-control))));
+    clip-path: var(--ibid-select-contour-corners, var(--ibid-contour-corners, none));
     height: 36px;
     padding-left: 12px;
     padding-right: 8px;
@@ -165,6 +166,41 @@ div.m-dropdown-panel.mat-mdc-select-panel {
     &.is-open {
       mask: url('/icons/chevron-up.svg') no-repeat center / contain;
       -webkit-mask: url('/icons/chevron-up.svg') no-repeat center / contain;
+    }
+  }
+}
+
+body.glass-surface {
+  .a-select-field .mdc-text-field--outlined {
+    position: relative;
+    background: transparent;
+    background-color: transparent;
+    @include glass-pane;
+    --glass-tint: var(--ibid-select-tint, var(--ibid-header-actions-tint, var(--glass-tint-amber)));
+    --glass-edge: var(--ibid-select-edge, var(--ibid-header-actions-edge, var(--glass-edge-amber)));
+    --glass-wash: var(--ibid-select-wash, var(--ibid-header-actions-wash, var(--glass-wash-amber)));
+    border-color: var(--glass-edge);
+  }
+
+  div.m-dropdown-panel.mat-mdc-select-panel {
+    position: relative;
+    background: transparent;
+    background-color: transparent;
+    @include glass-pane;
+    --glass-tint: var(--ibid-select-tint, var(--ibid-header-actions-tint, var(--glass-tint-amber)));
+    --glass-edge: var(--ibid-select-edge, var(--ibid-header-actions-edge, var(--glass-edge-amber)));
+    --glass-wash: var(--ibid-select-wash, var(--ibid-header-actions-wash, var(--glass-wash-amber)));
+    border-color: var(--glass-edge);
+
+    .mat-mdc-option {
+      &.mdc-list-item--selected {
+        background: var(--glass-white, rgba(255, 255, 255, 0.44));
+        color: var(--color-primary);
+      }
+
+      &:hover:not(.mdc-list-item--selected) {
+        background: rgba(255, 255, 255, 0.22);
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/glass-surface/pane' as *;
 
 :host {
   position: relative;
@@ -21,7 +22,6 @@
 
 .a-date-input {
   &__trigger {
-    @include form-control-base;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,10 +33,13 @@
     font-weight: var(--ibid-date-input-font-weight, var(--weight-medium, 500));
     cursor: pointer;
     color: var(--ibid-date-input-color, var(--color-text, #2C2C2A));
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
     padding: 4px 6px 4px 12px;
-    border-radius: var(--ibid-date-input-contour-edges, var(--ibid-date-input-radius, var(--radius-control)));
-    clip-path: var(--ibid-date-input-contour-corners, none);
-    @include glass-highlight-surface;
+    border-radius: var(--ibid-date-input-contour-edges, var(--ibid-contour-edges, var(--ibid-date-input-radius, var(--radius-control))));
+    clip-path: var(--ibid-date-input-contour-corners, var(--ibid-contour-corners, none));
+    outline: none;
+    box-sizing: border-box;
     @include transition-standard;
 
     .a-date-input__text,
@@ -111,15 +114,10 @@
     padding: var(--space-4, 16px);
     box-sizing: border-box;
     filter: drop-shadow(0 12px 24px rgba(44, 44, 42, 0.18));
-    border-radius: 8px 30px 10px 26px;
-    background: var(--color-glass-surface);
+    border-radius: var(--ibid-date-input-popover-contour-edges, var(--ibid-contour-edges, 14px));
+    clip-path: var(--ibid-date-input-popover-contour-corners, var(--ibid-contour-corners, none));
+    background: var(--color-surface);
     border: 1px solid var(--color-border, #E5E3DC);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-
-    @supports not (backdrop-filter: blur(1px)) {
-      background: var(--color-glass-surface-opaque);
-    }
 
     > * {
       position: relative;
@@ -341,6 +339,75 @@
 
     &--selected {
       background-color: var(--color-ink, #2C2C2A);
+      color: #ffffff;
+    }
+  }
+}
+
+body.glass-surface {
+  .a-date-input__trigger,
+  .a-date-input__popover {
+    position: relative;
+    background: transparent;
+    background-color: transparent;
+    @include glass-pane;
+    --glass-tint: var(--ibid-date-input-tint, var(--ibid-header-actions-tint, var(--glass-tint-amber)));
+    --glass-edge: var(--ibid-date-input-edge, var(--ibid-header-actions-edge, var(--glass-edge-amber)));
+    --glass-wash: var(--ibid-date-input-wash, var(--ibid-header-actions-wash, var(--glass-wash-amber)));
+    border-color: var(--glass-edge);
+  }
+
+  .a-date-input__day {
+    color: var(--color-text);
+
+    &:hover:not(:disabled):not(&--selected):not(&--range-start):not(&--range-end) {
+      background-color: var(--glass-white, rgba(255, 255, 255, 0.44));
+    }
+
+    &--today {
+      border: 1px solid var(--glass-edge-teal, var(--color-teal-text));
+    }
+
+    &--selected,
+    &--range-start,
+    &--range-end {
+      background-color: var(--color-primary);
+      color: #ffffff;
+    }
+
+    &--in-range {
+      background-color: var(--glass-tint-teal, rgba(93, 202, 165, 0.25));
+      color: var(--color-teal-text);
+    }
+  }
+
+  .a-date-input__month-btn,
+  .a-date-input__year-btn {
+    &:hover:not(:disabled):not(&--selected) {
+      background-color: var(--glass-white, rgba(255, 255, 255, 0.44));
+    }
+
+    &--selected {
+      background-color: var(--color-primary);
+      color: #ffffff;
+    }
+  }
+
+  .a-date-input__nav-btn:hover:not(:disabled),
+  .a-date-input__nav-center-btn:hover {
+    background-color: var(--glass-white, rgba(255, 255, 255, 0.44));
+  }
+
+  .a-date-input__preset-btn {
+    background-color: transparent;
+    border-color: var(--glass-edge);
+
+    &:hover:not(.is-active) {
+      background-color: var(--glass-white, rgba(255, 255, 255, 0.44));
+    }
+
+    &.is-active {
+      background-color: var(--color-primary);
       color: #ffffff;
     }
   }

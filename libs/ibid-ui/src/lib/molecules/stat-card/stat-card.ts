@@ -10,7 +10,7 @@ import { FeatureDisplayComponent } from '../../atoms/feature-display/feature-dis
   standalone: true,
   imports: [I18N_SHARED, StatIconComponent, AppCurrencyPipe, HandDrawnDirective, FeatureDisplayComponent],
   template: `
-    <div class="m-stat-card" ibidHandDrawn>
+    <div class="m-stat-card" [ibidHandDrawn]="4">
       <div class="m-stat-card__body">
         <ibid-stat-icon
           [icon]="data.icon"

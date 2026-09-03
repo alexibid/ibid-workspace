@@ -1,4 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/glass-surface/pane' as *;
 
 :host {
   display: block;
@@ -95,5 +96,37 @@
 @media (prefers-reduced-motion: reduce) {
   .o-header-nav__panel {
     transition: none;
+  }
+}
+
+body.glass-surface {
+  .o-header-nav__panel {
+    @include glass-pane;
+    --glass-tint: var(--ibid-sidenav-surface-tint);
+    --glass-edge: var(--ibid-sidenav-surface-edge);
+    --glass-wash: var(--ibid-sidenav-surface-wash);
+    border-right-color: var(--glass-edge);
+    border-bottom-color: var(--glass-edge);
+
+    .m-nav-menu__link--active {
+      background: var(--glass-white, rgba(255, 255, 255, 0.44));
+      color: var(--color-primary);
+    }
+
+    .m-nav-menu__link:hover:not(.m-nav-menu__link--active) {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .m-sidenav-menu__cycle,
+    .m-sidenav-menu__header,
+    .m-sidenav-menu__sub-menu,
+    ibid-select,
+    ibid-date-input,
+    ibid-icon-button,
+    ibid-button {
+      --glass-tint: var(--ibid-header-actions-tint, var(--glass-tint-amber));
+      --glass-edge: var(--ibid-header-actions-edge, var(--glass-edge-amber));
+      --glass-wash: var(--ibid-header-actions-wash, var(--glass-wash-amber));
+    }
   }
 }

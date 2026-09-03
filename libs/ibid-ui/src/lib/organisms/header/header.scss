@@ -1,3 +1,6 @@
+@use '../../../styles/tools/mixins' as *;
+@use '../../../themes/glass-surface/pane' as *;
+
 :host {
   display: block;
   width: 100%;
@@ -49,4 +52,39 @@
 .o-header-shell__filters:empty,
 .o-header-shell__context:empty {
   display: none;
+}
+
+body.glass-surface {
+  .o-header-shell {
+    position: fixed;
+    @include glass-pane;
+    --glass-tint: var(--ibid-header-surface-tint);
+    --glass-edge: var(--ibid-header-surface-edge);
+    --glass-wash: var(--ibid-header-surface-wash);
+    --glass-gleam-angle: var(--ibid-header-surface-gleam);
+    border-bottom-color: var(--glass-edge);
+
+    .o-header-shell__actions,
+    .o-header-shell__navigation,
+    .o-header-shell__filters,
+    .o-header-shell__context {
+      --glass-tint: var(--ibid-header-actions-tint);
+      --glass-edge: var(--ibid-header-actions-edge);
+      --glass-wash: var(--ibid-header-actions-wash);
+      --glass-gleam-angle: var(--ibid-header-actions-gleam);
+    }
+  }
+
+  .o-header--is-open .o-header-shell {
+    @include respond-to('tablet-down') {
+      background: transparent;
+      border-bottom-color: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      &::after {
+        display: none !important;
+      }
+    }
+  }
 }

@@ -7,7 +7,7 @@ import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
   standalone: true,
   imports: [CommonModule, HandDrawnDirective],
   template: `
-    <div class="m-card" [ngClass]="customClass" [class.m-card--full-bleed-mobile]="fullBleedMobile" ibidHandDrawn>
+    <div class="m-card" [ngClass]="customClass" [class.m-card--full-bleed-mobile]="fullBleedMobile" [ibidHandDrawn]="4">
       <ng-content></ng-content>
     </div>
   `,

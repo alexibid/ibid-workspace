@@ -1,3 +1,4 @@
+@use 'sass:list';
 @use '../shared' as *;
 
 /// The four glasses the theme is cut from, each with the angle its gleam falls at, so no two
@@ -7,11 +8,11 @@ $gleam-angles: (112deg, 138deg, 124deg, 148deg, 106deg, 132deg, 118deg, 142deg);
 $wash-angles:  (136deg, 118deg, 144deg, 122deg, 152deg, 110deg, 128deg, 140deg);
 
 @mixin glass-gleam-scatter {
-  @for $i from 1 through length($gleam-angles) {
-    &:nth-child(#{length($gleam-angles)}n + #{$i}),
-    &:nth-of-type(#{length($gleam-angles)}n + #{$i}) {
-      --glass-gleam-angle: #{nth($gleam-angles, $i)};
-      --glass-angle: #{nth($wash-angles, $i)};
+  @for $i from 1 through list.length($gleam-angles) {
+    &:nth-child(#{list.length($gleam-angles)}n + #{$i}),
+    &:nth-of-type(#{list.length($gleam-angles)}n + #{$i}) {
+      --glass-gleam-angle: #{list.nth($gleam-angles, $i)};
+      --glass-angle: #{list.nth($wash-angles, $i)};
     }
   }
 }

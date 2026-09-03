@@ -32,7 +32,7 @@ const VIEWPORT_EDGE_GUTTER = 8;
       appearance="outline"
       class="a-select-field"
       subscriptSizing="dynamic"
-      [ibidHandDrawn]="1"
+      [ibidHandDrawn]="2"
     >
       <mat-select
         [value]="value"

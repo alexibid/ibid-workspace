@@ -23,3 +23,7 @@
     border-bottom: none;
   }
 }
+
+body.glass-surface .o-table th {
+  border-bottom-color: var(--glass-edge);
+}

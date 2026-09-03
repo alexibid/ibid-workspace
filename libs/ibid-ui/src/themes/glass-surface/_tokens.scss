@@ -1,6 +1,7 @@
 @use 'tokens-atoms';
 @use 'tokens-molecules';
 @use 'tokens-organisms';
+@use 'pane' as *;
 
 body.glass-surface {
   --glass-blur: 16px;
@@ -56,4 +57,11 @@ body.glass-surface {
   --glass-wash: var(--glass-wash-teal);
   --glass-gleam-angle: 118deg;
   --glass-gleam-opacity: 44%;
+
+  @each $name, $angle in $glass-variants {
+    .u-bg-#{$name} {
+      @include glass-variant($name, $angle);
+      background-color: transparent;
+    }
+  }
 }
