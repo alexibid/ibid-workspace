@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
+import { HandDrawnDirective, HandDrawnIntensity } from '../../directives/hand-drawn.directive';
 
 @Component({
   selector: 'ibid-card',
   standalone: true,
   imports: [CommonModule, HandDrawnDirective],
   template: `
-    <div class="m-card" [ngClass]="customClass" [class.m-card--full-bleed-mobile]="fullBleedMobile" [ibidHandDrawn]="4">
+    <div class="m-card" [ngClass]="customClass" [class.m-card--full-bleed-mobile]="fullBleedMobile" [ibidHandDrawn]="intensity">
       <ng-content></ng-content>
     </div>
   `,
@@ -16,4 +16,6 @@ import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 export class CardComponent {
   @Input() customClass = '';
   @Input() fullBleedMobile = false;
+  @Input() intensity: HandDrawnIntensity = 2;
 }
+

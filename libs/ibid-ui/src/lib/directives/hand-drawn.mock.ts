@@ -1,11 +1,11 @@
 import { HandDrawnIntensity } from './hand-drawn.directive';
 
 export const MOCK_CORNER_BANDS: Readonly<Record<HandDrawnIntensity, readonly [number, number]>> = {
-  1: [10, 14],
-  2: [15, 20],
-  3: [21, 26],
-  4: [27, 34],
-  5: [35, 46]
+  1: [0.040, 0.055],
+  2: [0.065, 0.085],
+  3: [0.095, 0.120],
+  4: [0.125, 0.155],
+  5: [0.160, 0.200]
 };
 
 const SAMPLES_PER_INTENSITY = 12;
@@ -15,3 +15,4 @@ export const MOCK_BAND_SAMPLES: readonly HandDrawnIntensity[] = (
 ).flatMap(key =>
   Array.from({ length: SAMPLES_PER_INTENSITY }, () => Number(key) as HandDrawnIntensity)
 );
+

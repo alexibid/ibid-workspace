@@ -1,4 +1,5 @@
 import { Component, Input, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon';
 import { Router } from '@angular/router';
 import { I18N_SHARED } from '@ibid/services';
@@ -6,7 +7,7 @@ import { I18N_SHARED } from '@ibid/services';
 @Component({
   selector: 'ibid-view-more-link',
   standalone: true,
-  imports: [IconComponent, ...I18N_SHARED],
+  imports: [CommonModule, IconComponent, ...I18N_SHARED],
   template: `
     <button type="button" class="a-view-more-link" (click)="navigate($event)">
       <ibid-icon name="link" class="a-view-more-link__icon"></ibid-icon>

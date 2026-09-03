@@ -23,6 +23,7 @@
   z-index: -1;
   pointer-events: none;
   border-radius: inherit;
+  clip-path: inherit;
 }
 
 @mixin page-layer {

@@ -45,10 +45,11 @@ $wash-angles:  (136deg, 118deg, 144deg, 122deg, 152deg, 110deg, 128deg, 140deg);
   box-shadow: none;
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
+  clip-path: var(--ibid-contour-clip, var(--ibid-contour-corners, none));
 
   &::after {
     @include decorative-layer;
-    border-radius: inherit;
+    clip-path: inherit;
     background-color: var(--glass-tint);
     background-image:
       linear-gradient(
@@ -68,3 +69,4 @@ $wash-angles:  (136deg, 118deg, 144deg, 122deg, 152deg, 110deg, 128deg, 140deg);
     }
   }
 }
+
