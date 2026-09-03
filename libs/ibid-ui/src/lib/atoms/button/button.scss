@@ -62,12 +62,12 @@
   }
 
   &--highlight {
-    @include glass-highlight-surface(-0.8deg, 4px 18px 6px 16px);
-    color: var(--color-text, #1e293b);
+    background-color: var(--color-amber-mid, #fef3c7);
+    color: var(--color-amber-text, #92400e);
+    border-color: var(--color-amber-mid, #fef3c7);
 
-    span, mat-icon, ibid-icon {
-      position: relative;
-      z-index: 1;
+    &:hover {
+      background-color: var(--color-amber-light, #fde68a);
     }
   }
 

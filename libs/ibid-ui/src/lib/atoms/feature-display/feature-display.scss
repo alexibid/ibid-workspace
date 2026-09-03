@@ -187,7 +187,7 @@ body.glass-surface {
     color: var(--color-text);
   }
 
-  .a-feature-display {
+  .a-feature-display:not(.a-feature-display--positive):not(.a-feature-display--negative) {
     background-image: linear-gradient(
       100deg,
       currentColor 0%,
@@ -210,6 +210,14 @@ body.glass-surface {
       animation: glass-surface-spectrum var(--glass-sheen-duration) ease-in-out infinite;
       animation-delay: var(--feature-delay, 0s);
     }
+  }
+
+  .a-feature-display--positive {
+    color: var(--color-green-text, #047857);
+  }
+
+  .a-feature-display--negative {
+    color: var(--color-red-text, #b91c1c);
   }
 }
 

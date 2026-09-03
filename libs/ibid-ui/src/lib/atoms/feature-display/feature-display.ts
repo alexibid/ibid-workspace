@@ -128,8 +128,8 @@ export class FeatureDisplayComponent {
     return this.showPositiveSign() && amount > 0 ? `+${formatted}` : formatted;
   });
 
-  protected readonly isPositive = computed(() => this.signed() && (this.value() ?? 0) > 0);
-  protected readonly isNegative = computed(() => this.signed() && (this.value() ?? 0) < 0);
+  protected readonly isPositive = computed(() => (this.signed() || this.showPositiveSign()) && (this.value() ?? 0) > 0);
+  protected readonly isNegative = computed(() => (this.signed() ? (this.value() ?? 0) < 0 : (this.value() !== undefined && (this.value() ?? 0) < 0)));
 
   toggle(): void {
     this.hasOpened.set(true);

@@ -30,4 +30,10 @@ body.glass-surface .m-card {
   --glass-tint: var(--ibid-card-surface-tint);
   --glass-edge: var(--ibid-card-surface-edge);
   --glass-wash: var(--ibid-card-surface-wash);
+
+  @each $name, $angle in $glass-variants {
+    &.u-bg-#{$name} {
+      @include glass-variant($name, $angle);
+    }
+  }
 }

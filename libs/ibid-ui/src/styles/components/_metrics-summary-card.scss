@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.4rem;
 
   &__view-more {
     position: absolute;
@@ -13,24 +13,24 @@
   &__section {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.1rem;
 
     &--horizontal {
       flex-direction: row;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
   }
 
   &__info {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.1rem;
   }
 
   &__title {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 500;
     color: var(--color-text-muted);
   }
@@ -38,7 +38,7 @@
   &__meta-row {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.25rem;
     flex-wrap: wrap;
   }
 
@@ -53,7 +53,7 @@
   }
 
   &__value {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-text);
     white-space: nowrap;
@@ -75,8 +75,8 @@
   &__details {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
+    gap: 0.2rem;
+    margin-top: 0.25rem;
   }
 
   &__detail-item {
@@ -105,14 +105,14 @@
 
   &__account-name {
     display: block;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--color-text);
   }
 
   &__account-type {
     display: block;
-    margin-top: 0.1rem;
+    margin-top: 0.05rem;
     font-size: var(--text-m);
     color: var(--color-text-muted);
   }
@@ -120,9 +120,9 @@
   &__caveat {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
+    gap: 0.35rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
     background: var(--color-coral-bg);
     color: var(--color-coral-text);
     font-size: var(--text-m);
@@ -130,29 +130,30 @@
 
   &__caveat-icon {
     flex-shrink: 0;
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
+    font-size: 0.9rem;
+    width: 0.9rem;
+    height: 0.9rem;
   }
 
   &__metrics {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
+    gap: 0.35rem;
+    margin-top: 0.2rem;
   }
 
   &__child-card {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.25rem 1rem;
-    border-radius: 4px;
+    gap: 0.15rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 6px;
     
     .o-metrics-summary-card__info {
+      display: flex;
       flex-direction: row;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
     }
 
     .o-metrics-summary-card__title {
@@ -163,14 +164,17 @@
 
     .o-metrics-summary-card__date {
       color: inherit;
-      font-size: var(--text-m);
+      font-size: 0.75rem;
+      opacity: 0.85;
     }
 
     .o-metrics-summary-card__value {
-      font-size: 2.25rem;
+      font-size: 1.35rem;
       font-weight: 800;
       color: inherit;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-top: 0.05rem;
 
       &--danger {
         color: var(--color-danger);
@@ -182,29 +186,34 @@
     }
 
     .o-metrics-summary-card__header {
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.1rem;
       .o-metrics-summary-card__title {
         font-size: var(--text-m);
       }
     }
 
     .o-metrics-summary-card__detail-item {
-      font-size: 1rem;
+      font-size: var(--text-m);
     }
 
     .o-metrics-summary-card__detail-label {
       color: inherit;
+      opacity: 0.9;
     }
   }
 
   &--compact {
-    gap: 0.6rem;
+    gap: 0.3rem;
+
+    .o-metrics-summary-card__metrics {
+      gap: 0.3rem;
+    }
 
     .o-metrics-summary-card__child-card {
-      padding: 1rem 0.75rem;
+      padding: 0.4rem 0.6rem;
 
       .o-metrics-summary-card__value {
-        font-size: 2rem;
+        font-size: 1.35rem;
       }
     }
   }
