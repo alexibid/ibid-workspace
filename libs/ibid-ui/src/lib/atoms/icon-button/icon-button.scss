@@ -3,10 +3,10 @@
 
 :host {
   display: inline-flex;
-  width: var(--ibid-icon-button-size, 38px);
-  height: var(--ibid-icon-button-size, 38px);
-  min-width: var(--ibid-icon-button-size, 38px);
-  min-height: var(--ibid-icon-button-size, 38px);
+  width: var(--ibid-icon-button-size, auto);
+  height: var(--ibid-icon-button-height, var(--ibid-icon-button-size, 38px));
+  min-width: var(--ibid-icon-button-min-width, var(--ibid-icon-button-size, 38px));
+  min-height: var(--ibid-icon-button-height, var(--ibid-icon-button-size, 38px));
   box-sizing: border-box;
   vertical-align: middle;
   pointer-events: auto;
@@ -22,7 +22,7 @@
   border: none;
   border-radius: var(--ibid-icon-button-contour-edges, var(--ibid-contour-edges, var(--ibid-icon-button-radius, var(--radius-control, 10px))));
   clip-path: var(--ibid-icon-button-contour-corners, var(--ibid-contour-corners, none));
-  padding: 0;
+  padding: var(--ibid-icon-button-padding, 0 8px);
   margin: 0;
   font: inherit;
   color: var(--ibid-icon-button-color, var(--color-text));
