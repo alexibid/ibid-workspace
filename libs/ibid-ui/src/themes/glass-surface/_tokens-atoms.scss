@@ -1,0 +1,34 @@
+body.glass-surface {
+  --ibid-button-font-family: var(--font-ui);
+  --ibid-button-font-size: var(--text-m);
+  --ibid-button-radius: var(--glass-radius-md);
+  --ibid-button-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-icon-button-radius: var(--glass-radius-sm);
+  --ibid-icon-button-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-input-font-family: var(--font-sans);
+  --ibid-input-font-size: var(--text-m);
+  --ibid-input-radius: var(--glass-radius-md);
+  --ibid-input-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-select-font-family: var(--font-ui);
+  --ibid-select-font-size: var(--text-m);
+  --ibid-select-radius: var(--glass-radius-md);
+  --ibid-select-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-dropdown-panel-bg-opacity: 0.85;
+  --ibid-dropdown-panel-radius: var(--glass-radius-md);
+
+  --ibid-date-input-font-family: var(--font-ui);
+  --ibid-date-input-font-size: var(--text-m);
+  --ibid-date-input-radius: var(--glass-radius-md);
+  --ibid-date-input-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-badge-font-family: var(--font-ui);
+  --ibid-badge-font-size: var(--text-xs);
+  --ibid-badge-bg-opacity: 0.6;
+
+  --ibid-feature-display-font-family: var(--font-ui);
+  --ibid-feature-display-font-size: var(--text-4xl);
+}

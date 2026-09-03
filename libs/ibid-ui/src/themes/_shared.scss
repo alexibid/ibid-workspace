@@ -1,3 +1,5 @@
+@use '../styles/tools/mixins' as *;
+
 /// Building blocks every theme uses to decorate a surface without touching its content.
 ///
 /// A theme only ever paints behind the content. `decorated-surface` turns the element into its

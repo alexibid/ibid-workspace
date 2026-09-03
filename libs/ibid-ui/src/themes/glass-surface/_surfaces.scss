@@ -1,3 +1,5 @@
+@use '../../styles/tools/mixins' as *;
+@use '../shared' as *;
 @use 'pane' as *;
 
 /// Every raised surface becomes a pane of frosted glass: it blurs whatever passes under it,
@@ -12,8 +14,33 @@ body.glass-surface {
   .o-header-shell {
     position: fixed;
     @include glass-pane;
-    @include glass-variant(amber, 112deg);
+    --glass-tint: var(--ibid-header-surface-tint);
+    --glass-edge: var(--ibid-header-surface-edge);
+    --glass-wash: var(--ibid-header-surface-wash);
+    --glass-gleam-angle: var(--ibid-header-surface-gleam);
     border-bottom-color: var(--glass-edge);
+
+    .o-header-shell__actions,
+    .o-header-shell__filters,
+    .o-header-shell__context {
+      --glass-tint: var(--ibid-header-actions-tint);
+      --glass-edge: var(--ibid-header-actions-edge);
+      --glass-wash: var(--ibid-header-actions-wash);
+      --glass-gleam-angle: var(--ibid-header-actions-gleam);
+    }
+  }
+
+  .o-header--is-open .o-header-shell {
+    @include respond-to('tablet-down') {
+      background: transparent;
+      border-bottom-color: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      &::after {
+        display: none !important;
+      }
+    }
   }
 
   .m-card,
@@ -21,6 +48,10 @@ body.glass-surface {
   .m-metric-card {
     position: relative;
     @include glass-pane;
+    @include glass-gleam-scatter;
+    --glass-tint: var(--ibid-card-surface-tint);
+    --glass-edge: var(--ibid-card-surface-edge);
+    --glass-wash: var(--ibid-card-surface-wash);
   }
 
   .hand-drawn-sample {
@@ -41,16 +72,23 @@ body.glass-surface {
     }
   }
 
-  .a-select-field .mdc-text-field--outlined {
+  .a-select-field .mdc-text-field--outlined,
+  .a-date-input__trigger,
+  .a-date-input__popover {
     position: relative;
     @include glass-pane;
-    @include glass-variant(teal);
+    @include glass-gleam-scatter;
+    --glass-tint: var(--ibid-header-actions-tint);
+    --glass-edge: var(--ibid-header-actions-edge);
+    --glass-wash: var(--ibid-header-actions-wash);
     border-color: var(--glass-edge);
   }
 
   .m-bottom-sheet-dialog {
     @include glass-pane;
-    @include glass-variant(pink, 120deg);
+    --glass-tint: var(--ibid-dialog-surface-tint);
+    --glass-edge: var(--ibid-dialog-surface-edge);
+    --glass-wash: var(--ibid-dialog-surface-wash);
   }
 
   .m-bottom-sheet-dialog__footer {
@@ -61,7 +99,9 @@ body.glass-surface {
   div.m-dropdown-panel.mat-mdc-select-panel {
     position: relative;
     @include glass-pane;
-    @include glass-variant(amber);
+    --glass-tint: var(--ibid-header-actions-tint);
+    --glass-edge: var(--ibid-header-actions-edge);
+    --glass-wash: var(--ibid-header-actions-wash);
     border-color: var(--glass-edge);
 
     .mat-mdc-option {
@@ -78,7 +118,9 @@ body.glass-surface {
 
   .o-header-nav__panel {
     @include glass-pane;
-    @include glass-variant(coral, 128deg);
+    --glass-tint: var(--ibid-sidenav-surface-tint);
+    --glass-edge: var(--ibid-sidenav-surface-edge);
+    --glass-wash: var(--ibid-sidenav-surface-wash);
     border-right-color: var(--glass-edge);
     border-bottom-color: var(--glass-edge);
 
@@ -169,7 +211,68 @@ body.glass-surface {
     box-shadow: 0 2px 8px rgba(44, 44, 42, 0.08);
   }
 
+  .a-feature-display-hit-area {
+    position: relative;
+    @include glass-pane;
+    border-radius: var(--radius-sm, 8px);
+    border: 1px solid var(--glass-edge);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  }
+
+  .a-feature-display__balloon {
+    @include glass-pane;
+    border-radius: var(--radius-balloon, 12px);
+    border: 1px solid var(--glass-edge);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .a-feature-display__balloon-title {
+    color: var(--color-text);
+  }
+
+  .a-feature-display__balloon-label {
+    color: var(--color-text-muted);
+  }
+
+  .a-feature-display__balloon-value {
+    color: var(--color-text);
+  }
+
+  .a-feature-display {
+    background-image: linear-gradient(
+      100deg,
+      currentColor 0%,
+      currentColor 42%,
+      var(--color-coral-text) 45.5%,
+      var(--color-amber-text) 48%,
+      var(--color-teal-text) 50%,
+      var(--color-pink-text) 52%,
+      var(--color-coral-text) 54.5%,
+      currentColor 58%,
+      currentColor 100%
+    );
+    background-size: 420% 100%;
+    background-position: 130% 0;
+    background-clip: text;
+    -webkit-background-clip: text;
+
+    @include motion {
+      -webkit-text-fill-color: transparent;
+      animation: glass-surface-spectrum var(--glass-sheen-duration) ease-in-out infinite;
+      animation-delay: var(--feature-delay, 0s);
+    }
+  }
+
   .o-table th {
     border-bottom-color: var(--glass-edge);
+  }
+}
+
+@keyframes glass-surface-spectrum {
+  0% {
+    background-position: 130% 0;
+  }
+  70%, 100% {
+    background-position: -30% 0;
   }
 }

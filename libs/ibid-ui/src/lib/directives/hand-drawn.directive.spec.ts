@@ -33,7 +33,7 @@ class BandHostComponent {
 }
 
 const cornerRadiiOf = (element: HTMLElement): readonly number[] =>
-  [...element.style.clipPath.matchAll(/(\d+)px/g)].map(match => Number(match[1]));
+  [...element.style.getPropertyValue('--ibid-contour-corners').matchAll(/(\d+)px/g)].map(match => Number(match[1]));
 
 describe('HandDrawnDirective', () => {
   let fixture: ComponentFixture<TestHostComponent>;
@@ -54,39 +54,39 @@ describe('HandDrawnDirective', () => {
 
   it('applies border-radius style on default intensity', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
-    expect(el.style.borderRadius).toContain('%');
+    expect(el.style.getPropertyValue('--ibid-contour-edges')).toContain('%');
   });
 
   it('applies subtle border-radius variation on level 1', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-level-1');
-    expect(el.style.borderRadius).toContain('%');
+    expect(el.style.getPropertyValue('--ibid-contour-edges')).toContain('%');
   });
 
   it('applies bold border-radius variation on level 5', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-level-5');
-    expect(el.style.borderRadius).toContain('%');
+    expect(el.style.getPropertyValue('--ibid-contour-edges')).toContain('%');
   });
 
   it('applies clip-path inset with corner rounding', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
-    expect(el.style.clipPath).toContain('inset');
+    expect(el.style.getPropertyValue('--ibid-contour-corners')).toContain('inset');
   });
 
   it('flattens bottom, left, right edges when edges: ["top"] is used', () => {
     const sheetEl: HTMLElement = fixture.nativeElement.querySelector('.test-sheet');
-    expect(sheetEl.style.borderRadius).toContain('0 0');
+    expect(sheetEl.style.getPropertyValue('--ibid-contour-edges')).toContain('0 0');
   });
 
   it('flattens top, left, right edges when edges: ["bottom"] is used', () => {
     const headerEl: HTMLElement = fixture.nativeElement.querySelector('.test-header');
-    expect(headerEl.style.borderRadius.startsWith('0 0')).toBe(true);
+    expect(headerEl.style.getPropertyValue('--ibid-contour-edges').startsWith('0 0')).toBe(true);
   });
 
   it('supports programmatic setConfiguration', () => {
     const component = fixture.componentInstance;
     component.progDir?.setConfiguration({ intensity: 4, edges: ['top'] });
     const progEl: HTMLElement = fixture.nativeElement.querySelector('.test-programmatic');
-    expect(progEl.style.borderRadius).toContain('0 0');
+    expect(progEl.style.getPropertyValue('--ibid-contour-edges')).toContain('0 0');
   });
 
   describe('intensity bands', () => {
@@ -121,7 +121,7 @@ describe('HandDrawnDirective', () => {
     });
 
     it('varies the shape between elements that share an intensity', () => {
-      const shapes = samplesAt(3).map(element => element.style.clipPath);
+      const shapes = samplesAt(3).map(element => element.style.getPropertyValue('--ibid-contour-corners'));
 
       expect(new Set(shapes).size).toBeGreaterThan(1);
     });

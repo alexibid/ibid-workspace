@@ -14,7 +14,8 @@
   gap: 6px;
   padding: 6px 14px;
   margin: -2px 0;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--ibid-feature-display-contour-edges, var(--radius-sm, 8px));
+  clip-path: var(--ibid-feature-display-contour-corners, none);
   box-sizing: border-box;
   text-decoration: none;
 

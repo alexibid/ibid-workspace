@@ -161,34 +161,20 @@ export class HandDrawnDirective implements OnInit {
     this.renderer.addClass(this.el.nativeElement, 'o-hand-drawn');
     this.renderer.setStyle(
       this.el.nativeElement,
-      'border-radius',
+      '--ibid-contour-edges',
       value,
       RendererStyleFlags2.DashCase
     );
     this.renderer.setStyle(
       this.el.nativeElement,
-      'clip-path',
+      '--ibid-contour-corners',
       clipPathValue,
       RendererStyleFlags2.DashCase
     );
     this.renderer.setStyle(
       this.el.nativeElement,
       '--hand-drawn-intensity',
-      `${activeConfig.intensity}`
-    );
-
-    const gleamAngle = Math.round(105 + Math.random() * 45);
-    const washAngle = Math.round(115 + Math.random() * 50);
-    this.renderer.setStyle(
-      this.el.nativeElement,
-      '--glass-gleam-angle',
-      `${gleamAngle}deg`,
-      RendererStyleFlags2.DashCase
-    );
-    this.renderer.setStyle(
-      this.el.nativeElement,
-      '--glass-angle',
-      `${washAngle}deg`,
+      `${activeConfig.intensity}`,
       RendererStyleFlags2.DashCase
     );
   }

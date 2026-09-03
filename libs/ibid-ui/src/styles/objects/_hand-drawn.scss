@@ -1,3 +1,4 @@
 .o-hand-drawn {
-  border: none;
+  border-radius: var(--ibid-contour-edges, inherit);
+  clip-path: var(--ibid-contour-corners, none);
 }

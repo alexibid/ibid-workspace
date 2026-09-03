@@ -6,7 +6,12 @@
 .o-header-shell {
   width: 100%;
   box-sizing: border-box;
-  z-index: 30;
+  font-family: var(--ibid-header-font-family, var(--font-sans));
+  font-size: var(--ibid-header-font-size, var(--text-l));
+  font-weight: var(--ibid-header-font-weight, var(--weight-bold));
+  color: var(--ibid-header-color, var(--color-text));
+  background-color: var(--ibid-header-bg, var(--color-surface));
+  border-bottom: 1px solid var(--ibid-header-border-color, var(--color-border));
 }
 
 .o-header-shell__bar {

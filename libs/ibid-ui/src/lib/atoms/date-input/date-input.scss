@@ -28,12 +28,14 @@
     width: 100%;
     min-width: 0;
     gap: var(--space-2, 8px);
-    font-family: var(--font-ui);
-    font-size: var(--text-m);
-    font-weight: var(--weight-medium, 500);
+    font-family: var(--ibid-date-input-font-family, var(--font-ui));
+    font-size: var(--ibid-date-input-font-size, var(--text-m));
+    font-weight: var(--ibid-date-input-font-weight, var(--weight-medium, 500));
     cursor: pointer;
-    color: var(--color-text, #2C2C2A);
+    color: var(--ibid-date-input-color, var(--color-text, #2C2C2A));
     padding: 4px 6px 4px 12px;
+    border-radius: var(--ibid-date-input-contour-edges, var(--ibid-date-input-radius, var(--radius-control)));
+    clip-path: var(--ibid-date-input-contour-corners, none);
     @include glass-highlight-surface;
     @include transition-standard;
 

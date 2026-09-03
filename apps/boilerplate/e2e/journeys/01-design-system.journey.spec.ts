@@ -27,7 +27,7 @@ test.describe('Design system showcase', () => {
     test(`the ${name} page renders its sections`, async ({ page }, testInfo) => {
       const recorder = new FlowRecorder(page, testInfo, `design-system-${name}`);
 
-      await page.goto(`/${page_.path}`);
+      await page.goto(`/${page_.path}`, { waitUntil: 'commit' });
       for (const heading of page_.headings) {
         await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
       }
@@ -36,7 +36,7 @@ test.describe('Design system showcase', () => {
   }
 
   test('the root renders the home page with every colour and type token', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'commit' });
     await expect(page.getByRole('heading', { level: 1 })).toContainText('boilerplate');
     await expect(page.locator('.boilerplate-swatch')).toHaveCount(29);
     await expect(page.locator('.boilerplate-specimen')).toHaveCount(8);
@@ -44,7 +44,7 @@ test.describe('Design system showcase', () => {
   });
 
   test('the header switches the language', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'commit' });
     await expect(page.locator('.boilerplate-language-toggle__code')).toHaveText('PT');
 
     await page.locator('.boilerplate-language-toggle button').click();
@@ -52,7 +52,7 @@ test.describe('Design system showcase', () => {
   });
 
   test('the theme picker swaps the body class and the reported tokens', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'commit' });
     await expect(page.locator('body')).toHaveClass(/glass-surface/);
     const backgroundValue = page.locator('.boilerplate-swatch__value').first();
     await expect(backgroundValue).toHaveText('#F1EFE8');
@@ -65,7 +65,7 @@ test.describe('Design system showcase', () => {
   });
 
   test('the data table renders one row per movement', async ({ page }) => {
-    await page.goto('/data');
+    await page.goto('/data', { waitUntil: 'commit' });
     await expect(page.locator('ibid-data-table tbody tr')).toHaveCount(3);
     await expect(page.locator('ibid-data-table th')).toHaveCount(5);
     await expect(page.locator('ibid-data-table ibid-smart-currency-cell')).toHaveCount(3);
@@ -74,7 +74,7 @@ test.describe('Design system showcase', () => {
   test('inputs report their state back to the page', async ({ page }, testInfo) => {
     const recorder = new FlowRecorder(page, testInfo, 'design-system-inputs-state');
 
-    await page.goto('/inputs');
+    await page.goto('/inputs', { waitUntil: 'commit' });
     await page.locator('ibid-search-input input').fill('groceries');
     await recorder.step(1, 'type into search', 'state line shows the term');
 
@@ -84,7 +84,7 @@ test.describe('Design system showcase', () => {
   test('the scrim opens and dismisses', async ({ page }, testInfo) => {
     const recorder = new FlowRecorder(page, testInfo, 'design-system-scrim');
 
-    await page.goto('/overlays');
+    await page.goto('/overlays', { waitUntil: 'commit' });
     await expect(page.locator('ibid-scrim')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Show scrim' }).click();
@@ -99,7 +99,7 @@ test.describe('Design system showcase', () => {
   test('the navigation opens, links to every page and closes', async ({ page }, testInfo) => {
     const recorder = new FlowRecorder(page, testInfo, 'design-system-navigation');
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'commit' });
     await expect(page.locator('.o-header-nav--open')).toHaveCount(0);
     await recorder.step(1, 'load page', 'navigation is closed');
 
@@ -129,7 +129,7 @@ test.describe('Design system showcase', () => {
     const recorder = new FlowRecorder(page, testInfo, 'design-system-persistence');
     await page.clock.setFixedTime(new Date('2026-09-02T10:00:00Z'));
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'commit' });
     await expect(page.locator('body')).toHaveClass(/glass-surface/);
     await expect(page.locator('.boilerplate-language-toggle__code')).toHaveText('PT');
     await recorder.step(1, 'load the page', 'defaults are glass-surface and PT');

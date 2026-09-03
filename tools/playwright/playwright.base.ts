@@ -18,15 +18,20 @@ export const DEVICE_PROJECTS: PlaywrightTestConfig['projects'] = [
 const isCI = !!process.env['CI'];
 
 export const basePlaywrightConfig: PlaywrightTestConfig = {
-  timeout: 90 * 1000,
-  fullyParallel: true,
+  timeout: 30 * 1000,
+  expect: {
+    timeout: 1000,
+  },
+  fullyParallel: false,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
-  reporter: 'html',
+  workers: 1,
+  reporter: 'list',
   outputDir: '.playwright-artifacts/',
   projects: DEVICE_PROJECTS,
   use: {
+    actionTimeout: 1000,
+    navigationTimeout: 1000,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

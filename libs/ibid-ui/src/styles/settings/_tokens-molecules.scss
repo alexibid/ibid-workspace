@@ -1,0 +1,87 @@
+:root {
+  --ibid-card-font-family: var(--font-sans);
+  --ibid-card-font-size: var(--text-m);
+  --ibid-card-line-height: var(--leading-normal);
+  --ibid-card-radius: var(--radius-card, 16px);
+  --ibid-card-contour-edges: var(--ibid-card-radius);
+  --ibid-card-contour-corners: none;
+  --ibid-card-bg: var(--color-surface);
+  --ibid-card-bg-opacity: 1;
+  --ibid-card-color: var(--color-text);
+  --ibid-card-border-color: var(--color-border);
+  --ibid-card-border-width: 1px;
+  --ibid-card-padding: 16px;
+  --ibid-card-shadow: none;
+
+  --ibid-metric-card-font-family: var(--font-sans);
+  --ibid-metric-card-font-size: var(--text-m);
+  --ibid-metric-card-contour-edges: var(--radius-card, 16px);
+  --ibid-metric-card-contour-corners: none;
+  --ibid-metric-card-bg: var(--color-surface);
+  --ibid-metric-card-bg-opacity: 1;
+  --ibid-metric-card-color: var(--color-text);
+  --ibid-metric-card-border-color: var(--color-border);
+  --ibid-metric-card-border-width: 1px;
+  --ibid-metric-card-padding: 16px;
+  --ibid-metric-card-shadow: none;
+
+  --ibid-stat-card-font-family: var(--font-sans);
+  --ibid-stat-card-font-size: var(--text-m);
+  --ibid-stat-card-contour-edges: var(--radius-card, 16px);
+  --ibid-stat-card-contour-corners: none;
+  --ibid-stat-card-bg: var(--color-surface);
+  --ibid-stat-card-bg-opacity: 1;
+  --ibid-stat-card-color: var(--color-text);
+  --ibid-stat-card-border-color: var(--color-border);
+  --ibid-stat-card-border-width: 1px;
+  --ibid-stat-card-padding: 16px;
+  --ibid-stat-card-shadow: none;
+
+  --ibid-nav-menu-font-family: var(--font-ui);
+  --ibid-nav-menu-font-size: var(--text-m);
+  --ibid-nav-menu-font-weight: var(--weight-medium);
+  --ibid-nav-menu-bg: transparent;
+  --ibid-nav-menu-bg-opacity: 1;
+  --ibid-nav-menu-item-color: var(--color-text);
+  --ibid-nav-menu-active-bg: var(--color-surface);
+  --ibid-nav-menu-active-bg-opacity: 1;
+  --ibid-nav-menu-active-color: var(--color-primary);
+
+  --ibid-form-field-label-font-family: var(--font-ui);
+  --ibid-form-field-label-font-size: var(--text-xs);
+  --ibid-form-field-label-font-weight: var(--weight-medium);
+  --ibid-form-field-label-color: var(--color-text-muted);
+
+  --ibid-segmented-control-font-family: var(--font-ui);
+  --ibid-segmented-control-font-size: var(--text-m);
+  --ibid-segmented-control-contour-edges: 8px;
+  --ibid-segmented-control-contour-corners: none;
+  --ibid-segmented-control-bg: var(--color-bg);
+  --ibid-segmented-control-bg-opacity: 1;
+  --ibid-segmented-control-color: var(--color-text);
+  --ibid-segmented-control-active-bg: var(--color-surface);
+  --ibid-segmented-control-active-bg-opacity: 1;
+  --ibid-segmented-control-active-color: var(--color-ink);
+
+  --ibid-info-balloon-font-family: var(--font-sans);
+  --ibid-info-balloon-font-size: var(--text-s);
+  --ibid-info-balloon-radius: var(--radius-balloon, 12px);
+  --ibid-info-balloon-contour-edges: var(--ibid-info-balloon-radius);
+  --ibid-info-balloon-contour-corners: none;
+  --ibid-info-balloon-bg: var(--color-surface);
+  --ibid-info-balloon-bg-opacity: 1;
+  --ibid-info-balloon-color: var(--color-text);
+  --ibid-info-balloon-border-color: var(--color-border);
+  --ibid-info-balloon-border-width: 1px;
+  --ibid-info-balloon-padding: 10px 12px;
+  --ibid-info-balloon-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  --ibid-table-header-font-family: var(--font-ui);
+  --ibid-table-header-font-size: var(--text-xs);
+  --ibid-table-header-font-weight: var(--weight-semibold);
+  --ibid-table-header-color: var(--color-text-muted);
+  --ibid-table-header-bg: var(--color-surface);
+  --ibid-table-header-bg-opacity: 1;
+  --ibid-table-row-hover-bg: var(--color-surface-hover);
+  --ibid-table-row-hover-bg-opacity: 1;
+}
