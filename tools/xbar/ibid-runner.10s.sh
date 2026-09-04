@@ -20,7 +20,6 @@ WORKSPACE_DIR="${WORKSPACE_DIR:-$HOME/Projects/ibid-workspace}"
 GDRIVE_DIR="${GDRIVE_DIR:-$HOME/Google Drive/My Drive/ibid-builds}"
 LOG_FILE="$HOME/Library/Logs/$SERVICE_LABEL/stdout.log"
 
-
 if [ "$1" = "action" ]; then
   case "$2" in
     start)
@@ -258,8 +257,6 @@ NOTIF_STATE_FILE="/tmp/ibid-runner-last-notif.txt"
 GH="/opt/homebrew/bin/gh"
 COST_CACHE="/tmp/ibid-xbar-cost"
 
-# O total do dia é pesado, por isso vive numa cache de cinco minutos: o menu redesenha a
-# cada dez segundos e não deve pagar uma volta à API de cada vez.
 if [ -x "$GH" ]; then
   ACTIVE=$("$GH" run list --repo alexibid/ibid-workspace --limit 1 --json workflowName,status,startedAt \
     --jq '.[] | select(.status=="in_progress") | "\(.workflowName)|\(.startedAt)"' 2>/dev/null)
@@ -276,10 +273,8 @@ if [ -x "$GH" ]; then
     fi
   fi
 
-  # O total do dia custa dezenas de chamadas à API, por isso é recalculado em segundo
-  # plano: o menu mostra sempre o último valor conhecido e nunca bloqueia a redesenhar.
   if [ ! -f "$COST_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$COST_CACHE" 2>/dev/null || echo 0) )) -gt 300 ]; then
-    if [ ! -f "$COST_CACHE.lock" ]; then
+    if [ ! -f "$COST_CACHE.lock" ] || [ $(( $(date +%s) - $(stat -f %m "$COST_CACHE.lock" 2>/dev/null || echo 0) )) -gt 120 ]; then
       touch "$COST_CACHE.lock"
       (
         TODAY=$(date -u +%Y-%m-%d)
