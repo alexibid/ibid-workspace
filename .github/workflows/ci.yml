@@ -100,6 +100,7 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v5
+      # tools/ci scripts import only node: builtins, so this job needs no install.
       - name: Draw the execution graph
         env:
           AFFECTED_PROJECTS: ${{ needs.verify.outputs.projects }}
