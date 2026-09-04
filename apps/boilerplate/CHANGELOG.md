@@ -1,3 +1,19 @@
+## 0.1.3 (2026-09-04)
+
+### 🩹 Fixes
+
+- **tools:** route workflows to self-hosted runner and configure Firebase multi-site delivery ([6a1b7df](https://github.com/alexibid/ibid-workspace/commit/6a1b7df))
+
+### 🧱 Updated Dependencies
+
+- Updated services to 0.1.3
+- Updated ibid-ui to 0.1.3
+- Updated testing to 0.0.4
+
+### ❤️ Thank You
+
+- alexibid @alexibid
+
 ## 0.1.2 (2026-09-04)
 
 ### 🧱 Updated Dependencies

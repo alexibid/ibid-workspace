@@ -1,3 +1,10 @@
+## 0.1.3 (2026-09-04)
+
+### 🧱 Updated Dependencies
+
+- Updated services to 0.1.3
+- Updated utils to 0.0.4
+
 ## 0.1.2 (2026-09-04)
 
 ### 🧱 Updated Dependencies
