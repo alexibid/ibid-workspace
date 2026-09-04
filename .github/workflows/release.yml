@@ -119,12 +119,6 @@ jobs:
         with:
           nx-cache-key: release-${{ matrix.platform }}
       - uses: dtolnay/rust-toolchain@stable
-      - name: System dependencies for Tauri
-        if: matrix.platform == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file \
-            libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
       - run: npx nx desktop-build "$APP"
         shell: bash
       - uses: actions/upload-artifact@v6
@@ -210,10 +204,12 @@ jobs:
           projectId: ibid-32cbe
           target: ${{ env.PROJECT }}
 
-  report:
-    name: Report · Execution graph
+  # A tag de uma biblioteca não empacota nem entrega nada, por isso o pipeline termina
+  # no inspect: o registo de que a tag existiu fica, sem ocupar o runner.
+  verified:
+    name: Release verified
     needs: [inspect, web, android, desktop, drive, hosting]
-    if: always()
+    if: always() && needs.inspect.outputs.is_app == 'true'
     timeout-minutes: 10
     runs-on: [self-hosted, macOS, ARM64]
     steps:
@@ -223,15 +219,6 @@ jobs:
           PIPELINE: release
           JOB_RESULTS: ${{ toJson(needs) }}
         run: node tools/ci/execution-graph.mjs >> "$GITHUB_STEP_SUMMARY"
-
-  verified:
-    name: Release verified
-    needs: [inspect, web, android, desktop, drive, hosting]
-    if: always()
-    timeout-minutes: 10
-    runs-on: [self-hosted, macOS, ARM64]
-    steps:
-      - uses: actions/checkout@v5
       - name: Fail when any group did not pass
         env:
           JOB_RESULTS: ${{ toJson(needs) }}

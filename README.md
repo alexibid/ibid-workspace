@@ -301,6 +301,7 @@ A lightweight macOS menu bar plugin lives in `tools/xbar/ibid-runner.10s.sh` to 
   - Direct USB installation to connected Android devices (`adb install -r`).
   - 1-click Firebase Hosting deployment per application.
   - Direct links to live Web Apps (`https://ibid-ohsaveme.web.app`, `https://ibid-boilerplate.web.app`, `https://ibid-camila.web.app`).
+- **Live CLI Monitoring & Native Notifications**: 1-click launch of animated GitHub CLI monitor (`gh run watch`) or live local runner logs in Terminal, with automatic native macOS notification banners on job state transitions.
 - **Google Drive Sync**: Synchronizes all native installers (`.dmg`, `.apk`, `.exe`, `.msi`, `.deb`, `.rpm`, `.AppImage`) from `dist/` directly into the local Google Drive folder (`ibid-builds/`).
 
 To install into [xbar](https://xbarapp.com/):

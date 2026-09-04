@@ -14,17 +14,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  scope:
-    name: Setup · Affected scope
-    timeout-minutes: 15
+  verify:
+    name: Verify · Static, tests and build
+    timeout-minutes: 45
     runs-on: [self-hosted, macOS, ARM64]
-    outputs:
-      base: ${{ steps.shas.outputs.base }}
-      head: ${{ steps.shas.outputs.head }}
-      projects: ${{ steps.affected.outputs.projects }}
-      e2e_apps: ${{ steps.affected.outputs.e2e_apps }}
-      has_projects: ${{ steps.affected.outputs.has_projects }}
-      has_e2e: ${{ steps.affected.outputs.has_e2e }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -43,129 +36,65 @@ jobs:
           NX_HEAD: ${{ steps.shas.outputs.head }}
         run: node tools/ci/affected-scope.mjs >> "$GITHUB_OUTPUT"
 
-  lint:
-    name: Static · Lint
-    needs: scope
-    if: needs.scope.outputs.has_projects == 'true'
-    timeout-minutes: 20
-    runs-on: [self-hosted, macOS, ARM64]
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup-workspace
-        with:
-          nx-cache-key: ci
-      - name: Lint every project against the warning ceiling
+      - name: Lint against the warning ceiling
         run: node tools/ci/lint-budget.mjs
 
-  typecheck:
-    name: Static · Types
-    needs: scope
-    if: needs.scope.outputs.has_projects == 'true'
-    timeout-minutes: 20
+      - name: Types
+        env:
+          NX_BASE: ${{ steps.shas.outputs.base }}
+          NX_HEAD: ${{ steps.shas.outputs.head }}
+        run: npx nx affected -t typecheck --parallel=3
+
+      - name: Unit tests
+        env:
+          NX_BASE: ${{ steps.shas.outputs.base }}
+          NX_HEAD: ${{ steps.shas.outputs.head }}
+        run: npx nx affected -t test --parallel=3
+
+      - name: Build
+        env:
+          NX_BASE: ${{ steps.shas.outputs.base }}
+          NX_HEAD: ${{ steps.shas.outputs.head }}
+        run: npx nx affected -t build --parallel=3
+    outputs:
+      projects: ${{ steps.affected.outputs.projects }}
+      e2e_apps: ${{ steps.affected.outputs.e2e_apps }}
+      has_e2e: ${{ steps.affected.outputs.has_e2e }}
+
+  journeys:
+    name: Journeys · E2E and accessibility
+    needs: verify
+    if: needs.verify.outputs.has_e2e == 'true'
+    timeout-minutes: 90
     runs-on: [self-hosted, macOS, ARM64]
-    env:
-      NX_BASE: ${{ needs.scope.outputs.base }}
-      NX_HEAD: ${{ needs.scope.outputs.head }}
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
       - uses: ./.github/actions/setup-workspace
         with:
           nx-cache-key: ci
-      - run: npx nx affected -t typecheck --parallel=3
 
-  unit:
-    name: Tests · Unit
-    needs: scope
-    if: needs.scope.outputs.has_projects == 'true'
-    timeout-minutes: 30
-    runs-on: [self-hosted, macOS, ARM64]
-    env:
-      NX_BASE: ${{ needs.scope.outputs.base }}
-      NX_HEAD: ${{ needs.scope.outputs.head }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-workspace
-        with:
-          nx-cache-key: ci
-      - run: npx nx affected -t test --parallel=3
+      - name: Install the browser
+        run: npx playwright install chromium
 
-  build:
-    name: Build · Apps and libraries
-    needs: scope
-    if: needs.scope.outputs.has_projects == 'true'
-    timeout-minutes: 30
-    runs-on: [self-hosted, macOS, ARM64]
-    env:
-      NX_BASE: ${{ needs.scope.outputs.base }}
-      NX_HEAD: ${{ needs.scope.outputs.head }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-workspace
-        with:
-          nx-cache-key: ci
-      - run: npx nx affected -t build --parallel=3
+      # One runner takes one job at a time, so the apps run in sequence here rather
+      # than as a matrix: a matrix would only queue behind itself.
+      - name: Run every affected journey
+        env:
+          APPS: ${{ needs.verify.outputs.e2e_apps }}
+        run: node tools/ci/run-journeys.mjs
 
-  e2e:
-    name: Journeys · E2E ${{ matrix.app }}
-    needs: [scope, build]
-    if: needs.scope.outputs.has_e2e == 'true'
-    timeout-minutes: 60
-    runs-on: [self-hosted, macOS, ARM64]
-    strategy:
-      fail-fast: false
-      matrix:
-        app: ${{ fromJson(needs.scope.outputs.e2e_apps) }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup-workspace
-        with:
-          nx-cache-key: ci-journeys
-      - run: npx playwright install --with-deps chromium
-      - run: npx nx e2e ${{ matrix.app }}
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: e2e-${{ matrix.app }}
+          name: journeys
           path: |
-            apps/${{ matrix.app }}/.playwright-artifacts
+            apps/*/.playwright-artifacts
             test-results
           if-no-files-found: ignore
 
-  a11y:
-    name: Journeys · Accessibility ${{ matrix.app }}
-    needs: [scope, build]
-    if: needs.scope.outputs.has_e2e == 'true'
-    timeout-minutes: 45
-    runs-on: [self-hosted, macOS, ARM64]
-    strategy:
-      fail-fast: false
-      matrix:
-        app: ${{ fromJson(needs.scope.outputs.e2e_apps) }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup-workspace
-        with:
-          nx-cache-key: ci-journeys
-      - run: npx playwright install --with-deps chromium
-      - run: npx nx test-a11y ${{ matrix.app }}
-      - uses: actions/upload-artifact@v6
-        if: failure()
-        with:
-          name: a11y-${{ matrix.app }}
-          path: |
-            apps/${{ matrix.app }}/.playwright-artifacts
-            test-results
-          if-no-files-found: ignore
-
-  report:
-    name: Report · Execution graph
-    needs: [scope, lint, typecheck, unit, build, e2e, a11y]
+  verified:
+    name: CI verified
+    needs: [verify, journeys]
     if: always()
     timeout-minutes: 10
     runs-on: [self-hosted, macOS, ARM64]
@@ -173,18 +102,9 @@ jobs:
       - uses: actions/checkout@v5
       - name: Draw the execution graph
         env:
-          AFFECTED_PROJECTS: ${{ needs.scope.outputs.projects }}
+          AFFECTED_PROJECTS: ${{ needs.verify.outputs.projects }}
           JOB_RESULTS: ${{ toJson(needs) }}
         run: node tools/ci/execution-graph.mjs >> "$GITHUB_STEP_SUMMARY"
-
-  verified:
-    name: CI verified
-    needs: [scope, lint, typecheck, unit, build, e2e, a11y]
-    if: always()
-    timeout-minutes: 10
-    runs-on: [self-hosted, macOS, ARM64]
-    steps:
-      - uses: actions/checkout@v5
       - name: Fail when any group did not pass
         env:
           JOB_RESULTS: ${{ toJson(needs) }}

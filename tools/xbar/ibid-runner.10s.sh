@@ -46,6 +46,18 @@ if [ "$1" = "action" ]; then
         launchctl start "$SERVICE_LABEL"
       fi
       ;;
+    watch-cli)
+      cd "$WORKSPACE_DIR" || exit 1
+      RUN_ID=$(gh run list --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null)
+      if [ -n "$RUN_ID" ]; then
+        gh run watch "$RUN_ID"
+      else
+        gh run watch
+      fi
+      ;;
+    watch-runner)
+      tail -f "$LOG_FILE"
+      ;;
     check-fast)
       echo "Running fast affected check..."
       cd "$WORKSPACE_DIR" || exit 1
@@ -242,13 +254,36 @@ else
   echo "○ Runner CI: Desligado | refresh=true bash=/usr/bin/true terminal=false"
 fi
 
+NOTIF_STATE_FILE="/tmp/ibid-runner-last-notif.txt"
 if [ -f "$LOG_FILE" ]; then
-  LAST_LOG=$(tail -n 1 "$LOG_FILE" 2>/dev/null | cut -c 1-50)
+  CURRENT_LINE=$(tail -n 1 "$LOG_FILE" 2>/dev/null)
+  LAST_LOG=$(echo "$CURRENT_LINE" | cut -c 1-50)
   if [ -n "$LAST_LOG" ]; then
     echo "Último evento: $LAST_LOG | size=11 bash=/usr/bin/open param1=\"$LOG_FILE\" terminal=false"
   fi
+
+  LAST_NOTIFIED=""
+  if [ -f "$NOTIF_STATE_FILE" ]; then
+    LAST_NOTIFIED=$(cat "$NOTIF_STATE_FILE" 2>/dev/null)
+  fi
+  if [ -n "$CURRENT_LINE" ] && [ "$CURRENT_LINE" != "$LAST_NOTIFIED" ]; then
+    echo "$CURRENT_LINE" > "$NOTIF_STATE_FILE"
+    if echo "$CURRENT_LINE" | grep -q "Running job:"; then
+      JOB_NAME=$(echo "$CURRENT_LINE" | sed -n 's/.*Running job: //p')
+      osascript -e "display notification \"${JOB_NAME}\" with title \"IBID Workspace\" subtitle \"Execução em curso\" sound name \"Glass\"" 2>/dev/null
+    elif echo "$CURRENT_LINE" | grep -q "completed with result: Succeeded"; then
+      JOB_NAME=$(echo "$CURRENT_LINE" | sed -n 's/.*Job \(.*\) completed with result: Succeeded/\1/p')
+      osascript -e "display notification \"${JOB_NAME}: Concluído\" with title \"IBID Workspace\" subtitle \"Etapa concluída\"" 2>/dev/null
+    elif echo "$CURRENT_LINE" | grep -q "completed with result: Failed"; then
+      JOB_NAME=$(echo "$CURRENT_LINE" | sed -n 's/.*Job \(.*\) completed with result: Failed/\1/p')
+      osascript -e "display notification \"${JOB_NAME}: Falhou\" with title \"IBID Workspace\" subtitle \"Erro na etapa\" sound name \"Basso\"" 2>/dev/null
+    fi
+  fi
 fi
 
+echo "---"
+echo "⌁ Acompanhar ao Vivo no Terminal (CLI) | bash=\"$0\" param1=action param2=watch-cli terminal=true"
+echo "↗ Ver Log em Direto do Runner Local | bash=\"$0\" param1=action param2=watch-runner terminal=true"
 echo "---"
 if [ "$IS_RUNNING" = true ]; then
   echo "■ Parar Runner | bash=\"$0\" param1=action param2=stop terminal=false refresh=true"
@@ -259,35 +294,35 @@ fi
 
 echo "---"
 echo "Workspace (ibid-workspace)"
-echo "-- ⚡ Verificação Rápida (check:fast) | bash=\"$0\" param1=action param2=check-fast terminal=true"
-echo "-- 🏗️ Compilar Workspace (check:build) | bash=\"$0\" param1=action param2=check-build terminal=true"
-echo "-- 🚀 Publicar Todas as Web Apps no Firebase | bash=\"$0\" param1=action param2=deploy-web param3=all terminal=true refresh=true"
-echo "-- ↑ Sincronizar Todos os Instaladores para o Drive | bash=\"$0\" param1=action param2=sync-drive terminal=true refresh=true"
-echo "-- 📂 Abrir Raiz do Workspace | bash=/usr/bin/open param1=\"$WORKSPACE_DIR\" terminal=false"
-echo "-- 📂 Abrir Pasta Dist | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/dist\" terminal=false"
-echo "-- ↗ GitHub Actions | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
+echo "-- ⌁ Verificação Rápida (check:fast) | bash=\"$0\" param1=action param2=check-fast terminal=true"
+echo "-- ⚙ Compilar Workspace (check:build) | bash=\"$0\" param1=action param2=check-build terminal=true"
+echo "-- ↑ Publicar Todas as Web Apps no Firebase | bash=\"$0\" param1=action param2=deploy-web param3=all terminal=true refresh=true"
+echo "-- ↑ Sincronizar Instaladores para o Drive | bash=\"$0\" param1=action param2=sync-drive terminal=true refresh=true"
+echo "-- ↗ Abrir Pasta do Workspace | bash=/usr/bin/open param1=\"$WORKSPACE_DIR\" terminal=false"
+echo "-- ↗ Abrir Pasta Dist | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/dist\" terminal=false"
+echo "-- ↗ Abrir GitHub Actions | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
 
 echo "Oh Save Me!"
-echo "-- ⚒ Compilar Tudo (.dmg + .apk) | bash=\"$0\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
-echo "-- ⚒ Compilar Desktop (.dmg) | bash=\"$0\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
-echo "-- 📦 Compilar Android (.apk) | bash=\"$0\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
-echo "-- 💻 Instalar Desktop (.dmg) | bash=\"$0\" param1=action param2=install-desktop param3=oh-save-me terminal=true refresh=true"
-echo "-- 📲 Instalar APK no Telemóvel (USB) | bash=\"$0\" param1=action param2=install-mobile param3=oh-save-me terminal=true refresh=true"
-echo "-- 🚀 Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Compilar Tudo (.dmg + .apk) | bash=\"$0\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Compilar Desktop (.dmg) | bash=\"$0\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Compilar Android (.apk) | bash=\"$0\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
+echo "-- ↓ Instalar Desktop (.dmg) | bash=\"$0\" param1=action param2=install-desktop param3=oh-save-me terminal=true refresh=true"
+echo "-- ↓ Instalar APK no Telemóvel (USB) | bash=\"$0\" param1=action param2=install-mobile param3=oh-save-me terminal=true refresh=true"
+echo "-- ↑ Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=oh-save-me terminal=true refresh=true"
 echo "-- ↗ Abrir Web App (ibid-ohsaveme.web.app) | bash=/usr/bin/open param1=\"https://ibid-ohsaveme.web.app\" terminal=false"
-echo "-- 📂 Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
+echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
 
 echo "Boilerplate"
-echo "-- 🏗️ Compilar Web | bash=\"$0\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
-echo "-- 🚀 Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
+echo "-- ⚙ Compilar Web | bash=\"$0\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
+echo "-- ↑ Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
 echo "-- ↗ Abrir Web App (ibid-boilerplate.web.app) | bash=/usr/bin/open param1=\"https://ibid-boilerplate.web.app\" terminal=false"
-echo "-- 📖 Storybook Showcase (porta 6006) | bash=/usr/bin/open param1=\"http://localhost:6006\" terminal=false"
-echo "-- 📂 Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
+echo "-- ↗ Abrir Storybook Showcase | bash=/usr/bin/open param1=\"http://localhost:6006\" terminal=false"
+echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
 
 echo "Camila"
-echo "-- 🚀 Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
+echo "-- ↑ Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
 echo "-- ↗ Abrir Web App (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
-echo "-- 📂 Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
 
 echo "---"
 if [ -d "$GDRIVE_DIR" ]; then
