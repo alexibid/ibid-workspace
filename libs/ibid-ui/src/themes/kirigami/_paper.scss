@@ -27,13 +27,14 @@
     @include decorative-layer;
     border-radius: 0;
     clip-path: $shape;
-    background-image: linear-gradient(
-      105deg,
-      transparent 43%,
-      var(--kirigami-fold-light) 48%,
-      var(--kirigami-fold-shade) 52%,
-      transparent 57%
-    );
+    background-image:
+      linear-gradient(
+        152deg,
+        var(--kirigami-sheet-lit) 0%,
+        transparent 34%,
+        transparent 66%,
+        var(--kirigami-sheet-shade) 100%
+      );
     mix-blend-mode: multiply;
   }
 }

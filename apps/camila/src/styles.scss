@@ -1,0 +1,83 @@
+@use 'libs/ibid-ui/src/themes/kirigami';
+
+:root {
+  --header-nav-offset: 57px;
+}
+
+body.camila.kirigami {
+  --camila-muted: #5a5249;
+  --kirigami-wash-opacity: 0.34;
+  --kirigami-wash-size: 78vmax;
+}
+
+ibid-header {
+  display: block;
+}
+
+body.camila.kirigami ibid-header {
+  height: 0;
+  overflow: visible;
+}
+
+.o-header-shell {
+  z-index: 30;
+  padding: var(--spacing-sm, 0.75rem) var(--spacing-md, 1rem);
+  background-color: var(--color-surface, #ffffff);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.o-header-shell__bar {
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm, 0.75rem);
+}
+
+.o-header-shell__navigation {
+  flex: 1;
+  justify-content: space-between;
+}
+
+.camila-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.75rem);
+  margin-bottom: var(--spacing-lg, 2rem);
+}
+
+.camila-section__intro {
+  margin: 0;
+  font-size: var(--text-s, 0.9rem);
+  opacity: 0.72;
+}
+
+body.camila.kirigami {
+  .a-button,
+  ibid-button button {
+    &,
+    &.a-button--primary,
+    &:nth-of-type(4n + 1),
+    &:nth-of-type(4n + 2),
+    &:nth-of-type(4n + 3),
+    &:nth-of-type(4n + 4) {
+      background-color: var(--color-ink);
+      color: var(--color-surface);
+      font-weight: 500;
+    }
+  }
+
+  .a-textarea__field {
+    background-color: var(--color-surface);
+    border: none;
+    clip-path: var(--kirigami-cut-2);
+    filter: drop-shadow(0 2px 5px var(--kirigami-paper-shadow));
+  }
+
+  .a-chip__control {
+    clip-path: var(--kirigami-snip);
+  }
+
+  .a-chip__control:not(.a-chip__control--selected) {
+    background-color: var(--color-surface);
+    border-color: var(--kirigami-paper-edge);
+  }
+}

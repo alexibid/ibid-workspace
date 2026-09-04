@@ -1,0 +1,30 @@
+<section class="camila-sheet">
+  <h1 class="camila-sheet__title">{{ i18n.translate('sheetTitle') }}</h1>
+  <p class="camila-sheet__intro">{{ i18n.translate('sheetIntro') }}</p>
+
+  <div class="camila-sheet__tabs" role="tablist">
+    @for (slide of slides; track slide.variant; let index = $index) {
+      <button
+        type="button"
+        role="tab"
+        class="camila-sheet__tab"
+        [class.camila-sheet__tab--active]="current() === index"
+        [attr.aria-selected]="current() === index"
+        (click)="show(index)"
+      >
+        {{ i18n.translate(slide.labelKey) }}
+      </button>
+    }
+  </div>
+
+  <div class="camila-sheet__carousel">
+    @for (slide of slides; track slide.variant; let index = $index) {
+      @if (current() === index) {
+        <camila-cut-sheet
+          [variant]="slide.variant"
+          [ariaLabel]="i18n.translate('sheetLabel') + ' — ' + i18n.translate(slide.labelKey)"
+        />
+      }
+    }
+  </div>
+</section>

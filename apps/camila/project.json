@@ -1,0 +1,104 @@
+{
+  "name": "camila",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "camila",
+  "sourceRoot": "apps/camila/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "defaultConfiguration": "production",
+      "options": {
+        "styles": [
+          "apps/camila/src/styles.scss"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "700kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "8kb",
+              "maximumError": "16kb"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4400
+      }
+    },
+    "serve-e2e": {
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4401
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@angular/build:unit-test"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "camila:build",
+        "staticFilePath": "dist/apps/camila/browser",
+        "spa": true
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular-vite:start-storybook",
+      "options": {
+        "configDir": "apps/camila/.storybook",
+        "browserTarget": "camila:build",
+        "port": 6008
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular-vite:build-storybook",
+      "outputs": [
+        "{options.outputDir}"
+      ],
+      "options": {
+        "configDir": "apps/camila/.storybook",
+        "browserTarget": "camila:build",
+        "outputDir": "dist/storybook/camila"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --project=mobile --grep-invert \"Accessibility\"",
+        "cwd": "apps/camila"
+      }
+    },
+    "e2e-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --grep-invert \"Accessibility\"",
+        "cwd": "apps/camila"
+      }
+    },
+    "test-a11y": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --project=mobile --grep \"Accessibility\"",
+        "cwd": "apps/camila"
+      }
+    }
+  }
+}

@@ -1,0 +1,156 @@
+:host {
+  display: block;
+}
+
+.o-cut-sheet {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  --sheet-ground: #8b9a6d;
+  --sheet-paper: #a9b98a;
+  --sheet-dark: #93a476;
+  --sheet-plate: #6e7d54;
+  --sheet-blank: #f2f0e4;
+  --sheet-ink: #2f3324;
+  --sheet-accent: #c8402c;
+  --sheet-label: #f3f0e4;
+
+  &--outline {
+    --sheet-ground: #ffffff;
+    --sheet-paper: #ffffff;
+    --sheet-dark: #ffffff;
+    --sheet-plate: #ffffff;
+    --sheet-blank: #ffffff;
+    --sheet-accent: #ffffff;
+    --sheet-label: #2f3324;
+
+    .o-cut-sheet__pupil,
+    .o-cut-sheet__brow {
+      fill: none;
+      stroke: var(--sheet-ink);
+      stroke-width: 0.7;
+    }
+
+    .o-cut-sheet__plate {
+      stroke: var(--sheet-ink);
+      stroke-width: 0.7;
+    }
+  }
+
+  &__ground {
+    fill: var(--sheet-ground);
+  }
+
+  &__border {
+    fill: none;
+    stroke: var(--sheet-ink);
+    stroke-width: 0.4;
+    stroke-dasharray: 3 2;
+    opacity: 0.45;
+  }
+
+  &__part {
+    fill: var(--sheet-paper);
+    stroke: var(--sheet-ink);
+    stroke-width: 0.7;
+    stroke-linejoin: round;
+
+    &--dark {
+      fill: var(--sheet-dark);
+    }
+  }
+
+  &__blank {
+    fill: var(--sheet-blank);
+    stroke: var(--sheet-ink);
+    stroke-width: 0.7;
+    stroke-linejoin: round;
+  }
+
+  &__flap {
+    fill: var(--sheet-blank);
+    stroke: var(--sheet-ink);
+    stroke-width: 0.5;
+    stroke-dasharray: 2 1.4;
+  }
+
+  &__glue {
+    fill: url(#sheet-glue);
+    stroke: var(--sheet-ink);
+    stroke-width: 0.5;
+  }
+
+  &__hatch {
+    stroke: var(--sheet-ink);
+    stroke-width: 0.5;
+    opacity: 0.6;
+  }
+
+  &__accent {
+    fill: var(--sheet-accent);
+    stroke: var(--sheet-ink);
+    stroke-width: 0.6;
+    stroke-linejoin: round;
+  }
+
+  &__cut,
+  &__ink {
+    fill: none;
+    stroke: var(--sheet-ink);
+    stroke-width: 0.8;
+    stroke-linejoin: round;
+  }
+
+  &__fold {
+    stroke: var(--sheet-ink);
+    stroke-width: 0.5;
+    stroke-dasharray: 3 2;
+  }
+
+  &__eye {
+    fill: #ffffff;
+    stroke: var(--sheet-ink);
+    stroke-width: 0.8;
+  }
+
+  &__pupil,
+  &__brow {
+    fill: var(--sheet-ink);
+  }
+
+  &__plate {
+    fill: var(--sheet-plate);
+  }
+
+  &__title {
+    fill: var(--sheet-label);
+    font-family: var(--font-brand, sans-serif);
+    font-size: 6.2px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-anchor: middle;
+  }
+
+  &__subtitle {
+    fill: var(--sheet-label);
+    font-family: var(--font-sans, sans-serif);
+    font-size: 3.4px;
+    letter-spacing: 0.1em;
+    text-anchor: middle;
+  }
+
+  &__caption {
+    fill: var(--sheet-ink);
+    font-family: var(--font-sans, sans-serif);
+    font-size: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  &__number {
+    fill: var(--sheet-ink);
+    font-family: var(--font-sans, sans-serif);
+    font-size: 5.4px;
+    font-weight: 700;
+  }
+}

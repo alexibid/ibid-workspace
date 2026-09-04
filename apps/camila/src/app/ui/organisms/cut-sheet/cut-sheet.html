@@ -1,0 +1,153 @@
+<svg
+  class="o-cut-sheet"
+  [class.o-cut-sheet--outline]="variant() === 'outline'"
+  viewBox="0 0 210 297"
+  role="img"
+  [attr.aria-label]="ariaLabel() || name()"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <pattern id="sheet-glue" width="5" height="5" patternUnits="userSpaceOnUse">
+      <path class="o-cut-sheet__hatch" d="M0 0 L5 5 M5 0 L0 5" />
+    </pattern>
+  </defs>
+
+  <rect class="o-cut-sheet__ground" x="0" y="0" width="210" height="297" />
+  <rect class="o-cut-sheet__border" x="10" y="10" width="190" height="277" />
+
+  <g class="o-cut-sheet__jaw-net">
+    <path class="o-cut-sheet__blank" d="M 20 16 L 46 16 L 52 12 L 68 12 L 74 20 L 74 42 L 62 48 L 34 48 L 20 40 Z" />
+    <line class="o-cut-sheet__fold" x1="34" y1="16" x2="34" y2="48" />
+    <line class="o-cut-sheet__fold" x1="52" y1="12" x2="52" y2="46" />
+    <line class="o-cut-sheet__fold" x1="62" y1="14" x2="62" y2="48" />
+    <text class="o-cut-sheet__number" x="80" y="30">1</text>
+  </g>
+
+  <g class="o-cut-sheet__eye-strips">
+    <rect class="o-cut-sheet__part" x="90" y="14" width="38" height="14" />
+    <circle class="o-cut-sheet__eye" cx="102" cy="21" r="4.2" />
+    <circle class="o-cut-sheet__eye" cx="116" cy="21" r="4.2" />
+    <circle class="o-cut-sheet__pupil" cx="103" cy="22" r="1.8" />
+    <circle class="o-cut-sheet__pupil" cx="117" cy="22" r="1.8" />
+    <text class="o-cut-sheet__number" x="132" y="25">2</text>
+
+    <rect class="o-cut-sheet__part" x="90" y="32" width="38" height="14" />
+    <path class="o-cut-sheet__ink" d="M 98 42 Q 102 34 106 42" />
+    <path class="o-cut-sheet__ink" d="M 112 42 Q 116 34 120 42" />
+    <text class="o-cut-sheet__number" x="132" y="43">3</text>
+
+    <rect class="o-cut-sheet__part" x="90" y="50" width="38" height="14" />
+    <path class="o-cut-sheet__brow" d="M 97 54 L 108 58 L 106 62 L 96 60 Z" />
+    <path class="o-cut-sheet__brow" d="M 121 54 L 110 58 L 112 62 L 122 60 Z" />
+    <text class="o-cut-sheet__number" x="132" y="61">4</text>
+  </g>
+
+  <g class="o-cut-sheet__title-plate">
+    <rect class="o-cut-sheet__plate" x="134" y="12" width="64" height="24" />
+    <text class="o-cut-sheet__title" x="166" y="24">{{ name() }}</text>
+    <text class="o-cut-sheet__subtitle" x="166" y="32">{{ i18n.translate('sheetSubtitle') }}</text>
+  </g>
+
+  <g class="o-cut-sheet__preview">
+    <rect class="o-cut-sheet__part" x="138" y="52" width="42" height="34" />
+    <rect class="o-cut-sheet__part o-cut-sheet__part--dark" x="180" y="56" width="10" height="30" />
+    <path class="o-cut-sheet__accent" d="M 142 52 L 147 42 L 152 52 L 158 41 L 164 52 L 170 43 L 175 52 Z" />
+    <rect class="o-cut-sheet__blank" x="143" y="58" width="32" height="12" />
+    <circle class="o-cut-sheet__eye" cx="152" cy="64" r="4" />
+    <circle class="o-cut-sheet__eye" cx="166" cy="64" r="4" />
+    <circle class="o-cut-sheet__pupil" cx="153" cy="65" r="1.7" />
+    <circle class="o-cut-sheet__pupil" cx="167" cy="65" r="1.7" />
+    <rect class="o-cut-sheet__blank" x="141" y="74" width="34" height="8" />
+    <path class="o-cut-sheet__ink" [attr.d]="previewTeeth()" />
+    <rect class="o-cut-sheet__part" x="145" y="86" width="10" height="10" />
+    <rect class="o-cut-sheet__part" x="163" y="86" width="10" height="10" />
+    <text class="o-cut-sheet__number" x="184" y="50">8</text>
+  </g>
+
+  <g class="o-cut-sheet__crests">
+    @for (crest of crests(); track crest.id) {
+      <path class="o-cut-sheet__accent" [attr.d]="crest.path" />
+    }
+    <text class="o-cut-sheet__number" x="34" y="44">5</text>
+    <text class="o-cut-sheet__number" x="20" y="78">5</text>
+    <text class="o-cut-sheet__number" x="32" y="112">6</text>
+    <text class="o-cut-sheet__number" x="18" y="146">6</text>
+  </g>
+
+  <g class="o-cut-sheet__body">
+    <path class="o-cut-sheet__part" d="M 62 56 L 92 56 L 98 64 L 98 246 L 56 246 L 56 64 Z" />
+
+    <rect class="o-cut-sheet__flap" x="46" y="106" width="10" height="34" />
+    <rect class="o-cut-sheet__flap" x="98" y="106" width="10" height="34" />
+    <rect class="o-cut-sheet__flap" x="46" y="176" width="10" height="34" />
+    <rect class="o-cut-sheet__flap" x="98" y="176" width="10" height="34" />
+
+    <line class="o-cut-sheet__fold" x1="56" y1="64" x2="98" y2="64" />
+    <line class="o-cut-sheet__fold" x1="56" y1="106" x2="98" y2="106" />
+    <line class="o-cut-sheet__fold" x1="56" y1="140" x2="98" y2="140" />
+    <line class="o-cut-sheet__fold" x1="56" y1="176" x2="98" y2="176" />
+    <line class="o-cut-sheet__fold" x1="56" y1="218" x2="98" y2="218" />
+
+    <rect class="o-cut-sheet__blank" x="60" y="146" width="34" height="16" />
+    <circle class="o-cut-sheet__eye" cx="70" cy="154" r="4.6" />
+    <circle class="o-cut-sheet__eye" cx="84" cy="154" r="4.6" />
+    <circle class="o-cut-sheet__pupil" cx="71" cy="155" r="2" />
+    <circle class="o-cut-sheet__pupil" cx="85" cy="155" r="2" />
+
+    <circle class="o-cut-sheet__pupil" cx="70" cy="188" r="2.2" />
+    <circle class="o-cut-sheet__pupil" cx="84" cy="188" r="2.2" />
+    <rect class="o-cut-sheet__blank" x="60" y="198" width="40" height="14" />
+    <path class="o-cut-sheet__ink" [attr.d]="teeth()" />
+
+    <text class="o-cut-sheet__number" x="102" y="62">8</text>
+
+    <path class="o-cut-sheet__part" d="M 62 218 L 74 218 L 74 250 L 62 250 Z" />
+    <path class="o-cut-sheet__part" d="M 82 218 L 94 218 L 94 250 L 82 250 Z" />
+    <rect class="o-cut-sheet__glue" x="62" y="222" width="12" height="24" />
+    <rect class="o-cut-sheet__glue" x="82" y="222" width="12" height="24" />
+
+    <path class="o-cut-sheet__part" d="M 56 250 L 98 250 L 98 282 L 56 282 Z" />
+    <rect class="o-cut-sheet__blank" x="70" y="266" width="16" height="10" />
+    <text class="o-cut-sheet__number" x="72" y="274">7-2</text>
+  </g>
+
+  <g class="o-cut-sheet__torso">
+    <path
+      class="o-cut-sheet__part"
+      d="M 112 96 L 132 92 L 146 104 L 150 128 L 138 138 L 148 158 L 146 186 L 130 200 L 116 194 L 110 168 L 118 146 L 108 122 Z"
+    />
+    <rect class="o-cut-sheet__blank" x="122" y="130" width="14" height="16" />
+    <text class="o-cut-sheet__number" x="125" y="141">7-1</text>
+    <text class="o-cut-sheet__number" x="104" y="146">9</text>
+  </g>
+
+  <g class="o-cut-sheet__arms">
+    <rect class="o-cut-sheet__part" x="156" y="100" width="18" height="16" />
+    <rect class="o-cut-sheet__part" x="176" y="100" width="18" height="16" />
+    <text class="o-cut-sheet__number" x="150" y="98">7</text>
+    <text class="o-cut-sheet__number" x="157" y="122">7-2</text>
+    <text class="o-cut-sheet__number" x="177" y="122">7-1</text>
+
+    <path class="o-cut-sheet__part" d="M 154 130 L 196 126 L 198 146 L 156 152 Z" />
+    <rect class="o-cut-sheet__flap" x="188" y="130" width="10" height="18" />
+  </g>
+
+  <g class="o-cut-sheet__tail">
+    <path class="o-cut-sheet__part" d="M 154 166 L 194 160 L 200 190 L 156 196 Z" />
+    <line class="o-cut-sheet__fold" x1="168" y1="164" x2="170" y2="194" />
+    <line class="o-cut-sheet__fold" x1="182" y1="162" x2="185" y2="192" />
+    <rect class="o-cut-sheet__glue" x="154" y="166" width="40" height="7" />
+    <text class="o-cut-sheet__number" x="146" y="182">10</text>
+  </g>
+
+  <g class="o-cut-sheet__notes">
+    <circle class="o-cut-sheet__blank" cx="166" cy="222" r="14" />
+    <path class="o-cut-sheet__ink" d="M 160 226 L 172 214 M 170 212 L 176 218 L 172 222 Z" />
+    <line class="o-cut-sheet__cut" x1="148" y1="246" x2="166" y2="246" />
+    <text class="o-cut-sheet__caption" x="170" y="248">{{ i18n.translate('sheetCut') }}</text>
+    <line class="o-cut-sheet__fold" x1="148" y1="258" x2="166" y2="258" />
+    <text class="o-cut-sheet__caption" x="170" y="260">{{ i18n.translate('sheetFold') }}</text>
+    <rect class="o-cut-sheet__glue" x="148" y="266" width="18" height="7" />
+    <text class="o-cut-sheet__caption" x="170" y="272">{{ i18n.translate('sheetGlue') }}</text>
+  </g>
+</svg>

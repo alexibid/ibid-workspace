@@ -1,0 +1,99 @@
+<div class="o-paper-model">
+  <div
+    #stage
+    class="o-paper-model__stage"
+    [attr.aria-label]="ariaLabel()"
+    role="img"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointercancel)="onPointerUp()"
+  >
+    <div class="o-paper-model__scene" [style.transform]="sceneTransform()">
+      @for (box of boxes(); track box.id) {
+        <div class="o-paper-model__box" [style.transform]="box.origin">
+          @for (face of box.faces; track face.key) {
+            <div
+              class="o-paper-model__face"
+              [style.width.px]="face.width"
+              [style.height.px]="face.height"
+              [style.margin-left.px]="-face.width / 2"
+              [style.margin-top.px]="-face.height / 2"
+              [style.background-color]="box.hue"
+              [style.filter]="'brightness(' + face.shade + ')'"
+              [style.transform]="face.transform"
+            >
+              @if (face.front && box.decor === 'face') {
+                <svg class="o-paper-model__decor" viewBox="0 0 62 54" aria-hidden="true">
+                  <rect class="o-paper-model__patch" x="8" y="14" width="46" height="20" rx="3" />
+                  <circle class="o-paper-model__eye" cx="21" cy="24" r="7" />
+                  <circle class="o-paper-model__eye" cx="41" cy="24" r="7" />
+                  <circle class="o-paper-model__pupil" cx="22.5" cy="25" r="3.2" />
+                  <circle class="o-paper-model__pupil" cx="42.5" cy="25" r="3.2" />
+                  <circle class="o-paper-model__pupil" cx="24" cy="45" r="2.4" />
+                  <circle class="o-paper-model__pupil" cx="38" cy="45" r="2.4" />
+                </svg>
+              }
+
+              @if (face.front && box.decor === 'grin') {
+                <svg class="o-paper-model__decor" viewBox="0 0 58 16" aria-hidden="true">
+                  <path
+                    class="o-paper-model__teeth"
+                    d="M 6 2 L 11 11 L 16 2 L 21 11 L 26 2 L 31 11 L 36 2 L 41 11 L 46 2 L 51 11 L 52 2 Z"
+                  />
+                </svg>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @for (prism of prisms(); track prism.id) {
+        <div class="o-paper-model__box" [style.transform]="prism.origin">
+          <div
+            class="o-paper-model__sheet"
+            [style.clip-path]="prism.clip"
+            [style.background-color]="prism.hue"
+            [style.transform]="'translateZ(' + prism.depth / 2 + 'px)'"
+          ></div>
+
+          <div
+            class="o-paper-model__sheet o-paper-model__sheet--back"
+            [style.clip-path]="prism.clip"
+            [style.background-color]="prism.hue"
+            [style.transform]="'translateZ(' + -prism.depth / 2 + 'px)'"
+          ></div>
+
+          @for (band of prism.bands; track $index) {
+            <div
+              class="o-paper-model__band"
+              [style.width.px]="band.length"
+              [style.height.px]="prism.depth"
+              [style.background-color]="prism.edge"
+              [style.transform]="band.transform"
+            ></div>
+          }
+        </div>
+      }
+
+      @for (spike of model().spikes; track spike.id) {
+        <div class="o-paper-model__spike" [style.transform]="spikeTransform(spike.x, spike.y, spike.z)">
+          <div
+            class="o-paper-model__spike-blade"
+            [style.width.px]="spike.size"
+            [style.height.px]="spike.size"
+            [style.margin-left.px]="-spike.size / 2"
+            [style.margin-top.px]="-spike.size / 2"
+            [style.background-color]="spike.hue"
+          ></div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="o-paper-model__controls">
+    <button type="button" class="o-paper-model__key" [attr.aria-label]="i18n.translate('modelTurnLeft')" (click)="nudge(-1)">‹</button>
+    <button type="button" class="o-paper-model__key" [attr.aria-label]="i18n.translate('modelReset')" (click)="reset()">•</button>
+    <button type="button" class="o-paper-model__key" [attr.aria-label]="i18n.translate('modelTurnRight')" (click)="nudge(1)">›</button>
+  </div>
+</div>

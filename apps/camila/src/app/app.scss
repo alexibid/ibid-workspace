@@ -1,0 +1,52 @@
+.camila-brand {
+  font-family: var(--font-brand);
+  font-size: var(--text-m);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.camila-profile {
+  padding: 7px 14px;
+  background-color: var(--kirigami-yellow-bg, #fdf3d8);
+  border: none;
+  color: var(--color-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  clip-path: var(--kirigami-snip);
+  filter: drop-shadow(0 2px 4px var(--kirigami-paper-shadow));
+
+  &:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+}
+
+.camila-language {
+  padding: 4px 2px;
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+.camila-language {
+  color: var(--camila-muted, #5a5249);
+}
+
+.camila-page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: calc(var(--header-nav-offset, 57px) + var(--spacing-sm, 0.75rem))
+    var(--spacing-md, 1rem) var(--spacing-md, 1rem);
+}

@@ -1,0 +1,21 @@
+<svg
+  class="m-origami"
+  [class.m-origami--complete]="complete()"
+  [attr.data-domain]="domain()"
+  viewBox="0 0 100 100"
+  [attr.role]="ariaLabel() ? 'img' : null"
+  [attr.aria-hidden]="ariaLabel() ? null : true"
+  [attr.aria-label]="ariaLabel() || null"
+>
+  @for (facet of pending(); track $index) {
+    <polygon class="m-origami__ghost" [attr.points]="facet.points" />
+  }
+
+  @for (facet of folded(); track $index) {
+    <polygon
+      [class]="'m-origami__facet m-origami__facet--' + facet.tone"
+      [style.animation-delay.ms]="$index * 110"
+      [attr.points]="facet.points"
+    />
+  }
+</svg>

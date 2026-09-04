@@ -1,0 +1,97 @@
+.camila-diary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.75rem);
+  padding-top: var(--spacing-md, 1rem);
+
+  &__title {
+    margin: 0 0 var(--spacing-xs, 0.375rem);
+    font-size: clamp(1.6rem, 7vw, 2.1rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.camila-reading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.75rem);
+  padding: var(--spacing-md, 1rem) 0;
+  border-top: 1px dashed var(--kirigami-paper-edge, var(--color-border));
+  border-bottom: 1px dashed var(--kirigami-paper-edge, var(--color-border));
+
+  &__lead {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--camila-muted, #5a5249);
+  }
+
+  &__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm, 0.75rem);
+    margin: 0;
+  }
+
+  &__hit {
+    font-size: 1.15rem;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs, 0.375rem);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md, 1rem);
+  }
+
+  &__dismiss {
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--camila-muted, #5a5249);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.camila-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__entry {
+    padding: var(--spacing-sm, 0.75rem) 0;
+    border-bottom: 1px dashed var(--kirigami-paper-edge, var(--color-border));
+  }
+
+  &__text {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  &__domains {
+    margin: 3px 0 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--camila-muted, #5a5249);
+  }
+
+  &__empty {
+    padding: var(--spacing-md, 1rem) 0;
+    color: var(--camila-muted, #5a5249);
+  }
+}

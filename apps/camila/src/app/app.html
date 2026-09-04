@@ -1,0 +1,27 @@
+<ibid-header #headerHost>
+  <span headerBrand class="camila-brand">{{ i18n.translate('appName') }}</span>
+
+  <button
+    headerActions
+    type="button"
+    class="camila-profile"
+    [attr.aria-label]="profileLabel()"
+    (click)="toggleProfile()"
+  >
+    {{ onDiary() ? i18n.translate('profileToChild') : i18n.translate('toParents') }}
+  </button>
+
+  <button
+    headerActions
+    type="button"
+    class="camila-language"
+    [attr.aria-label]="i18n.translate('languageToggleLabel')"
+    (click)="toggleLanguage()"
+  >
+    {{ languageCode() }}
+  </button>
+</ibid-header>
+
+<main class="camila-page">
+  <router-outlet></router-outlet>
+</main>

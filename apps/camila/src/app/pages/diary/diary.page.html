@@ -1,0 +1,64 @@
+<section class="camila-diary">
+  <h1 class="camila-diary__title">{{ i18n.translate('diaryTitle') }}</h1>
+
+  <ibid-textarea
+    class="camila-diary__field"
+    [value]="draft()"
+    [rows]="3"
+    [placeholder]="i18n.translate('diaryPlaceholder')"
+    [ariaLabel]="i18n.translate('diaryLabel')"
+    (valueChange)="draft.set($event)"
+  />
+
+  <div class="camila-diary__actions">
+    <ibid-button (clicked)="save()">{{ i18n.translate('diarySave') }}</ibid-button>
+  </div>
+
+  @if (store.proposal(); as proposal) {
+    <div class="camila-reading">
+      <p class="camila-reading__lead">
+        {{ hits().length > 0 ? i18n.translate('proposalTitle') : i18n.translate('proposalEmpty') }}
+      </p>
+
+      @if (hits().length > 0) {
+        <p class="camila-reading__summary">
+          @for (hit of hits(); track hit.domain) {
+            <span class="camila-reading__hit">{{ summaryOf(hit) }}</span>
+          }
+        </p>
+      }
+
+      <div class="camila-reading__chips">
+        @for (domain of domains; track domain.id) {
+          <ibid-chip
+            [label]="labelOf(domain.id)"
+            [selected]="chosen(domain.id)"
+            (selectedChange)="toggle(domain.id)"
+          />
+        }
+      </div>
+
+      <div class="camila-reading__actions">
+        <ibid-button [disabled]="hits().length === 0" (clicked)="confirm()">
+          {{ i18n.translate('proposalConfirm') }}
+        </ibid-button>
+        <button type="button" class="camila-reading__dismiss" (click)="dismiss()">
+          {{ i18n.translate('proposalDismiss') }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <ul class="camila-log">
+    @for (entry of store.entries(); track entry.id) {
+      <li class="camila-log__entry">
+        <p class="camila-log__text">{{ entry.text }}</p>
+        @if (domainsOf(entry.id); as domains) {
+          <p class="camila-log__domains">{{ domains }}</p>
+        }
+      </li>
+    } @empty {
+      <li class="camila-log__empty">{{ i18n.translate('diaryEmpty') }}</li>
+    }
+  </ul>
+</section>
