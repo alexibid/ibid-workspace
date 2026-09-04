@@ -48,11 +48,19 @@ if [ "$1" = "action" ]; then
       ;;
     watch-cli)
       cd "$WORKSPACE_DIR" || exit 1
-      RUN_ID=$(gh run list --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null)
+      RUN_ID=$(gh run list --limit 20 --json databaseId,status \
+        --jq 'map(select(.status=="in_progress")) | .[0].databaseId // empty' 2>/dev/null)
+      if [ -z "$RUN_ID" ]; then
+        RUN_ID=$(gh run list --limit 20 --json databaseId,status \
+          --jq 'map(select(.status=="queued" or .status=="pending")) | .[0].databaseId // empty' 2>/dev/null)
+      fi
+      if [ -z "$RUN_ID" ]; then
+        RUN_ID=$(gh run list --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null)
+      fi
       if [ -n "$RUN_ID" ]; then
         gh run watch "$RUN_ID"
       else
-        gh run watch
+        echo "Nenhum run encontrado."
       fi
       ;;
     watch-runner)
@@ -320,8 +328,8 @@ if [ -f "$LOG_FILE" ]; then
 fi
 
 echo "---"
-echo "⌁ Acompanhar ao Vivo no Terminal (CLI) | bash=\"$SELF\" param1=action param2=watch-cli terminal=true"
-echo "↗ Ver Log em Direto do Runner Local | bash=\"$SELF\" param1=action param2=watch-runner terminal=true"
+echo "⌁ Seguir o run no GitHub | bash=\"$SELF\" param1=action param2=watch-cli terminal=true"
+echo "≡ Seguir a máquina local | bash=\"$SELF\" param1=action param2=watch-runner terminal=true"
 echo "---"
 if [ "$IS_RUNNING" = true ]; then
   echo "■ Parar Runner | bash=\"$SELF\" param1=action param2=stop terminal=false refresh=true"
