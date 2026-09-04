@@ -1,10 +1,10 @@
-body.glass-surface {
+body.sea-glass-pebbles {
   --ibid-header-font-family: var(--font-sans);
   --ibid-header-font-size: var(--text-l);
-  --ibid-header-surface-tint: var(--glass-tint-teal);
-  --ibid-header-surface-edge: var(--glass-edge-teal);
-  --ibid-header-surface-wash: var(--glass-wash-teal);
-  --ibid-header-surface-gleam: 124deg;
+  --ibid-header-surface-tint: var(--glass-tint-brand);
+  --ibid-header-surface-edge: var(--glass-edge-brand);
+  --ibid-header-surface-wash: var(--glass-wash-brand);
+  --ibid-header-surface-gleam: 136deg;
   --ibid-header-bg-opacity: var(--glass-wash-opacity, 0.12);
 
   --ibid-header-actions-tint: var(--glass-tint-amber);
@@ -23,9 +23,9 @@ body.glass-surface {
   --ibid-dialog-radius: var(--glass-radius-sheet);
   --ibid-dialog-bg-opacity: var(--glass-wash-opacity, 0.12);
 
-  --ibid-sidenav-surface-tint: var(--glass-tint-coral);
-  --ibid-sidenav-surface-edge: var(--glass-edge-coral);
-  --ibid-sidenav-surface-wash: var(--glass-wash-coral);
+  --ibid-sidenav-surface-tint: var(--glass-tint-brand);
+  --ibid-sidenav-surface-edge: var(--glass-edge-brand);
+  --ibid-sidenav-surface-wash: var(--glass-wash-brand);
   --ibid-sidenav-bg-opacity: var(--glass-wash-opacity, 0.12);
 
   --ibid-chart-headline-font-family: var(--font-editorial);

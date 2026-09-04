@@ -34,7 +34,7 @@ function decorationStyle(): Record<string, string> {
         cdkOverlayOrigin
         class="a-feature-display-hit-area"
         [class.a-feature-display-hit-area--interactive]="showInfo()"
-        [ibidHandDrawn]="2"
+        [ibidHandDrawn]="3"
         [style]="decorStyle"
         [attr.role]="showInfo() ? 'button' : null"
         [attr.tabindex]="showInfo() ? 0 : null"
@@ -52,6 +52,7 @@ function decorationStyle(): Record<string, string> {
           [class.a-feature-display--xl]="size() === 'xl'"
           [class.a-feature-display--positive]="isPositive()"
           [class.a-feature-display--negative]="isNegative()"
+          [class.a-feature-display--warning]="isWarning()"
         >{{ display() }}</span>
 
         @if (showInfo()) {
@@ -100,7 +101,9 @@ export class FeatureDisplayComponent {
 
   readonly absolute = input(false);
 
-  readonly showInfo = input(true);
+  readonly showInfo = input(false);
+
+  readonly status = input<'auto' | 'positive' | 'negative' | 'warning' | 'neutral' | 'none'>('auto');
 
   readonly explanation = input<readonly FeatureExplanationRow[]>([]);
   readonly explanationTitle = input('');
@@ -128,8 +131,19 @@ export class FeatureDisplayComponent {
     return this.showPositiveSign() && amount > 0 ? `+${formatted}` : formatted;
   });
 
-  protected readonly isPositive = computed(() => (this.signed() || this.showPositiveSign()) && (this.value() ?? 0) > 0);
-  protected readonly isNegative = computed(() => (this.signed() ? (this.value() ?? 0) < 0 : (this.value() !== undefined && (this.value() ?? 0) < 0)));
+  protected readonly isPositive = computed(() => {
+    if (this.status() === 'positive') return true;
+    if (this.status() === 'negative' || this.status() === 'warning' || this.status() === 'neutral' || this.status() === 'none') return false;
+    return (this.signed() || this.showPositiveSign()) && (this.value() ?? 0) > 0;
+  });
+
+  protected readonly isNegative = computed(() => {
+    if (this.status() === 'negative') return true;
+    if (this.status() === 'positive' || this.status() === 'warning' || this.status() === 'neutral' || this.status() === 'none') return false;
+    return this.signed() && (this.value() ?? 0) < 0;
+  });
+
+  protected readonly isWarning = computed(() => this.status() === 'warning');
 
   toggle(): void {
     this.hasOpened.set(true);

@@ -35,7 +35,7 @@ export class SmartBudgetCellComponent {
   readonly categoryId = input<string | undefined>(undefined);
   readonly categoryColor = input<string | undefined>(undefined);
   readonly glassColor = input<string | undefined>(undefined);
-  readonly handDrawn = input<HandDrawnIntensity>(1);
+  readonly handDrawn = input<HandDrawnIntensity>(2);
   readonly projectName = input<string | undefined>(undefined);
   readonly showChevron = input(false);
   readonly categoryName = input('');

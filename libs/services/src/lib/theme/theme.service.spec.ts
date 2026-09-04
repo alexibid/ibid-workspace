@@ -26,14 +26,14 @@ describe('ThemeService', () => {
   it('wears the configured default theme on creation', () => {
     const service = serviceWithStoredTheme();
 
-    expect(service.theme()).toBe('glass-surface');
-    expect(bodyClasses()).toContain('glass-surface');
+    expect(service.theme()).toBe('sea-glass-pebbles');
+    expect(bodyClasses()).toContain('sea-glass-pebbles');
   });
 
   it('exposes the declared themes', () => {
     const service = serviceWithStoredTheme();
 
-    expect(service.themes.map(theme => theme.id)).toEqual(['base', 'glass-surface', 'kirigami']);
+    expect(service.themes.map(theme => theme.id)).toEqual(['base', 'sea-glass-pebbles', 'kirigami']);
   });
 
   it('restores a stored theme over the default', () => {
@@ -46,7 +46,7 @@ describe('ThemeService', () => {
   it('falls back to the default when the stored theme is not declared', () => {
     const service = serviceWithStoredTheme(MOCK_UNDECLARED_THEME_ID);
 
-    expect(service.theme()).toBe('glass-surface');
+    expect(service.theme()).toBe('sea-glass-pebbles');
     expect(bodyClasses()).not.toContain(MOCK_UNDECLARED_THEME_ID);
   });
 
@@ -56,7 +56,7 @@ describe('ThemeService', () => {
     service.select('kirigami');
 
     expect(bodyClasses()).toContain('kirigami');
-    expect(bodyClasses()).not.toContain('glass-surface');
+    expect(bodyClasses()).not.toContain('sea-glass-pebbles');
   });
 
   it('leaves classes it does not own untouched', () => {
@@ -83,7 +83,7 @@ describe('ThemeService', () => {
     expect(() => service.select(MOCK_UNDECLARED_THEME_ID)).toThrowError(
       `Unknown theme "${MOCK_UNDECLARED_THEME_ID}". Declare it in the ThemeConfig of this app.`
     );
-    expect(service.theme()).toBe('glass-surface');
+    expect(service.theme()).toBe('sea-glass-pebbles');
   });
 
   it('wears nothing and declares nothing when no config is provided', () => {

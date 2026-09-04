@@ -16,6 +16,6 @@ import { HandDrawnDirective, HandDrawnIntensity } from '../../directives/hand-dr
 export class CardComponent {
   @Input() customClass = '';
   @Input() fullBleedMobile = false;
-  @Input() intensity: HandDrawnIntensity = 2;
+  @Input() intensity: HandDrawnIntensity = 3;
 }
 

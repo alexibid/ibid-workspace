@@ -1,5 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
-@use '../../../themes/glass-surface/pane' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 :host {
   display: block;
@@ -54,8 +54,8 @@
   }
 }
 
-:host-context(body.glass-surface) .m-stat-card,
-body.glass-surface .m-stat-card {
+:host-context(body.sea-glass-pebbles) .m-stat-card,
+body.sea-glass-pebbles .m-stat-card {
   position: relative;
   @include glass-pane;
   @include glass-gleam-scatter;

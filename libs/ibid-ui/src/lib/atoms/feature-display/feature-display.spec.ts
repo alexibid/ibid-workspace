@@ -90,8 +90,16 @@ describe('FeatureDisplayComponent', () => {
     expect(element().classList.contains('a-feature-display--negative')).toBe(false);
   });
 
-  it('always offers the explanation affordance, even with no rows supplied', () => {
+  it('does not offer explanation affordance by default', () => {
     fixture.componentRef.setInput('value', 10);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.a-feature-display__info')).toBeNull();
+  });
+
+  it('offers the explanation affordance when showInfo is enabled', () => {
+    fixture.componentRef.setInput('value', 10);
+    fixture.componentRef.setInput('showInfo', true);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.a-feature-display__info')).not.toBeNull();
@@ -99,6 +107,7 @@ describe('FeatureDisplayComponent', () => {
 
   it('falls back to showing the figure itself when no rows are supplied', () => {
     fixture.componentRef.setInput('value', 10);
+    fixture.componentRef.setInput('showInfo', true);
     fixture.detectChanges();
     fixture.nativeElement.querySelector('.a-feature-display__info').click();
     fixture.detectChanges();
@@ -107,8 +116,9 @@ describe('FeatureDisplayComponent', () => {
     expect(fixture.componentInstance['balloonRows']()[0].value).toBe('10.00 €');
   });
 
-  it('renders an info trigger when an explanation is provided', () => {
+  it('renders an info trigger when an explanation is provided and showInfo is true', () => {
     fixture.componentRef.setInput('value', 10);
+    fixture.componentRef.setInput('showInfo', true);
     fixture.componentRef.setInput('explanation', [{ label: 'Receitas', value: '+30,00 €' }]);
     fixture.detectChanges();
 
@@ -121,6 +131,7 @@ describe('FeatureDisplayComponent', () => {
 
   it('toggles the explanation balloon open and closed', () => {
     fixture.componentRef.setInput('value', 10);
+    fixture.componentRef.setInput('showInfo', true);
     fixture.componentRef.setInput('explanation', [{ label: 'Receitas', value: '+30,00 €' }]);
     fixture.detectChanges();
     expect(fixture.componentInstance['isOpen']()).toBe(false);
@@ -140,6 +151,26 @@ describe('FeatureDisplayComponent', () => {
     expect(element().classList.contains('a-feature-display--negative')).toBe(true);
 
     fixture.componentRef.setInput('value', 84.2);
+    fixture.detectChanges();
+
+    expect(element().classList.contains('a-feature-display--positive')).toBe(true);
+  });
+
+  it('applies status modifier classes when explicit status is provided', () => {
+    fixture.componentRef.setInput('value', 100);
+    fixture.componentRef.setInput('status', 'warning');
+    fixture.detectChanges();
+
+    expect(element().classList.contains('a-feature-display--warning')).toBe(true);
+    expect(element().classList.contains('a-feature-display--positive')).toBe(false);
+
+    fixture.componentRef.setInput('status', 'negative');
+    fixture.detectChanges();
+
+    expect(element().classList.contains('a-feature-display--negative')).toBe(true);
+    expect(element().classList.contains('a-feature-display--warning')).toBe(false);
+
+    fixture.componentRef.setInput('status', 'positive');
     fixture.detectChanges();
 
     expect(element().classList.contains('a-feature-display--positive')).toBe(true);

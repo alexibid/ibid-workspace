@@ -1,5 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
-@use '../../../themes/glass-surface/pane' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 .m-searchable-select {
   position: relative;
@@ -155,8 +155,8 @@
   }
 }
 
-:host-context(body.glass-surface) .m-searchable-select__popover,
-body.glass-surface .m-searchable-select__popover {
+:host-context(body.sea-glass-pebbles) .m-searchable-select__popover,
+body.sea-glass-pebbles .m-searchable-select__popover {
   background-color: var(--color-glass-surface, rgba(238, 244, 242, 0.88));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

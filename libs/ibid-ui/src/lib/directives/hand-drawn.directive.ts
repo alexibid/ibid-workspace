@@ -122,7 +122,7 @@ export function parseHandDrawnConfig(
   value: HandDrawnConfig | HandDrawnIntensity | '' | boolean | null | undefined
 ): Required<HandDrawnConfig> {
   if (value === '' || value === true || value === undefined || value === null) {
-    return { intensity: 2, edges: ALL_EDGES };
+    return { intensity: 3, edges: ALL_EDGES };
   }
 
   if (typeof value === 'number') {
@@ -134,19 +134,19 @@ export function parseHandDrawnConfig(
     const intensity =
       typeof value.intensity === 'number'
         ? (Math.min(5, Math.max(1, Math.round(value.intensity))) as HandDrawnIntensity)
-        : 2;
+        : 3;
     const edges = value.edges && value.edges.length > 0 ? value.edges : ALL_EDGES;
     return { intensity, edges };
   }
 
-  return { intensity: 2, edges: ALL_EDGES };
+  return { intensity: 3, edges: ALL_EDGES };
 }
 
 export function generatePebbleNormalizedPath(
   intensity: HandDrawnIntensity,
   edges: readonly HandDrawnEdge[] = ALL_EDGES
 ): string {
-  const cfg = INTENSITY_RANGES[intensity] ?? INTENSITY_RANGES[2];
+  const cfg = INTENSITY_RANGES[intensity] ?? INTENSITY_RANGES[3];
   const rnd = (min: number, max: number) => Math.random() * (max - min) + min;
 
   const hasTop = edges.includes('top');
@@ -234,7 +234,7 @@ export class HandDrawnDirective implements OnInit, OnDestroy {
     Required<HandDrawnConfig>,
     HandDrawnConfig | HandDrawnIntensity | '' | boolean | null | undefined
   >(
-    { intensity: 2, edges: ALL_EDGES },
+    { intensity: 3, edges: ALL_EDGES },
     {
       alias: 'ibidHandDrawn',
       transform: parseHandDrawnConfig

@@ -10,7 +10,7 @@ describe('SearchableSelectComponent', () => {
       imports: [SearchableSelectComponent]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchableSelectComponent);
+    fixture = TestBed.createComponent(SearchableSelectComponent) as ComponentFixture<SearchableSelectComponent<string>>;
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

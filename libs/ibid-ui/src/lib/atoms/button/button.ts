@@ -9,7 +9,7 @@ import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
   imports: [CommonModule, HandDrawnDirective],
   template: `
     <button
-      [ibidHandDrawn]="3"
+      [ibidHandDrawn]="4"
       [class]="'a-button a-button--' + variant"
       (click)="clicked.emit($event)"
       [type]="type"

@@ -33,7 +33,7 @@ const LATEST_SELECTABLE_YEAR = 2100;
       <button
         #trigger="cdkOverlayOrigin"
         cdkOverlayOrigin
-        [ibidHandDrawn]="2"
+        [ibidHandDrawn]="3"
         type="button"
         class="a-date-input__trigger"
         [disabled]="disabled()"
@@ -65,7 +65,7 @@ const LATEST_SELECTABLE_YEAR = 2100;
         [cdkConnectedOverlayViewportMargin]="8"
         (overlayOutsideClick)="close()"
       >
-        <div class="a-date-input__popover" [ibidHandDrawn]="2">
+        <div class="a-date-input__popover" [ibidHandDrawn]="3">
           <header class="a-date-input__nav">
             <button type="button" class="a-date-input__nav-btn" (click)="previous()" [disabled]="!canGoPrevious()">
               <ibid-icon name="chevron-left"></ibid-icon>

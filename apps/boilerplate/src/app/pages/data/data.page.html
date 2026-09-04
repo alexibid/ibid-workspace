@@ -61,7 +61,7 @@
       <h3 class="boilerplate-data-page__view-title">1. List view (ibid-collection-list)</h3>
       <ibid-collection-list gap="xs">
         @for (m of displayedMovements(); track m.description + m.date) {
-          <div class="boilerplate-data-page__list-row" [ibidHandDrawn]="1">
+          <div class="boilerplate-data-page__list-row" [ibidHandDrawn]="2">
             <ibid-smart-icon-cell [iconName]="m.amount >= 0 ? 'add' : 'sync-alt'"></ibid-smart-icon-cell>
             <div class="boilerplate-data-page__list-main">
               <ibid-smart-text-cell [value]="m.description"></ibid-smart-text-cell>

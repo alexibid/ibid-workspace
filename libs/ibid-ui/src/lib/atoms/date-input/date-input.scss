@@ -1,5 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
-@use '../../../themes/glass-surface/pane' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 :host {
   position: relative;
@@ -346,7 +346,7 @@
   }
 }
 
-body.glass-surface {
+body.sea-glass-pebbles {
   .a-date-input__trigger,
   .a-date-input__popover {
     position: relative;

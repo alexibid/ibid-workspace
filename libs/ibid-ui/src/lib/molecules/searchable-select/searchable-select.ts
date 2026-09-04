@@ -55,7 +55,7 @@ export class SearchableSelectComponent<T = string> {
   @Input() label?: string;
   @Input() color?: string;
   @Input() glassColor?: string;
-  @Input() handDrawn: HandDrawnIntensity = 1;
+  @Input() handDrawn: HandDrawnIntensity = 2;
   @Input() projectName?: string;
   @Input() placeholder = '';
   @Input() searchPlaceholder = 'Pesquisar...';

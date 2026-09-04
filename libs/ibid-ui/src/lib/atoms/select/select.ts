@@ -65,7 +65,7 @@ const POSITIONS_TOP_RIGHT: ConnectedPosition[] = [
       <button
         #triggerBtn="cdkOverlayOrigin"
         cdkOverlayOrigin
-        [ibidHandDrawn]="2"
+        [ibidHandDrawn]="3"
         type="button"
         class="a-select__trigger a-select-field"
         [class.is-open]="isOpen"
@@ -95,7 +95,7 @@ const POSITIONS_TOP_RIGHT: ConnectedPosition[] = [
           class="a-select__popover m-dropdown-panel mat-mdc-select-panel"
           [class]="panelClasses"
           [style.width]="popoverWidth"
-          [ibidHandDrawn]="2"
+          [ibidHandDrawn]="3"
           role="listbox"
           tabindex="-1"
           (keydown.escape)="close()"

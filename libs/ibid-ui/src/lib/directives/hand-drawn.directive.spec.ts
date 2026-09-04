@@ -35,14 +35,14 @@ describe('HandDrawnDirective', () => {
 
   it('applies svg clip-path url to elements', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
-    expect(el.style.clipPath).toContain('url(#ibid-pebble-');
+    expect(el.style.clipPath).toMatch(/url\(["']?#ibid-pebble-/);
   });
 
   it('applies contour custom properties on default intensity', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
-    expect(el.style.getPropertyValue('--ibid-contour-clip')).toContain('url(#ibid-pebble-');
-    expect(el.style.getPropertyValue('--ibid-contour-corners')).toContain('url(#ibid-pebble-');
-    expect(el.style.getPropertyValue('--hand-drawn-intensity')).toBe('2');
+    expect(el.style.getPropertyValue('--ibid-contour-clip')).toMatch(/url\(["']?#ibid-pebble-/);
+    expect(el.style.getPropertyValue('--ibid-contour-corners')).toMatch(/url\(["']?#ibid-pebble-/);
+    expect(el.style.getPropertyValue('--hand-drawn-intensity')).toBe('3');
   });
 
   it('applies level 1 intensity custom property', () => {

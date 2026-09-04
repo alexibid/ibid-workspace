@@ -53,7 +53,7 @@ test.describe('Design system showcase', () => {
 
   test('the theme picker swaps the body class and the reported tokens', async ({ page }) => {
     await page.goto('/', { waitUntil: 'commit' });
-    await expect(page.locator('body')).toHaveClass(/glass-surface/);
+    await expect(page.locator('body')).toHaveClass(/sea-glass-pebbles/);
     const backgroundValue = page.locator('.boilerplate-swatch__value').first();
     await expect(backgroundValue).toHaveText('#F1EFE8');
 
@@ -130,7 +130,7 @@ test.describe('Design system showcase', () => {
     await page.clock.setFixedTime(new Date('2026-09-02T10:00:00Z'));
 
     await page.goto('/', { waitUntil: 'commit' });
-    await expect(page.locator('body')).toHaveClass(/glass-surface/);
+    await expect(page.locator('body')).toHaveClass(/sea-glass-pebbles/);
     await expect(page.locator('.boilerplate-language-toggle__code')).toHaveText('PT');
     await recorder.step(1, 'load the page', 'defaults are glass-surface and PT');
 
@@ -144,7 +144,7 @@ test.describe('Design system showcase', () => {
     await page.reload();
 
     await expect(page.locator('body')).toHaveClass(/kirigami/);
-    await expect(page.locator('body')).not.toHaveClass(/glass-surface/);
+    await expect(page.locator('body')).not.toHaveClass(/sea-glass-pebbles/);
     await expect(page.locator('.boilerplate-language-toggle__code')).toHaveText('EN');
     await expect(page.locator('.boilerplate-swatch__value').first()).toHaveText('#FFF8EF');
     await recorder.step(3, 'reload', 'both preferences restored from storage');

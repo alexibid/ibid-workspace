@@ -9,7 +9,7 @@ import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
   imports: [CommonModule, HandDrawnDirective],
   template: `
     <button
-      [ibidHandDrawn]="3"
+      [ibidHandDrawn]="4"
       type="button"
       class="a-icon-button"
       [attr.aria-label]="ariaLabel() || title() || null"

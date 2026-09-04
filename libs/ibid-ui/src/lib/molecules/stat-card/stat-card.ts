@@ -23,6 +23,7 @@ import { FeatureDisplayComponent } from '../../atoms/feature-display/feature-dis
             <ibid-feature-display
               [value]="data.value"
               [size]="'md'"
+              [status]="data.theme === 'success' ? 'positive' : data.theme === 'danger' ? 'negative' : data.theme === 'warning' ? 'warning' : 'auto'"
               [showInfo]="data.showInfo ?? false"
               [explanationTitle]="data.explanationTitle ?? ''"
               [explanation]="data.explanation ?? []"

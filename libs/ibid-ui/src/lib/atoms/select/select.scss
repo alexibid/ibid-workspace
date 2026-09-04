@@ -1,5 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
-@use '../../../themes/glass-surface/pane' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 :host {
   display: block;
@@ -158,7 +158,7 @@
   max-width: 80vw !important;
 }
 
-body.glass-surface {
+body.sea-glass-pebbles {
   .a-select__trigger {
     position: relative;
     background: transparent;

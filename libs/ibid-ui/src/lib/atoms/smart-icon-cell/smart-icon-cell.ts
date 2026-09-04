@@ -8,7 +8,7 @@ export type SmartIconCellMode = 'icon' | 'checkbox';
   standalone: true,
   imports: [HandDrawnDirective, IconComponent],
   template: `
-    <div class="a-smart-icon-cell" [ibidHandDrawn]="1">
+    <div class="a-smart-icon-cell" [ibidHandDrawn]="2">
       @if (mode() === 'checkbox') {
         <input
           type="checkbox"

@@ -1,6 +1,6 @@
 @use '../../../styles/settings/colors' as *;
 @use '../../../styles/tools/mixins' as *;
-@use '../../../themes/glass-surface/pane' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 .m-metric-card {
   @include card-surface;
@@ -63,8 +63,8 @@
   }
 }
 
-:host-context(body.glass-surface) .m-metric-card,
-body.glass-surface .m-metric-card {
+:host-context(body.sea-glass-pebbles) .m-metric-card,
+body.sea-glass-pebbles .m-metric-card {
   position: relative;
   @include glass-pane;
   @include glass-gleam-scatter;

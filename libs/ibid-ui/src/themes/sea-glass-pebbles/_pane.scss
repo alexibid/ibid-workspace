@@ -2,18 +2,19 @@
 @use '../shared' as *;
 
 $glass-variants: (
-  teal: 124deg,
-  amber: 142deg,
-  coral: 108deg,
-  pink: 136deg,
-  blue: 132deg,
-  green: 140deg,
-  red: 118deg,
-  purple: 126deg,
-  indigo: 130deg,
-  cyan: 122deg,
-  lime: 138deg,
-  gray: 116deg
+  'brand': 136deg,
+  'teal': 124deg,
+  'amber': 142deg,
+  'coral': 108deg,
+  'pink': 136deg,
+  'blue': 132deg,
+  'green': 140deg,
+  'red': 118deg,
+  'purple': 126deg,
+  'indigo': 130deg,
+  'cyan': 122deg,
+  'lime': 138deg,
+  'gray': 116deg
 );
 $gleam-angles: (112deg, 138deg, 124deg, 148deg, 106deg, 132deg, 118deg, 142deg);
 $wash-angles:  (136deg, 118deg, 144deg, 122deg, 152deg, 110deg, 128deg, 140deg);

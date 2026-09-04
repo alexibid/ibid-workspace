@@ -101,8 +101,8 @@
   }
 }
 
-:host-context(body.glass-surface) .m-collection-header,
-body.glass-surface .m-collection-header {
+:host-context(body.sea-glass-pebbles) .m-collection-header,
+body.sea-glass-pebbles .m-collection-header {
   &--sticky {
     background-color: var(--color-glass-surface, rgba(238, 244, 242, 0.85));
     backdrop-filter: blur(16px);

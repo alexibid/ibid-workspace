@@ -3,7 +3,7 @@
 @use 'tokens-organisms';
 @use 'pane' as *;
 
-body.glass-surface {
+body.sea-glass-pebbles {
   --glass-blur: 16px;
   --glass-sheen-duration: 5.5s;
 
@@ -21,6 +21,15 @@ body.glass-surface {
   --glass-radius-md: 14px;
   --glass-radius-lg: 18px;
   --glass-radius-sheet: 24px;
+
+  --glass-tint-brand: rgb(238 243 242 / 86%);
+  --glass-edge-brand: rgb(215 228 226 / 64%);
+  --glass-wash-brand: linear-gradient(
+    var(--glass-angle, 136deg),
+    rgb(215 228 226 / 0.28),
+    rgb(238 243 242 / 0.44) 50%,
+    rgb(180 205 200 / 0.16)
+  );
 
   --glass-tint-teal: rgb(228 245 240 / 84%);
   --glass-edge-teal: rgb(93 202 165 / 64%);

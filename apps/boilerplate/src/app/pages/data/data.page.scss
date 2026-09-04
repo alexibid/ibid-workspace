@@ -1,5 +1,5 @@
 @use 'libs/ibid-ui/src/styles/tools/mixins' as *;
-@use 'libs/ibid-ui/src/themes/glass-surface/pane' as *;
+@use 'libs/ibid-ui/src/themes/sea-glass-pebbles/pane' as *;
 
 .boilerplate-data-page {
   &__views {
@@ -47,8 +47,8 @@
   }
 }
 
-:host-context(body.glass-surface) .boilerplate-data-page__list-row,
-body.glass-surface .boilerplate-data-page__list-row {
+:host-context(body.sea-glass-pebbles) .boilerplate-data-page__list-row,
+body.sea-glass-pebbles .boilerplate-data-page__list-row {
   position: relative;
   @include glass-pane;
   --glass-tint: var(--glass-tint-cyan);
