@@ -1,6 +1,6 @@
 {
   "name": "@ibid/services",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "main": "./dist/esm2022/index.js",
   "types": "./dist/index.d.ts",
