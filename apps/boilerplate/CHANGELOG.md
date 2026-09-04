@@ -1,3 +1,11 @@
+## 0.1.2 (2026-09-04)
+
+### 🧱 Updated Dependencies
+
+- Updated services to 0.1.2
+- Updated ibid-ui to 0.1.2
+- Updated testing to 0.0.3
+
 ## 0.1.1 (2026-09-04)
 
 ### 🚀 Features
