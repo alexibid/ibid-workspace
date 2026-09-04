@@ -101,7 +101,7 @@ if [ "$1" = "action" ]; then
         DMG_FILE=$(find "$WORKSPACE_DIR/dist" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
       fi
       if [ -z "$DMG_FILE" ]; then
-        DMG_FILE=$(find "$WORKSPACE_DIR/apps/$APP/platforms/desktop/src-tauri/target/release/bundle/dmg" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
+        DMG_FILE=$(find "$WORKSPACE_DIR/dist/$APP/desktop/release/bundle/dmg" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
       fi
       if [ -n "$DMG_FILE" ] && [ -f "$DMG_FILE" ]; then
         echo "Opening $DMG_FILE..."
@@ -115,7 +115,7 @@ if [ "$1" = "action" ]; then
         DMG_FILE=$(find "$WORKSPACE_DIR/dist" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
       fi
       if [ -z "$DMG_FILE" ]; then
-        DMG_FILE=$(find "$WORKSPACE_DIR/apps/$APP/platforms/desktop/src-tauri/target/release/bundle/dmg" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
+        DMG_FILE=$(find "$WORKSPACE_DIR/dist/$APP/desktop/release/bundle/dmg" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
       fi
       if [ -n "$DMG_FILE" ] && [ -f "$DMG_FILE" ]; then
         echo "Opening installer: $DMG_FILE..."
@@ -173,7 +173,7 @@ if [ "$1" = "action" ]; then
       else
         echo "Installing $APK_FILE on device..."
         adb install -r "$APK_FILE"
-        PACKAGE_ID=$(node -e "try { const f = require('fs').readFileSync('apps/$APP/capacitor.config.ts', 'utf8'); const m = f.match(/appId:\s*['\"]([^'\"]+)['\"]/); console.log(m ? m[1] : ''); } catch { console.log(''); }")
+        PACKAGE_ID=$(node -e "try { const f = require('fs').readFileSync('apps/$APP/platforms/mobile/capacitor.config.ts', 'utf8'); const m = f.match(/appId:\s*['\"]([^'\"]+)['\"]/); console.log(m ? m[1] : ''); } catch { console.log(''); }")
         if [ -n "$PACKAGE_ID" ]; then
           echo "Launching $PACKAGE_ID..."
           adb shell monkey -p "$PACKAGE_ID" -c android.intent.category.LAUNCHER 1
@@ -255,6 +255,48 @@ else
 fi
 
 NOTIF_STATE_FILE="/tmp/ibid-runner-last-notif.txt"
+GH="/opt/homebrew/bin/gh"
+COST_CACHE="/tmp/ibid-xbar-cost"
+
+# O total do dia é pesado, por isso vive numa cache de cinco minutos: o menu redesenha a
+# cada dez segundos e não deve pagar uma volta à API de cada vez.
+if [ -x "$GH" ]; then
+  ACTIVE=$("$GH" run list --repo alexibid/ibid-workspace --limit 1 --json workflowName,status,startedAt \
+    --jq '.[] | select(.status=="in_progress") | "\(.workflowName)|\(.startedAt)"' 2>/dev/null)
+
+  if [ -n "$ACTIVE" ]; then
+    STARTED=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "${ACTIVE##*|}" +%s 2>/dev/null)
+    if [ -n "$STARTED" ]; then
+      ELAPSED=$(( ($(date -u +%s) - STARTED) / 60 ))
+      if pgrep -f "Runner.Worker" > /dev/null 2>&1; then
+        echo "⟳ ${ACTIVE%%|*} — ${ELAPSED}m, no teu Mac (grátis) | size=11 color=#2ea043"
+      else
+        echo "⟳ ${ACTIVE%%|*} — ${ELAPSED}m, runner do GitHub (faturado) | size=11 color=#d29922"
+      fi
+    fi
+  fi
+
+  # O total do dia custa dezenas de chamadas à API, por isso é recalculado em segundo
+  # plano: o menu mostra sempre o último valor conhecido e nunca bloqueia a redesenhar.
+  if [ ! -f "$COST_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$COST_CACHE" 2>/dev/null || echo 0) )) -gt 300 ]; then
+    if [ ! -f "$COST_CACHE.lock" ]; then
+      touch "$COST_CACHE.lock"
+      (
+        TODAY=$(date -u +%Y-%m-%d)
+        TOTAL=0
+        for RID in $("$GH" api "repos/alexibid/ibid-workspace/actions/runs?per_page=60" --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\")) | .id" 2>/dev/null); do
+          M=$("$GH" api "repos/alexibid/ibid-workspace/actions/runs/$RID/jobs" --jq '[.jobs[] | select(.completed_at != null) | ((((.completed_at|fromdate)-(.started_at|fromdate))/60)|ceil) * (if (.runner_name // "")=="MAC ALEX" then 0 elif (.name|test("windows")) then 2 elif (.name|test("macos")) then 10 else 1 end)] | add // 0' 2>/dev/null)
+          TOTAL=$(( TOTAL + ${M:-0} ))
+        done
+        echo "$TOTAL" > "$COST_CACHE"
+        rm -f "$COST_CACHE.lock"
+      ) >/dev/null 2>&1 &
+    fi
+  fi
+
+  echo "Faturado hoje: $(cat "$COST_CACHE" 2>/dev/null || echo 0) min de 2000 | size=11 bash=/usr/bin/open param1=\"https://github.com/settings/billing\" terminal=false"
+fi
+
 if [ -f "$LOG_FILE" ]; then
   CURRENT_LINE=$(tail -n 1 "$LOG_FILE" 2>/dev/null)
   LAST_LOG=$(echo "$CURRENT_LINE" | cut -c 1-50)
