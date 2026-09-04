@@ -2,38 +2,67 @@ name: Release
 
 on:
   push:
-    tags: ['v*']
+    tags: ['*-v*', 'v*']
   workflow_dispatch:
 
 permissions:
   contents: write
 
-env:
-  APP: oh-save-me
-
 jobs:
-  web:
-    name: Web build
+  inspect:
+    name: Inspect Tag
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.v.outputs.version }}
+      project: ${{ steps.parse.outputs.project }}
+      version: ${{ steps.parse.outputs.version }}
+      is_app: ${{ steps.parse.outputs.is_app }}
+    steps:
+      - id: parse
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$TAG" =~ ^(.+)-v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            PROJECT="${BASH_REMATCH[1]}"
+            VERSION="${BASH_REMATCH[2]}"
+          else
+            PROJECT="oh-save-me"
+            VERSION="${TAG#v}"
+          fi
+          echo "project=$PROJECT" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ "$PROJECT" = "oh-save-me" ] || [ "$PROJECT" = "boilerplate" ] || [ "$PROJECT" = "camila" ]; then
+            echo "is_app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_app=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Tag: $TAG -> Project: $PROJECT, Version: $VERSION"
+
+  web:
+    name: Web build
+    needs: inspect
+    if: needs.inspect.outputs.is_app == 'true'
+    runs-on: ubuntu-latest
+    env:
+      APP: ${{ needs.inspect.outputs.project }}
+      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: npm }
       - run: npm ci
-      - id: v
-        run: echo "version=$(node -p "require('./apps/oh-save-me/package.json').version")" >> "$GITHUB_OUTPUT"
       - run: npx nx build $APP
       - uses: actions/upload-artifact@v4
         with:
           name: web
-          path: dist/oh-save-me/browser
+          path: dist/${{ env.APP }}/browser
 
   android:
     name: Android APK
-    needs: web
+    needs: [inspect, web]
+    if: needs.inspect.outputs.project == 'oh-save-me'
     runs-on: ubuntu-latest
+    env:
+      APP: ${{ needs.inspect.outputs.project }}
+      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -64,12 +93,16 @@ jobs:
 
   desktop:
     name: Desktop (${{ matrix.os }})
-    needs: web
+    needs: [inspect, web]
+    if: needs.inspect.outputs.project == 'oh-save-me'
     strategy:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.os }}
+    env:
+      APP: ${{ needs.inspect.outputs.project }}
+      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -82,7 +115,7 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file \
             libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
       - run: npm ci
-      - run: npx nx build oh-save-me
+      - run: npx nx build ${{ env.APP }}
       - name: Build with Tauri
         working-directory: apps/oh-save-me
         env:
@@ -91,26 +124,28 @@ jobs:
       - name: Collect into dist/
         shell: bash
         run: |
-          node tools/builder/collect-artifact.mjs --project oh-save-me \
+          node tools/builder/collect-artifact.mjs --project ${{ env.APP }} \
             --from dist/oh-save-me/desktop/release/bundle --ext dmg,msi,exe,deb,rpm,AppImage
       - uses: actions/upload-artifact@v4
         with:
           name: desktop-${{ matrix.os }}
           path: |
-            dist/oh-save-me/*.dmg
-            dist/oh-save-me/*.msi
-            dist/oh-save-me/*.exe
-            dist/oh-save-me/*.deb
-            dist/oh-save-me/*.rpm
-            dist/oh-save-me/*.AppImage
+            dist/${{ env.APP }}/*.dmg
+            dist/${{ env.APP }}/*.msi
+            dist/${{ env.APP }}/*.exe
+            dist/${{ env.APP }}/*.deb
+            dist/${{ env.APP }}/*.rpm
+            dist/${{ env.APP }}/*.AppImage
           if-no-files-found: ignore
 
   publish:
     name: Publish
-    needs: [web, android, desktop]
+    needs: [inspect, web, android, desktop]
+    if: always() && needs.inspect.outputs.is_app == 'true'
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ needs.web.outputs.version }}
+      PROJECT: ${{ needs.inspect.outputs.project }}
+      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -121,15 +156,15 @@ jobs:
           pattern: '{android,desktop-*}'
       - name: Collect them in one place
         run: |
-          mkdir -p dist/oh-save-me
-          find artifacts -type f -exec mv -n {} dist/oh-save-me/ \;
-          ls -la dist/oh-save-me
+          mkdir -p dist/${{ env.PROJECT }}
+          find artifacts -type f -exec mv -n {} dist/${{ env.PROJECT }}/ \;
+          ls -la dist/${{ env.PROJECT }}
 
       - name: Attach to the GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/oh-save-me/oh-save-me.*
+          files: dist/${{ env.PROJECT }}/${{ env.PROJECT }}.*
           fail_on_unmatched_files: false
 
       # --- Google Drive -------------------------------------------------------------------
@@ -146,8 +181,8 @@ jobs:
         run: |
           mkdir -p ~/.config/rclone
           echo "${{ secrets.RCLONE_CONF_BASE64 }}" | base64 -d > ~/.config/rclone/rclone.conf
-          rclone copy dist/oh-save-me "gdrive:${DRIVE_FOLDER}/oh-save-me/v${VERSION}" \
-            --include "oh-save-me.*" --progress
+          rclone copy dist/${{ env.PROJECT }} "gdrive:${DRIVE_FOLDER}/${{ env.PROJECT }}/v${VERSION}" \
+            --include "${{ env.PROJECT }}.*" --progress
           rm -f ~/.config/rclone/rclone.conf
 
       - name: Warn when Drive is not configured
@@ -160,10 +195,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web
-          path: dist/oh-save-me/browser
+          path: dist/${{ env.PROJECT }}/browser
 
       - name: Publish no Firebase Hosting
-        if: ${{ startsWith(github.ref, 'refs/tags/') && secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: ${{ startsWith(github.ref, 'refs/tags/') && env.PROJECT == 'oh-save-me' && secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -175,11 +210,11 @@ jobs:
         if: always()
         run: |
           {
-            echo "### Release v${VERSION}"
+            echo "### Release ${{ env.PROJECT }} v${VERSION}"
             echo ""
             echo "| File | Size |"
             echo "|---|---|"
-            for f in dist/oh-save-me/oh-save-me.*; do
+            for f in dist/${{ env.PROJECT }}/${{ env.PROJECT }}.*; do
               [ -f "$f" ] && echo "| \`$(basename "$f")\` | $(du -h "$f" | cut -f1) |"
             done
           } >> "$GITHUB_STEP_SUMMARY"
