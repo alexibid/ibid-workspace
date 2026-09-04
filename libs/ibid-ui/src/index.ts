@@ -60,3 +60,7 @@ export * from './lib/organisms/chart/chart';
 export * from './lib/organisms/header/header';
 export * from './lib/organisms/header-nav/header-nav';
 export * from './lib/organisms/line-chart/line-chart';
+export * from './lib/atoms/feature-icon/feature-icon';
+export * from './lib/molecules/toggle-tabs/toggle-tabs';
+
+

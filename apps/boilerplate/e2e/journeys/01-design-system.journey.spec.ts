@@ -5,7 +5,7 @@ const PAGES = [
   { path: '', headings: ['Colors', 'Typography'] },
   { path: 'actions', headings: ['Buttons', 'Icon buttons and links'] },
   { path: 'inputs', headings: ['Inputs', 'Segmented control'] },
-  { path: 'data', headings: ['Values and figures', 'Data table'] },
+  { path: 'data', headings: ['Values and figures', 'Transactions collection'] },
   { path: 'charts', headings: ['Charts'] },
   { path: 'layout', headings: ['Structure', 'Indicators', 'Empty state'] },
   { path: 'overlays', headings: ['Bottom sheet', 'Scrim'] },
@@ -57,7 +57,7 @@ test.describe('Design system showcase', () => {
     const backgroundValue = page.locator('.boilerplate-swatch__value').first();
     await expect(backgroundValue).toHaveText('#F1EFE8');
 
-    await page.locator('.boilerplate-theme-select .mat-mdc-select-trigger').click();
+    await page.locator('.boilerplate-theme-select .a-select__trigger').click();
     await page.getByRole('option', { name: 'Kirigami' }).click();
 
     await expect(page.locator('body')).toHaveClass(/kirigami/);
@@ -66,9 +66,9 @@ test.describe('Design system showcase', () => {
 
   test('the data table renders one row per movement', async ({ page }) => {
     await page.goto('/data', { waitUntil: 'commit' });
-    await expect(page.locator('ibid-data-table tbody tr')).toHaveCount(3);
+    await expect(page.locator('ibid-data-table tbody tr')).toHaveCount(20);
     await expect(page.locator('ibid-data-table th')).toHaveCount(5);
-    await expect(page.locator('ibid-data-table ibid-smart-currency-cell')).toHaveCount(3);
+    await expect(page.locator('ibid-data-table ibid-smart-currency-cell')).toHaveCount(20);
   });
 
   test('inputs report their state back to the page', async ({ page }, testInfo) => {
@@ -134,7 +134,7 @@ test.describe('Design system showcase', () => {
     await expect(page.locator('.boilerplate-language-toggle__code')).toHaveText('PT');
     await recorder.step(1, 'load the page', 'defaults are glass-surface and PT');
 
-    await page.locator('.boilerplate-theme-select .mat-mdc-select-trigger').click();
+    await page.locator('.boilerplate-theme-select .a-select__trigger').click();
     await page.getByRole('option', { name: 'Kirigami' }).click();
     await page.locator('.boilerplate-language-toggle button').click();
     await expect(page.locator('body')).toHaveClass(/kirigami/);

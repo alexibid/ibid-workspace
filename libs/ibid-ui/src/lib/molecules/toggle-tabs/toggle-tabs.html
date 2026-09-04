@@ -1,0 +1,44 @@
+<div
+  #tabList
+  class="m-toggle-tabs"
+  [class.m-toggle-tabs--sm]="size() === 'sm'"
+  [class.m-toggle-tabs--md]="size() === 'md'"
+  [class.m-toggle-tabs--lg]="size() === 'lg'"
+  [ibidHandDrawn]="contour()"
+  role="tablist"
+  [attr.aria-label]="ariaLabel()"
+>
+  @if (indicatorVisible()) {
+    <div
+      class="m-toggle-tabs__indicator"
+      [ibidHandDrawn]="contour()"
+      [style.transform]="'translate3d(' + indicatorLeft() + 'px, 0, 0)'"
+      [style.width.px]="indicatorWidth()"
+      [style.--active-tab-color]="activeColor() || null"
+      aria-hidden="true"
+    ></div>
+  }
+
+  @for (item of items(); track item.value; let i = $index) {
+    <button
+      type="button"
+      role="tab"
+      class="m-toggle-tabs__tab"
+      [class.m-toggle-tabs__tab--active]="value() === item.value"
+      [class.m-toggle-tabs__tab--disabled]="item.disabled"
+      [attr.aria-selected]="value() === item.value"
+      [attr.tabindex]="value() === item.value ? 0 : -1"
+      [disabled]="item.disabled"
+      (click)="selectTab(item)"
+      (keydown)="onKeyDown($event, i)"
+    >
+      @if (item.icon) {
+        <ibid-icon [name]="item.icon" class="m-toggle-tabs__icon" />
+      }
+      <span class="m-toggle-tabs__label">{{ item.label }}</span>
+      @if (item.badge !== undefined) {
+        <span class="m-toggle-tabs__badge">{{ item.badge }}</span>
+      }
+    </button>
+  }
+</div>
