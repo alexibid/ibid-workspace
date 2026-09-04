@@ -7,6 +7,7 @@
 # <xbar.desc>Controls the macOS background runner and local Google Drive build delivery for ibid-workspace</xbar.desc>
 # <xbar.dependencies>bash,launchctl</xbar.dependencies>
 
+SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 RUNNER_DIR="${RUNNER_DIR:-$HOME/actions-runner}"
 DETECTED_LABEL=$(launchctl list 2>/dev/null | grep -oE 'actions\.runner\.[^ \t]+' | head -n 1)
 if [ -z "$DETECTED_LABEL" ]; then
@@ -319,45 +320,45 @@ if [ -f "$LOG_FILE" ]; then
 fi
 
 echo "---"
-echo "⌁ Acompanhar ao Vivo no Terminal (CLI) | bash=\"$0\" param1=action param2=watch-cli terminal=true"
-echo "↗ Ver Log em Direto do Runner Local | bash=\"$0\" param1=action param2=watch-runner terminal=true"
+echo "⌁ Acompanhar ao Vivo no Terminal (CLI) | bash=\"$SELF\" param1=action param2=watch-cli terminal=true"
+echo "↗ Ver Log em Direto do Runner Local | bash=\"$SELF\" param1=action param2=watch-runner terminal=true"
 echo "---"
 if [ "$IS_RUNNING" = true ]; then
-  echo "■ Parar Runner | bash=\"$0\" param1=action param2=stop terminal=false refresh=true"
-  echo "↺ Reiniciar Runner | bash=\"$0\" param1=action param2=restart terminal=false refresh=true"
+  echo "■ Parar Runner | bash=\"$SELF\" param1=action param2=stop terminal=false refresh=true"
+  echo "↺ Reiniciar Runner | bash=\"$SELF\" param1=action param2=restart terminal=false refresh=true"
 else
-  echo "▶ Iniciar Runner | bash=\"$0\" param1=action param2=start terminal=false refresh=true"
+  echo "▶ Iniciar Runner | bash=\"$SELF\" param1=action param2=start terminal=false refresh=true"
 fi
 
 echo "---"
 echo "Workspace (ibid-workspace)"
-echo "-- ⌁ Verificação Rápida (check:fast) | bash=\"$0\" param1=action param2=check-fast terminal=true"
-echo "-- ⚙ Compilar Workspace (check:build) | bash=\"$0\" param1=action param2=check-build terminal=true"
-echo "-- ↑ Publicar Todas as Web Apps no Firebase | bash=\"$0\" param1=action param2=deploy-web param3=all terminal=true refresh=true"
-echo "-- ↑ Sincronizar Instaladores para o Drive | bash=\"$0\" param1=action param2=sync-drive terminal=true refresh=true"
+echo "-- ⌁ Verificação Rápida (check:fast) | bash=\"$SELF\" param1=action param2=check-fast terminal=true"
+echo "-- ⚙ Compilar Workspace (check:build) | bash=\"$SELF\" param1=action param2=check-build terminal=true"
+echo "-- ↑ Publicar Todas as Web Apps no Firebase | bash=\"$SELF\" param1=action param2=deploy-web param3=all terminal=true refresh=true"
+echo "-- ↑ Sincronizar Instaladores para o Drive | bash=\"$SELF\" param1=action param2=sync-drive terminal=true refresh=true"
 echo "-- ↗ Abrir Pasta do Workspace | bash=/usr/bin/open param1=\"$WORKSPACE_DIR\" terminal=false"
 echo "-- ↗ Abrir Pasta Dist | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/dist\" terminal=false"
 echo "-- ↗ Abrir GitHub Actions | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
 
 echo "Oh Save Me!"
-echo "-- ⚙ Compilar Tudo (.dmg + .apk) | bash=\"$0\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
-echo "-- ⚙ Compilar Desktop (.dmg) | bash=\"$0\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
-echo "-- ⚙ Compilar Android (.apk) | bash=\"$0\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
-echo "-- ↓ Instalar Desktop (.dmg) | bash=\"$0\" param1=action param2=install-desktop param3=oh-save-me terminal=true refresh=true"
-echo "-- ↓ Instalar APK no Telemóvel (USB) | bash=\"$0\" param1=action param2=install-mobile param3=oh-save-me terminal=true refresh=true"
-echo "-- ↑ Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Compilar Tudo (.dmg + .apk) | bash=\"$SELF\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Compilar Desktop (.dmg) | bash=\"$SELF\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Compilar Android (.apk) | bash=\"$SELF\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
+echo "-- ↓ Instalar Desktop (.dmg) | bash=\"$SELF\" param1=action param2=install-desktop param3=oh-save-me terminal=true refresh=true"
+echo "-- ↓ Instalar APK no Telemóvel (USB) | bash=\"$SELF\" param1=action param2=install-mobile param3=oh-save-me terminal=true refresh=true"
+echo "-- ↑ Publicar no Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=oh-save-me terminal=true refresh=true"
 echo "-- ↗ Abrir Web App (ibid-ohsaveme.web.app) | bash=/usr/bin/open param1=\"https://ibid-ohsaveme.web.app\" terminal=false"
 echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
 
 echo "Boilerplate"
-echo "-- ⚙ Compilar Web | bash=\"$0\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
-echo "-- ↑ Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
+echo "-- ⚙ Compilar Web | bash=\"$SELF\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
+echo "-- ↑ Publicar no Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
 echo "-- ↗ Abrir Web App (ibid-boilerplate.web.app) | bash=/usr/bin/open param1=\"https://ibid-boilerplate.web.app\" terminal=false"
 echo "-- ↗ Abrir Storybook Showcase | bash=/usr/bin/open param1=\"http://localhost:6006\" terminal=false"
 echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
 
 echo "Camila"
-echo "-- ↑ Publicar no Firebase Hosting | bash=\"$0\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
+echo "-- ↑ Publicar no Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
 echo "-- ↗ Abrir Web App (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
 echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
 
