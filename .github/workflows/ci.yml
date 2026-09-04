@@ -29,6 +29,15 @@ jobs:
       - uses: nrwl/nx-set-shas@v5
         id: shas
 
+      - name: Decide the scope
+        id: scope
+        run: |
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            echo "nx=run-many --all" >> "$GITHUB_OUTPUT"
+          else
+            echo "nx=affected" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Resolve the affected projects
         id: affected
         env:
@@ -43,19 +52,19 @@ jobs:
         env:
           NX_BASE: ${{ steps.shas.outputs.base }}
           NX_HEAD: ${{ steps.shas.outputs.head }}
-        run: npx nx affected -t typecheck --parallel=3
+        run: npx nx ${{ steps.scope.outputs.nx }} -t typecheck --parallel=3
 
       - name: Unit tests
         env:
           NX_BASE: ${{ steps.shas.outputs.base }}
           NX_HEAD: ${{ steps.shas.outputs.head }}
-        run: npx nx affected -t test --parallel=3
+        run: npx nx ${{ steps.scope.outputs.nx }} -t test --parallel=3
 
       - name: Build
         env:
           NX_BASE: ${{ steps.shas.outputs.base }}
           NX_HEAD: ${{ steps.shas.outputs.head }}
-        run: npx nx affected -t build --parallel=3
+        run: npx nx ${{ steps.scope.outputs.nx }} -t build --parallel=3
     outputs:
       projects: ${{ steps.affected.outputs.projects }}
       e2e_apps: ${{ steps.affected.outputs.e2e_apps }}
@@ -97,14 +106,14 @@ jobs:
     needs: [verify, journeys]
     if: always()
     timeout-minutes: 10
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      # tools/ci scripts import only node: builtins, so this job needs no install.
       - name: Draw the execution graph
         env:
           AFFECTED_PROJECTS: ${{ needs.verify.outputs.projects }}
           JOB_RESULTS: ${{ toJson(needs) }}
+          GH_TOKEN: ${{ github.token }}
         run: node tools/ci/execution-graph.mjs >> "$GITHUB_STEP_SUMMARY"
       - name: Fail when any group did not pass
         env:

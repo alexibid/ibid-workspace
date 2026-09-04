@@ -61,7 +61,7 @@
       ]
     },
     "@nx/angular:ng-packagr-lite": {
-      "cache": false,
+      "cache": true,
       "dependsOn": [
         "^build"
       ],
@@ -71,14 +71,14 @@
       ]
     },
     "@nx/angular:unit-test": {
-      "cache": false,
+      "cache": true,
       "inputs": [
         "default",
         "^production"
       ]
     },
     "@angular/build:application": {
-      "cache": false,
+      "cache": true,
       "dependsOn": [
         "^build"
       ],
@@ -124,7 +124,7 @@
       }
     },
     "@angular/build:unit-test": {
-      "cache": false,
+      "cache": true,
       "inputs": [
         "default",
         "^production"

@@ -26,6 +26,7 @@ const releasePipeline = {
       jobs: [
         { id: 'drive', label: 'Google Drive' },
         { id: 'hosting', label: 'Firebase Hosting' },
+        { id: 'storybook', label: 'Storybook' },
       ],
     },
   ],

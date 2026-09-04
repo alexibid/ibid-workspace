@@ -5,9 +5,18 @@
   "targets": {
     "ibid-32cbe": {
       "hosting": {
-        "oh-save-me": ["ibid-ohsaveme"],
-        "boilerplate": ["ibid-boilerplate"],
-        "camila": ["ibid-camila"]
+        "oh-save-me": [
+          "ibid-ohsaveme"
+        ],
+        "boilerplate": [
+          "ibid-boilerplate"
+        ],
+        "camila": [
+          "ibid-camila"
+        ],
+        "storybook": [
+          "ibid-storybook"
+        ]
       }
     }
   }

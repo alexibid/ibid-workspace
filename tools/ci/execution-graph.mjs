@@ -1,4 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+
+import { elapsedSeconds, formatSeconds, toolTotals } from './tool-time.mjs';
 import { readPipeline } from './pipelines.mjs';
 import { describeOutcome, readJobResults } from './job-results.mjs';
 
@@ -10,6 +13,7 @@ const CLASS_STYLES = [
 
 const pipeline = readPipeline(process.env['PIPELINE'] ?? 'ci');
 const results = readJobResults();
+const jobs = readJobs();
 
 console.log(render(pipeline, results));
 
@@ -20,6 +24,7 @@ function render(definition, jobResults) {
     renderGraph(definition, jobResults),
     '',
     renderTable(definition, jobResults),
+    renderTools(),
     renderScope(),
     renderLinks(definition, jobResults),
   ].filter(Boolean).join('\n');
@@ -51,14 +56,65 @@ function renderClasses(group, jobResults) {
 }
 
 function renderTable(definition, jobResults) {
+  const timings = readTimings();
   const rows = definition.groups.flatMap((group) =>
     group.jobs.map((job) => {
       const outcome = outcomeOf(job, jobResults);
-      return `| ${group.label} | ${job.label} | ${outcome.icon} ${outcome.label} |`;
+      const timing = timings.get(job.label) ?? '';
+      return `| ${group.label} | ${job.label} | ${outcome.icon} ${outcome.label} | ${timing} |`;
     }),
   );
 
-  return ['| Group | Job | Result |', '|---|---|---|', ...rows].join('\n');
+  return ['| Group | Job | Result | Time |', '|---|---|---|---|', ...rows].join('\n');
+}
+
+function readTimings() {
+  return new Map(
+    jobs
+      .filter((job) => job.completed_at)
+      .map((job) => [
+        job.name.split(' · ').pop(),
+        formatSeconds(elapsedSeconds(job.started_at, job.completed_at)),
+      ]),
+  );
+}
+
+function renderTools() {
+  const totals = toolTotals(jobs);
+  if (totals.length === 0) return '';
+
+  const spent = totals.reduce((sum, [, seconds]) => sum + seconds, 0);
+  const rows = totals.map(
+    ([tool, seconds]) =>
+      `| \`${tool}\` | ${formatSeconds(seconds)} | ${Math.round((seconds / spent) * 100)}% |`,
+  );
+
+  return [
+    '',
+    '<details><summary>Time by tool</summary>',
+    '',
+    '| Tool | Time | Share |',
+    '|---|---|---|',
+    ...rows,
+    '',
+    '</details>',
+  ].join('\n');
+}
+
+function readJobs() {
+  const runId = process.env['GITHUB_RUN_ID'];
+  const repository = process.env['GITHUB_REPOSITORY'];
+  if (!runId || !repository) return [];
+
+  try {
+    const raw = execFileSync('gh', ['api', `/repos/${repository}/actions/runs/${runId}/jobs`], {
+      encoding: 'utf8',
+      maxBuffer: 32 * 1024 * 1024,
+    });
+    return JSON.parse(raw).jobs;
+  } catch {
+    return [];
+  }
 }
 
 function renderScope() {

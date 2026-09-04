@@ -10,13 +10,15 @@ inputs:
 runs:
   using: composite
   steps:
+    # package-manager-cache defaults to true and turns itself on because package.json
+    # declares packageManager, so dropping the cache input is not enough. The runner is a
+    # machine we own: ~/.npm and the Nx cache survive between runs on their own, and saving
+    # them through the Actions cache service uploads 1.3 GB per job for nothing.
     - uses: actions/setup-node@v5
       with:
         node-version: 24
+        package-manager-cache: false
 
-    # The runner is a machine we own, so ~/.npm and the Nx cache survive between runs on
-    # their own. Restoring either through the Actions cache service would trade a local
-    # read for a network round trip, which measured twelve times slower.
     - name: Install dependencies
       shell: bash
       run: npm ci --prefer-offline --no-audit --no-fund --loglevel=error
