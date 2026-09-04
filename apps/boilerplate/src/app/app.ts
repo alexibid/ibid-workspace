@@ -24,10 +24,6 @@ import {
 
 const NAV_OFFSET_PROPERTY = '--header-nav-offset';
 
-/**
- * Publishes the measured header height so the navigation panel keeps clearing it as the header
- * gains controls, instead of every app maintaining a hardcoded offset.
- */
 @Component({
   imports: [
     RouterModule,

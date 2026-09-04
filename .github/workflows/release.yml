@@ -112,9 +112,6 @@ jobs:
           name: android
           path: dist/${{ env.APP }}/*.apk
 
-  # macOS bundles are signed with the certificates in the local keychain and would otherwise
-  # bill at ten times the Linux rate, so that leg runs on the Mac registered as a self-hosted
-  # runner. If the machine is asleep the job queues until it wakes.
   desktop:
     name: Package · Desktop ${{ matrix.platform }}
     needs: inspect
@@ -220,8 +217,6 @@ jobs:
           projectId: ibid-32cbe
           target: ${{ env.PROJECT }}
 
-  # A tag de uma biblioteca não empacota nem entrega nada, por isso o pipeline termina
-  # no inspect: o registo de que a tag existiu fica, sem ocupar o runner.
   storybook:
     name: Deliver · Storybook
     needs: inspect

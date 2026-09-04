@@ -85,8 +85,6 @@ jobs:
       - name: Install the browser
         run: npx playwright install chromium
 
-      # One runner takes one job at a time, so the apps run in sequence here rather
-      # than as a matrix: a matrix would only queue behind itself.
       - name: Run every affected journey
         env:
           APPS: ${{ needs.verify.outputs.e2e_apps }}

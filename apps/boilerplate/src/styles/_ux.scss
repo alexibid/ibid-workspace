@@ -1,16 +1,4 @@
-/// App-level overrides that hold the boilerplate to the accessibility floor.
-///
-/// These belong in `ibid-ui` next to the atoms they correct, but moving them there would resize
-/// every control and change the focus behaviour in the products that already consume the
-/// library. They live here until each product can absorb the change.
-///
-/// Specificity is the whole game. An Angular component stylesheet resolves to
-/// `.a-button[_ngcontent-x]` (0,2,0) and, for focus, `.a-button:focus-visible[_ngcontent-x]`
-/// (0,3,0) — and it is injected after this sheet, so ties are lost. Leading with
-/// `body.boilerplate` buys one element and one class, which wins both on merit rather than order.
 
-/// WCAG 2.5.5 asks for 44x44 CSS pixels; 2.5.8 makes 24x24 the floor. The audit found the
-/// navigation toggle at 10x24 and the language toggle at 20px tall, failing even the floor.
 @use 'sass:list';
 
 $min-touch-target: 44px;

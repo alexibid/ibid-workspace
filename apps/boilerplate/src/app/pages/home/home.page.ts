@@ -13,10 +13,6 @@ import {
 } from './design-tokens';
 import { ResolvedToken, ResolvedTokenGroup } from './resolved-token';
 
-/**
- * Reports every colour and typography token. The lists are read again on each theme change,
- * because a theme redefines the very custom properties this page shows.
- */
 @Component({
   selector: 'boilerplate-home-page',
   standalone: true,

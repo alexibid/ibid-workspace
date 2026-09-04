@@ -17,10 +17,6 @@ const THEME_STORAGE_KEY = 'ibid_theme';
 
 const UNCONFIGURED: ThemeConfig = { themes: [], defaultTheme: '' };
 
-/**
- * A theme is a body class. The stylesheet an app compiles decides which classes carry rules;
- * this service only decides which of them the document wears.
- */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly config = inject(THEME_CONFIG_TOKEN, { optional: true }) ?? UNCONFIGURED;
@@ -72,7 +68,6 @@ export class ThemeService {
     try {
       localStorage.setItem(THEME_STORAGE_KEY, id);
     } catch {
-
     }
   }
 }

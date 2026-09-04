@@ -16,11 +16,6 @@ const written = [
 
 if (written.length === 0) throw new Error(`No platform manifest found under ${root}`);
 
-/**
- * Stores are strict about the build number: it must be an integer that only ever grows,
- * and it can never be reused. Packing the semver into major*10000 + minor*100 + patch
- * keeps it monotonic for every version this project can reach.
- */
 function toBuildNumber(semver) {
   const [major, minor, patch] = semver.split('-')[0].split('.').map(Number);
   if ([major, minor, patch].some(Number.isNaN)) throw new Error(`Unreadable version: ${semver}`);

@@ -1,15 +1,5 @@
 @use '../shared' as *;
 
-/// Every raised surface is a sheet of cut paper laid under the content: an irregular scissor
-/// edge, the drop shadow that edge casts, and a fold creasing across it. The sheet is only ever
-/// a background, so the table, the text and the controls on top are untouched.
-///
-/// `drop-shadow` rather than `box-shadow`, because only a filter follows the cut edge instead of
-/// tracing the rectangle the element still occupies.
-///
-/// Cards are plain white paper. A coloured sheet is something an author opts into with a `u-bg-*`
-/// class, never something the theme assigns by position.
-
 @mixin cut-paper($shape: var(--kirigami-cut)) {
   @include decorated-surface;
   background-color: transparent;
@@ -38,7 +28,6 @@
   }
 }
 
-/// The sheets: what a card, a header or a sample is cut out of.
 body.kirigami {
   *,
   *::before,

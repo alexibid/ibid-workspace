@@ -1,9 +1,5 @@
 @use '../shared' as *;
 
-/// Wide washes of nursery paint drift behind the page, with a sheet of cut paper pinned over
-/// them. The layer is fixed and inert, so scrolling never repaints it and nothing in the app can
-/// be covered by it.
-
 body.kirigami {
   position: relative;
   isolation: isolate;

@@ -17,10 +17,6 @@ export const DEVICE_PROJECTS: PlaywrightTestConfig['projects'] = [
 
 const isCI = !!process.env['CI'];
 
-/**
- * A shared runner is an order of magnitude slower than a laptop, so the tight local budgets turn
- * every cold compile into a false red. Locally they stay tight: a slow test is a broken test.
- */
 const budget = {
   test: isCI ? 90 * 1000 : 30 * 1000,
   expect: isCI ? 10 * 1000 : 1000,
