@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { readPipeline } from './pipelines.mjs';
 import { describeOutcome, readJobResults } from './job-results.mjs';
 
@@ -20,7 +21,8 @@ function render(definition, jobResults) {
     '',
     renderTable(definition, jobResults),
     renderScope(),
-  ].join('\n');
+    renderLinks(definition, jobResults),
+  ].filter(Boolean).join('\n');
 }
 
 function renderGraph(definition, jobResults) {
@@ -70,4 +72,40 @@ function renderScope() {
 
 function outcomeOf(job, jobResults) {
   return describeOutcome(jobResults[job.id]?.result);
+}
+
+function renderLinks(definition, jobResults) {
+  if (definition.title !== 'Release · delivery') return '';
+
+  const inspect = jobResults.inspect?.outputs;
+  const project = inspect?.project;
+  if (!project) return '';
+
+  const links = [];
+  const driveUrl = jobResults.drive?.outputs?.drive_url;
+  if (driveUrl) {
+    links.push(`* 📁 **Google Drive (Instaladores)**: [Abrir pasta de instaladores](${driveUrl})`);
+  }
+
+  const webUrl = resolveWebUrl(project);
+  if (webUrl) {
+    links.push(`* 🌐 **Aplicação Web**: [${webUrl}](${webUrl})`);
+  }
+
+  if (links.length === 0) return '';
+  return ['', '### 🚀 Links', '', ...links].join('\n');
+}
+
+function resolveWebUrl(project) {
+  const firebaseRcPath = '.firebaserc';
+  if (!existsSync(firebaseRcPath)) return null;
+
+  try {
+    const config = JSON.parse(readFileSync(firebaseRcPath, 'utf8'));
+    const target = config.targets?.['ibid-32cbe']?.hosting?.[project]?.[0];
+    if (target) return `https://${target}.web.app`;
+  } catch {
+    return null;
+  }
+  return null;
 }

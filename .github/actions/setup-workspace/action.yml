@@ -22,9 +22,7 @@ runs:
     - name: Restore the Nx cache
       uses: actions/cache@v5
       with:
-        path: |
-          .nx/cache
-          .nx/workspace-data
+        path: .nx/cache
         key: nx-${{ runner.os }}-${{ inputs.nx-cache-key }}-${{ github.sha }}
         restore-keys: |
           nx-${{ runner.os }}-${{ inputs.nx-cache-key }}-

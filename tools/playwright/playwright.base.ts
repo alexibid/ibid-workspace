@@ -28,7 +28,7 @@ const budget = {
   navigation: isCI ? 30 * 1000 : 1000,
 };
 
-export const E2E_SERVER_TIMEOUT = isCI ? 300 * 1000 : 120 * 1000;
+export const E2E_SERVER_TIMEOUT = isCI ? 600 * 1000 : 120 * 1000;
 
 export const basePlaywrightConfig: PlaywrightTestConfig = {
   timeout: budget.test,

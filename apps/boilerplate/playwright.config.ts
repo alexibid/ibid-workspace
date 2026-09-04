@@ -19,6 +19,8 @@ export default defineConfig({
     cwd: '../..',
     url: BASE_URL,
     reuseExistingServer: !process.env['CI'],
-    timeout: E2E_SERVER_TIMEOUT
+    timeout: E2E_SERVER_TIMEOUT,
+    stdout: 'pipe',
+    stderr: 'pipe',
   }
 });

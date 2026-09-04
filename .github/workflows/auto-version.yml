@@ -17,7 +17,7 @@ jobs:
   version:
     name: Version · Tag every changed project
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       !startsWith(github.event.workflow_run.head_commit.message, 'chore(release)')

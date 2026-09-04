@@ -21,7 +21,7 @@ jobs:
   inspect:
     name: Inspect · Tag and target
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     outputs:
       project: ${{ steps.target.outputs.project }}
       version: ${{ steps.target.outputs.version }}
@@ -56,7 +56,7 @@ jobs:
     needs: inspect
     if: needs.inspect.outputs.has_web == 'true'
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
@@ -75,7 +75,7 @@ jobs:
     needs: inspect
     if: needs.inspect.outputs.has_android == 'true'
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
@@ -111,10 +111,6 @@ jobs:
         include:
           - platform: macos
             runner: [self-hosted, macOS, ARM64]
-          - platform: linux
-            runner: ubuntu-22.04
-          - platform: windows
-            runner: windows-latest
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
@@ -150,7 +146,7 @@ jobs:
       !cancelled() && needs.inspect.outputs.has_drive == 'true' &&
       (needs.inspect.outputs.has_android == 'true' || needs.inspect.outputs.has_desktop == 'true')
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     outputs:
       drive_url: ${{ steps.share.outputs.drive_url }}
     env:
@@ -168,8 +164,11 @@ jobs:
         env:
           SOURCE_DIR: artifacts
           TARGET_DIR: dist/${{ env.PROJECT }}
-      - name: Install rclone
-        run: sudo apt-get update && sudo apt-get install -y rclone
+      - name: Ensure rclone is installed
+        run: |
+          if ! command -v rclone &> /dev/null; then
+            brew install rclone
+          fi
       - name: Upload the installers
         env:
           RCLONE_CONF_BASE64: ${{ secrets.RCLONE_CONF_BASE64 }}
@@ -194,7 +193,7 @@ jobs:
     needs: [inspect, web]
     if: needs.inspect.outputs.has_web == 'true' && needs.inspect.outputs.has_hosting == 'true'
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       PROJECT: ${{ needs.inspect.outputs.project }}
     steps:
@@ -216,7 +215,7 @@ jobs:
     needs: [inspect, web, android, desktop, drive, hosting]
     if: always()
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v5
       - name: Draw the execution graph
@@ -230,7 +229,7 @@ jobs:
     needs: [inspect, web, android, desktop, drive, hosting]
     if: always()
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v5
       - name: Fail when any group did not pass

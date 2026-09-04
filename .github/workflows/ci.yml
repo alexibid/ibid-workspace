@@ -17,7 +17,7 @@ jobs:
   scope:
     name: Setup · Affected scope
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     outputs:
       base: ${{ steps.shas.outputs.base }}
       head: ${{ steps.shas.outputs.head }}
@@ -48,7 +48,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.has_projects == 'true'
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-workspace
@@ -62,7 +62,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.has_projects == 'true'
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       NX_BASE: ${{ needs.scope.outputs.base }}
       NX_HEAD: ${{ needs.scope.outputs.head }}
@@ -80,7 +80,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.has_projects == 'true'
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       NX_BASE: ${{ needs.scope.outputs.base }}
       NX_HEAD: ${{ needs.scope.outputs.head }}
@@ -98,7 +98,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.has_projects == 'true'
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       NX_BASE: ${{ needs.scope.outputs.base }}
       NX_HEAD: ${{ needs.scope.outputs.head }}
@@ -116,7 +116,7 @@ jobs:
     needs: [scope, build]
     if: needs.scope.outputs.has_e2e == 'true'
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     strategy:
       fail-fast: false
       matrix:
@@ -142,7 +142,7 @@ jobs:
     needs: [scope, build]
     if: needs.scope.outputs.has_e2e == 'true'
     timeout-minutes: 45
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     strategy:
       fail-fast: false
       matrix:
@@ -168,7 +168,7 @@ jobs:
     needs: [scope, lint, typecheck, unit, build, e2e, a11y]
     if: always()
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v5
       - name: Draw the execution graph
@@ -182,7 +182,7 @@ jobs:
     needs: [scope, lint, typecheck, unit, build, e2e, a11y]
     if: always()
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     steps:
       - uses: actions/checkout@v5
       - name: Fail when any group did not pass

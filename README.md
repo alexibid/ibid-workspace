@@ -288,6 +288,27 @@ See the dependency graph:
 npx nx graph
 ```
 
+## macOS Menu Bar Integration (xbar)
+
+A lightweight macOS menu bar plugin lives in `tools/xbar/ibid-runner.10s.sh` to manage workspace builds, local runner services, and deliveries:
+
+- **Minimal template icon**: Uses the `.i` design token favicon with dynamic status indicators (`⟳` building, `○` stopped, or clean icon when running).
+- **Background Runner Control**: Start, stop, restart, and inspect logs for the local GitHub Actions runner (auto-detects `actions.runner.*`, e.g. `actions.runner.alexibid-ibid-workspace.<runner-name>`).
+- **Workspace Actions**: Run fast affected checks (`check:fast`), full workspace builds (`check:build`), or deploy all web apps to Firebase Hosting.
+- **Product Actions (Oh Save Me!, Boilerplate, Camila)**:
+  - 1-click native installer builds (`.dmg` + `.apk`).
+  - Automatic mounting of macOS `.dmg` installers.
+  - Direct USB installation to connected Android devices (`adb install -r`).
+  - 1-click Firebase Hosting deployment per application.
+  - Direct links to live Web Apps (`https://ibid-ohsaveme.web.app`, `https://ibid-boilerplate.web.app`, `https://ibid-camila.web.app`).
+- **Google Drive Sync**: Synchronizes all native installers (`.dmg`, `.apk`, `.exe`, `.msi`, `.deb`, `.rpm`, `.AppImage`) from `dist/` directly into the local Google Drive folder (`ibid-builds/`).
+
+To install into [xbar](https://xbarapp.com/):
+
+```bash
+ln -sf "$(pwd)/tools/xbar/ibid-runner.10s.sh" ~/Library/Application\ Support/xbar/plugins/
+```
+
 ## Build output
 
 Everything lands in `dist/<project>/`, native artifacts included:
