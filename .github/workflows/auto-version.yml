@@ -41,7 +41,7 @@ jobs:
           HUSKY: 0
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          npx nx release --yes
+          npx nx release --yes --skip-publish
           git push --follow-tags origin main
 
       - name: Summary
