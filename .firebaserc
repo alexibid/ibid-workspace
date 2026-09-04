@@ -5,7 +5,7 @@
   "targets": {
     "ibid-32cbe": {
       "hosting": {
-        "oh-save-me": ["savvyjar-app"]
+        "oh-save-me": ["ohsaveme-app"]
       }
     }
   }

@@ -8,6 +8,10 @@ export default [
     ignores: [
       '**/dist',
       '**/out-tsc',
+      '.angular',
+      '.nx',
+      'coverage',
+      'test-results',
       '**/vitest.config.*.timestamp*',
       '**/platforms/**',
       '**/documentation.json',

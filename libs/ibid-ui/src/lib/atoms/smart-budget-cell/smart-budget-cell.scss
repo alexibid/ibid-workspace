@@ -11,7 +11,7 @@
   white-space: nowrap;
   gap: 4px;
   background-color: color-mix(in srgb, var(--category-color, #a8a29e) 18%, #ffffff);
-  color: color-mix(in srgb, var(--category-color, #1c1917) 80%, #1c1917);
+  color: color-mix(in srgb, var(--category-color, #1c1917) 40%, #1c1917);
   border: 1px solid color-mix(in srgb, var(--category-color, #a8a29e) 30%, transparent);
   transition: background-color 150ms ease, border-color 150ms ease;
 
@@ -67,7 +67,7 @@ body.sea-glass-pebbles .a-smart-budget-cell {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--category-color, var(--glass-tint, #0d9488)) 35%, rgba(255, 255, 255, 0.65));
-  color: color-mix(in srgb, var(--category-color, #1c1917) 85%, #1c1917);
+  color: color-mix(in srgb, var(--category-color, #1c1917) 40%, #1c1917);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 2px color-mix(in srgb, var(--category-color, transparent) 12%, transparent);
 
   &--project {

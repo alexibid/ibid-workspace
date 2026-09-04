@@ -4,131 +4,136 @@ on:
   push:
     tags: ['*-v*', 'v*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release, for example oh-save-me-v1.2.3
+        required: true
 
 permissions:
-  contents: write
+  contents: read
+  actions: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   inspect:
-    name: Inspect Tag
+    name: Inspect · Tag and target
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     outputs:
-      project: ${{ steps.parse.outputs.project }}
-      version: ${{ steps.parse.outputs.version }}
-      is_app: ${{ steps.parse.outputs.is_app }}
+      project: ${{ steps.target.outputs.project }}
+      version: ${{ steps.target.outputs.version }}
+      is_app: ${{ steps.target.outputs.is_app }}
+      has_web: ${{ steps.target.outputs.has_web }}
+      has_android: ${{ steps.target.outputs.has_android }}
+      has_desktop: ${{ steps.target.outputs.has_desktop }}
+      has_drive: ${{ steps.capabilities.outputs.has_drive }}
+      has_hosting: ${{ steps.capabilities.outputs.has_hosting }}
     steps:
-      - id: parse
+      - uses: actions/checkout@v5
+
+      - name: Resolve what the tag releases
+        id: target
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: node tools/ci/release-target.mjs >> "$GITHUB_OUTPUT"
+
+      - name: Resolve the configured delivery channels
+        id: capabilities
+        env:
+          RCLONE_CONF_BASE64: ${{ secrets.RCLONE_CONF_BASE64 }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          if [[ "$TAG" =~ ^(.+)-v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
-            PROJECT="${BASH_REMATCH[1]}"
-            VERSION="${BASH_REMATCH[2]}"
-          else
-            PROJECT="oh-save-me"
-            VERSION="${TAG#v}"
-          fi
-          echo "project=$PROJECT" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if [ "$PROJECT" = "oh-save-me" ] || [ "$PROJECT" = "boilerplate" ] || [ "$PROJECT" = "camila" ]; then
-            echo "is_app=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_app=false" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Tag: $TAG -> Project: $PROJECT, Version: $VERSION"
+          {
+            echo "has_drive=${{ secrets.RCLONE_CONF_BASE64 != '' }}"
+            echo "has_hosting=${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}"
+          } >> "$GITHUB_OUTPUT"
 
   web:
-    name: Web build
+    name: Package · Web bundle
     needs: inspect
-    if: needs.inspect.outputs.is_app == 'true'
+    if: needs.inspect.outputs.has_web == 'true'
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       APP: ${{ needs.inspect.outputs.project }}
-      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: npm }
-      - run: npm ci
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: release
       - run: npx nx build "$APP"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: web
           path: dist/${{ env.APP }}/browser
 
   android:
-    name: Android APK
-    needs: [inspect, web]
-    if: needs.inspect.outputs.project == 'oh-save-me'
+    name: Package · Android APK
+    needs: inspect
+    if: needs.inspect.outputs.has_android == 'true'
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
       APP: ${{ needs.inspect.outputs.project }}
-      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: npm }
-      - uses: actions/setup-java@v4
-        with: { distribution: zulu, java-version: '21' }
-      - run: npm ci
-      - run: npx nx build "$APP"
-      - name: Sync Capacitor
-        working-directory: apps/oh-save-me/platforms/mobile
-        run: |
-          npm install
-          npx cap sync android
-      - name: Build the APK
-        working-directory: apps/oh-save-me/platforms/mobile/android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
-      # Renames the file to <app>.<version>.apk and places it next to the other builds.
-      - name: Collect into dist/
-        run: |
-          node tools/builder/collect-artifact.mjs --project "$APP" \
-            --from apps/oh-save-me/platforms/mobile/android/app/build/outputs/apk/debug --ext apk
-      - uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: release
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '21'
+      - name: Install the mobile platform dependencies
+        working-directory: apps/${{ env.APP }}/platforms/mobile
+        run: npm ci --no-audit --no-fund --loglevel=error
+      - run: npx nx mobile-apk "$APP"
+      - uses: actions/upload-artifact@v6
         with:
           name: android
-          path: dist/oh-save-me/*.apk
+          path: dist/${{ env.APP }}/*.apk
 
+  # macOS bundles are signed with the certificates in the local keychain and would otherwise
+  # bill at ten times the Linux rate, so that leg runs on the Mac registered as a self-hosted
+  # runner. If the machine is asleep the job queues until it wakes.
   desktop:
-    name: Desktop (${{ matrix.os }})
-    needs: [inspect, web]
-    if: needs.inspect.outputs.project == 'oh-save-me'
+    name: Package · Desktop ${{ matrix.platform }}
+    needs: inspect
+    if: needs.inspect.outputs.has_desktop == 'true'
+    timeout-minutes: 90
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-22.04, windows-latest]
-    runs-on: ${{ matrix.os }}
+        include:
+          - platform: macos
+            runner: [self-hosted, macOS, ARM64]
+          - platform: linux
+            runner: ubuntu-22.04
+          - platform: windows
+            runner: windows-latest
     env:
       APP: ${{ needs.inspect.outputs.project }}
-      VERSION: ${{ needs.inspect.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: npm }
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: release-${{ matrix.platform }}
       - uses: dtolnay/rust-toolchain@stable
-      - name: System dependencies (Linux)
-        if: matrix.os == 'ubuntu-22.04'
+      - name: System dependencies for Tauri
+        if: matrix.platform == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file \
             libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-      - run: npm ci
-      - run: npx nx build ${{ env.APP }}
-      - name: Build with Tauri
-        working-directory: apps/oh-save-me
-        env:
-          CARGO_TARGET_DIR: ../../dist/oh-save-me/desktop
-        run: npx tauri build --config platforms/desktop/src-tauri/tauri.conf.json
-      - name: Collect into dist/
+      - run: npx nx desktop-build "$APP"
         shell: bash
-        run: |
-          node tools/builder/collect-artifact.mjs --project ${{ env.APP }} \
-            --from dist/oh-save-me/desktop/release/bundle --ext dmg,msi,exe,deb,rpm,AppImage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
-          name: desktop-${{ matrix.os }}
+          name: desktop-${{ matrix.platform }}
           path: |
             dist/${{ env.APP }}/*.dmg
             dist/${{ env.APP }}/*.msi
@@ -138,84 +143,83 @@ jobs:
             dist/${{ env.APP }}/*.AppImage
           if-no-files-found: ignore
 
-  publish:
-    name: Publish
-    needs: [inspect, web, android, desktop]
-    if: always() && needs.inspect.outputs.is_app == 'true'
+  drive:
+    name: Deliver · Google Drive
+    needs: [inspect, android, desktop]
+    if: "!cancelled() && needs.inspect.outputs.is_app == 'true' && needs.inspect.outputs.has_drive == 'true'"
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       PROJECT: ${{ needs.inspect.outputs.project }}
       VERSION: ${{ needs.inspect.outputs.version }}
-      RCLONE_CONF_BASE64: ${{ secrets.RCLONE_CONF_BASE64 }}
-      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
       DRIVE_FOLDER: ${{ vars.DRIVE_FOLDER || 'ibid-builds' }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Gather the installers
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with:
           path: artifacts
           pattern: '{android,desktop-*}'
-      - name: Collect them in one place
-        run: |
-          mkdir -p dist/${{ env.PROJECT }}
-          find artifacts -type f -exec mv -n {} dist/${{ env.PROJECT }}/ \;
-          ls -la dist/${{ env.PROJECT }}
-
-      - name: Attach to the GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/${{ env.PROJECT }}/${{ env.PROJECT }}.*
-          fail_on_unmatched_files: false
-
-      # --- Google Drive -------------------------------------------------------------------
-      # Uploads only installers carrying the version in their name; the web build and the Cargo
-      # target are left out. Requires the RCLONE_CONF_BASE64 secret and DRIVE_FOLDER (see README).
+      - name: Gather the installers
+        run: node tools/ci/gather-installers.mjs
+        env:
+          SOURCE_DIR: artifacts
+          TARGET_DIR: dist/${{ env.PROJECT }}
       - name: Install rclone
-        if: env.RCLONE_CONF_BASE64 != ''
         run: sudo apt-get update && sudo apt-get install -y rclone
-
-      - name: Upload the installers to Google Drive
-        if: env.RCLONE_CONF_BASE64 != ''
+      - name: Upload the installers
+        env:
+          RCLONE_CONF_BASE64: ${{ secrets.RCLONE_CONF_BASE64 }}
         run: |
           mkdir -p ~/.config/rclone
-          echo "${{ env.RCLONE_CONF_BASE64 }}" | base64 -d > ~/.config/rclone/rclone.conf
-          rclone copy dist/${{ env.PROJECT }} "gdrive:${{ env.DRIVE_FOLDER }}/${{ env.PROJECT }}/v${{ env.VERSION }}" \
-            --include "${{ env.PROJECT }}.*" --progress
+          printf '%s' "$RCLONE_CONF_BASE64" | base64 -d > ~/.config/rclone/rclone.conf
+          rclone copy "dist/$PROJECT" "gdrive:$DRIVE_FOLDER/$PROJECT/v$VERSION" --stats-one-line
           rm -f ~/.config/rclone/rclone.conf
 
-      - name: Warn when Drive is not configured
-        if: env.RCLONE_CONF_BASE64 == ''
-        run: |
-          echo "> **Google Drive is not configured.** The \`RCLONE_CONF_BASE64\` secret is missing; the installers are only on the GitHub release." >> "$GITHUB_STEP_SUMMARY"
-
-      # --- Web ----------------------------------------------------------------------------
-      - name: Restore the web build
-        uses: actions/download-artifact@v4
+  hosting:
+    name: Deliver · Firebase Hosting
+    needs: [inspect, web]
+    if: needs.inspect.outputs.has_web == 'true' && needs.inspect.outputs.has_hosting == 'true'
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    env:
+      PROJECT: ${{ needs.inspect.outputs.project }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with:
           name: web
           path: dist/${{ env.PROJECT }}/browser
-
-      - name: Publish no Firebase Hosting
-        if: startsWith(github.ref, 'refs/tags/') && env.PROJECT == 'oh-save-me' && env.FIREBASE_SERVICE_ACCOUNT != ''
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: ibid-32cbe
+          target: ${{ env.PROJECT }}
 
-      - name: Summary
-        if: always()
-        run: |
-          {
-            echo "### Release ${{ env.PROJECT }} v${VERSION}"
-            echo ""
-            echo "| File | Size |"
-            echo "|---|---|"
-            for f in dist/${{ env.PROJECT }}/${{ env.PROJECT }}.*; do
-              [ -f "$f" ] && echo "| \`$(basename "$f")\` | $(du -h "$f" | cut -f1) |"
-            done
-          } >> "$GITHUB_STEP_SUMMARY"
+  report:
+    name: Report · Execution graph
+    needs: [inspect, web, android, desktop, drive, hosting]
+    if: always()
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Draw the execution graph
+        env:
+          PIPELINE: release
+          JOB_RESULTS: ${{ toJson(needs) }}
+        run: node tools/ci/execution-graph.mjs >> "$GITHUB_STEP_SUMMARY"
+
+  verified:
+    name: Release verified
+    needs: [inspect, web, android, desktop, drive, hosting]
+    if: always()
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fail when any group did not pass
+        env:
+          JOB_RESULTS: ${{ toJson(needs) }}
+        run: node tools/ci/assert-groups-passed.mjs

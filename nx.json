@@ -32,7 +32,7 @@
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
-        "targetName": "eslint:lint"
+        "targetName": "lint"
       }
     },
     {
@@ -46,6 +46,18 @@
   ],
   "analytics": false,
   "targetDefaults": {
+    "lint": {
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.mjs",
+        {
+          "externalDependencies": [
+            "eslint"
+          ]
+        }
+      ]
+    },
     "@nx/angular:ng-packagr-lite": {
       "cache": false,
       "dependsOn": [
@@ -61,17 +73,6 @@
       "inputs": [
         "default",
         "^production"
-      ]
-    },
-    "@nx/eslint:lint": {
-      "cache": false,
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.mjs",
-        "{workspaceRoot}/tools/eslint-rules/**/*"
       ]
     },
     "@angular/build:application": {

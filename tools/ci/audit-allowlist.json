@@ -1,0 +1,26 @@
+{
+  "failOn": ["critical", "high"],
+  "accepted": [
+    {
+      "package": "xlsx",
+      "advisories": [1108110, 1108111],
+      "reason": "SheetJS stopped publishing to the npm registry, so no registry version fixes these. The parser only reads spreadsheets the user picks themselves, never remote input. Getting out means the SheetJS CDN tarball or a different reader.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@angular-devkit/build-angular",
+      "reason": "Build-time only devDependency, pinned by Angular 22. Never reaches the shipped bundle. The fix arrives with the next Angular patch, not with npm audit fix.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "less",
+      "reason": "Reached only through @angular-devkit/build-angular, @angular/build, ng-packagr and vite. Build-time only, never in the shipped bundle.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "image-size",
+      "reason": "Reached only through less, which is itself build-time only. The advisories are denial of service on malformed images the build never reads.",
+      "reviewBy": "2026-10-31"
+    }
+  ]
+}

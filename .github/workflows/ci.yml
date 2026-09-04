@@ -14,41 +14,178 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify:
-    name: Lint, tests and build
+  scope:
+    name: Setup · Affected scope
+    timeout-minutes: 15
     runs-on: ubuntu-latest
+    outputs:
+      base: ${{ steps.shas.outputs.base }}
+      head: ${{ steps.shas.outputs.head }}
+      projects: ${{ steps.affected.outputs.projects }}
+      e2e_apps: ${{ steps.affected.outputs.e2e_apps }}
+      has_projects: ${{ steps.affected.outputs.has_projects }}
+      has_e2e: ${{ steps.affected.outputs.has_e2e }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-workspace
         with:
-          node-version: 24
-          cache: npm
+          nx-cache-key: ci
 
-      - run: npm ci
+      - uses: nrwl/nx-set-shas@v5
+        id: shas
 
-      # Sets the comparison base so `nx affected` only runs what the changes touch.
-      - uses: nrwl/nx-set-shas@v4
+      - name: Resolve the affected projects
+        id: affected
+        env:
+          NX_BASE: ${{ steps.shas.outputs.base }}
+          NX_HEAD: ${{ steps.shas.outputs.head }}
+        run: node tools/ci/affected-scope.mjs >> "$GITHUB_OUTPUT"
 
-      - name: Lint
-        run: npx nx affected -t lint --parallel=3
+  lint:
+    name: Static · Lint
+    needs: scope
+    if: needs.scope.outputs.has_projects == 'true'
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: ci
+      - name: Lint every project against the warning ceiling
+        run: node tools/ci/lint-budget.mjs
 
-      - name: Unit tests
-        run: npx nx affected -t test --parallel=3
+  typecheck:
+    name: Static · Types
+    needs: scope
+    if: needs.scope.outputs.has_projects == 'true'
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    env:
+      NX_BASE: ${{ needs.scope.outputs.base }}
+      NX_HEAD: ${{ needs.scope.outputs.head }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: ci
+      - run: npx nx affected -t typecheck --parallel=3
 
-      - name: Build
-        run: npx nx affected -t build --parallel=3
+  unit:
+    name: Tests · Unit
+    needs: scope
+    if: needs.scope.outputs.has_projects == 'true'
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      NX_BASE: ${{ needs.scope.outputs.base }}
+      NX_HEAD: ${{ needs.scope.outputs.head }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: ci
+      - run: npx nx affected -t test --parallel=3
 
-      - name: Summary
-        if: always()
-        run: |
-          {
-            echo "### Verification"
-            echo ""
-            echo "| | |"
-            echo "|---|---|"
-            echo "| Version | \`$(node -p "require('./package.json').version")\` |"
-            echo "| Affected projects | \`$(npx nx show projects --affected 2>/dev/null | tr '\n' ' ')\` |"
-          } >> "$GITHUB_STEP_SUMMARY"
+  build:
+    name: Build · Apps and libraries
+    needs: scope
+    if: needs.scope.outputs.has_projects == 'true'
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      NX_BASE: ${{ needs.scope.outputs.base }}
+      NX_HEAD: ${{ needs.scope.outputs.head }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: ci
+      - run: npx nx affected -t build --parallel=3
+
+  e2e:
+    name: Journeys · E2E ${{ matrix.app }}
+    needs: [scope, build]
+    if: needs.scope.outputs.has_e2e == 'true'
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.scope.outputs.e2e_apps) }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: ci-journeys
+      - run: npx playwright install --with-deps chromium
+      - run: npx nx e2e ${{ matrix.app }}
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: e2e-${{ matrix.app }}
+          path: |
+            apps/${{ matrix.app }}/.playwright-artifacts
+            test-results
+          if-no-files-found: ignore
+
+  a11y:
+    name: Journeys · Accessibility ${{ matrix.app }}
+    needs: [scope, build]
+    if: needs.scope.outputs.has_e2e == 'true'
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.scope.outputs.e2e_apps) }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: ci-journeys
+      - run: npx playwright install --with-deps chromium
+      - run: npx nx test-a11y ${{ matrix.app }}
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: a11y-${{ matrix.app }}
+          path: |
+            apps/${{ matrix.app }}/.playwright-artifacts
+            test-results
+          if-no-files-found: ignore
+
+  report:
+    name: Report · Execution graph
+    needs: [scope, lint, typecheck, unit, build, e2e, a11y]
+    if: always()
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Draw the execution graph
+        env:
+          AFFECTED_PROJECTS: ${{ needs.scope.outputs.projects }}
+          JOB_RESULTS: ${{ toJson(needs) }}
+        run: node tools/ci/execution-graph.mjs >> "$GITHUB_STEP_SUMMARY"
+
+  verified:
+    name: CI verified
+    needs: [scope, lint, typecheck, unit, build, e2e, a11y]
+    if: always()
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fail when any group did not pass
+        env:
+          JOB_RESULTS: ${{ toJson(needs) }}
+        run: node tools/ci/assert-groups-passed.mjs

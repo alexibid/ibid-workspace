@@ -60,7 +60,7 @@
         @for (opt of group.options; track opt.value) {
           <div
             class="m-searchable-select__option"
-            [class.a-category-select__option--project]="group.mode === 'checkbox'"
+            [class.m-searchable-select__option--project]="group.mode === 'checkbox'"
             [class.m-searchable-select__option--selected]="opt.selected || opt.value === value"
             role="option"
             [attr.aria-selected]="opt.selected || opt.value === value"

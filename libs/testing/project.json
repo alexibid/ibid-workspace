@@ -3,10 +3,9 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/testing/src",
   "projectType": "library",
-  "tags": ["type:lib", "scope:shared"],
-  "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    }
-  }
+  "tags": [
+    "type:lib",
+    "scope:shared"
+  ],
+  "targets": {}
 }

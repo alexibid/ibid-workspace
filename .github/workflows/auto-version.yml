@@ -1,59 +1,71 @@
 name: Automatic versioning
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
+
+permissions:
+  contents: write
 
 concurrency:
   group: auto-version
   cancel-in-progress: false
 
-permissions:
-  contents: write
-
 jobs:
   version:
-    name: Compute and tag the version
+    name: Version · Tag every changed project
+    timeout-minutes: 30
     runs-on: ubuntu-latest
-    # Avoids reacting to the release commit this workflow creates.
-    if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      !startsWith(github.event.workflow_run.head_commit.message, 'chore(release)')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
+          ref: main
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
+      - name: Skip when main has already moved on
+        id: guard
+        env:
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          CURRENT="$(git rev-parse HEAD)"
+          if [ "$CURRENT" != "$VERIFIED_SHA" ]; then
+            echo "main is at $CURRENT, but CI verified $VERIFIED_SHA; the newer commit will version itself."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - run: npm ci
+      - uses: ./.github/actions/setup-workspace
+        if: steps.guard.outputs.proceed == 'true'
+        with:
+          nx-cache-key: version
 
       - name: Git identity
+        if: steps.guard.outputs.proceed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Compute independent versions and changelogs with Nx
-        id: release
+      - name: Compute the independent versions and changelogs
+        if: steps.guard.outputs.proceed == 'true'
         env:
           HUSKY: 0
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          npx nx release --yes --skip-publish
+          BEFORE="$(git tag --list)"
+          npx nx release --skip-publish
           git push --follow-tags origin main
+          comm -13 <(echo "$BEFORE" | sort) <(git tag --list | sort) > created-tags.txt
+          cat created-tags.txt
 
       - name: Summary
-        run: |
-          {
-            echo "### Independent Nx Release Complete"
-            echo ""
-            echo "Independent versioning and changelogs generated and pushed to origin."
-            if [ -z "${{ secrets.RELEASE_TOKEN }}" ]; then
-              echo ""
-              echo "> **RELEASE_TOKEN is not set.** The tag was pushed with GITHUB_TOKEN,"
-              echo "> which does not start other workflows, so **release.yml did not run**. Add a personal"
-              echo "> token with \`contents:write\` as the \`RELEASE_TOKEN\` secret, or trigger the release manually."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+        if: always() && steps.guard.outputs.proceed == 'true'
+        env:
+          RELEASE_TOKEN_SET: ${{ secrets.RELEASE_TOKEN != '' }}
+        run: node tools/ci/version-summary.mjs >> "$GITHUB_STEP_SUMMARY"

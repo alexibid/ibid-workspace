@@ -17,21 +17,34 @@ export const DEVICE_PROJECTS: PlaywrightTestConfig['projects'] = [
 
 const isCI = !!process.env['CI'];
 
+/**
+ * A shared runner is an order of magnitude slower than a laptop, so the tight local budgets turn
+ * every cold compile into a false red. Locally they stay tight: a slow test is a broken test.
+ */
+const budget = {
+  test: isCI ? 90 * 1000 : 30 * 1000,
+  expect: isCI ? 10 * 1000 : 1000,
+  action: isCI ? 15 * 1000 : 1000,
+  navigation: isCI ? 30 * 1000 : 1000,
+};
+
+export const E2E_SERVER_TIMEOUT = isCI ? 300 * 1000 : 120 * 1000;
+
 export const basePlaywrightConfig: PlaywrightTestConfig = {
-  timeout: 30 * 1000,
+  timeout: budget.test,
   expect: {
-    timeout: 1000,
+    timeout: budget.expect,
   },
   fullyParallel: false,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
   workers: 1,
-  reporter: 'list',
+  reporter: isCI ? [['list'], ['github']] : 'list',
   outputDir: '.playwright-artifacts/',
   projects: DEVICE_PROJECTS,
   use: {
-    actionTimeout: 1000,
-    navigationTimeout: 1000,
+    actionTimeout: budget.action,
+    navigationTimeout: budget.navigation,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

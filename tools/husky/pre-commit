@@ -1,3 +1,17 @@
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -n "$STAGED" ]; then
+  printf '%s\n' "$STAGED" | tr '\n' '\0' \
+    | xargs -0 npx --no-install secretlint --secretlintignore .secretlintignore
+fi
+
+# Dependency advisories only move when a manifest does, so the network round trip is
+# spent on the commits that can actually introduce one. Every lockfile counts, not just
+# the one at the root: the Capacitor platform carries its own.
+if printf '%s\n' "$STAGED" | grep -qE '(^|/)package(-lock)?\.json$'; then
+  node tools/ci/audit.mjs
+fi
+
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   npx nx affected -t lint test
