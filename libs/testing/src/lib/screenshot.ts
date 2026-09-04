@@ -1,7 +1,23 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Locator, Page, TestInfo } from '@playwright/test';
 import { DEFAULT_APP_SHELL } from './app-shell-selectors';
 
 export type DeviceFolder = 'mobile' | 'tablet' | 'desktop';
+
+export function getWorkspaceRoot(): string {
+  if (process.env['NX_WORKSPACE_ROOT']) {
+    return process.env['NX_WORKSPACE_ROOT'];
+  }
+  let current = process.cwd();
+  while (current !== path.dirname(current)) {
+    if (fs.existsSync(path.join(current, 'nx.json'))) {
+      return current;
+    }
+    current = path.dirname(current);
+  }
+  return process.cwd();
+}
 
 export function getDeviceFolder(testInfo: TestInfo): DeviceFolder {
   const name = testInfo.project.name.toLowerCase();
@@ -10,10 +26,19 @@ export function getDeviceFolder(testInfo: TestInfo): DeviceFolder {
   return 'desktop';
 }
 
+export function getProjectFolder(testInfo: TestInfo): string {
+  const filePath = testInfo.file ?? '';
+  const match = filePath.match(/(?:apps|libs)\/([a-zA-Z0-9_-]+)/);
+  if (match) return match[1];
+  return 'shared';
+}
+
 export function getScreenshotPath(testInfo: TestInfo, group: string, filename: string): string {
+  const root = getWorkspaceRoot();
+  const project = getProjectFolder(testInfo);
   const device = getDeviceFolder(testInfo);
   const cleanFilename = filename.endsWith('.png') ? filename : `${filename}.png`;
-  return `test-results/${device}/${group}/${cleanFilename}`;
+  return path.join(root, 'test-results', project, device, group, cleanFilename);
 }
 
 export async function takeScreenshot(

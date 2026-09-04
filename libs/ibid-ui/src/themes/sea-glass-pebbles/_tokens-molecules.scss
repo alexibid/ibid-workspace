@@ -1,0 +1,24 @@
+body.sea-glass-pebbles {
+  --ibid-card-surface-tint: var(--glass-tint-teal);
+  --ibid-card-surface-edge: var(--glass-edge-teal);
+  --ibid-card-surface-wash: var(--glass-wash-teal);
+  --ibid-card-radius: var(--glass-radius-lg);
+  --ibid-card-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-metric-card-surface-tint: var(--glass-tint-teal);
+  --ibid-metric-card-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-stat-card-surface-tint: var(--glass-tint-teal);
+  --ibid-stat-card-bg-opacity: var(--glass-wash-opacity, 0.12);
+
+  --ibid-nav-menu-font-family: var(--font-ui);
+  --ibid-nav-menu-font-size: var(--text-m);
+
+  --ibid-info-balloon-font-family: var(--font-sans);
+  --ibid-info-balloon-font-size: var(--text-s);
+  --ibid-info-balloon-bg-opacity: 0.85;
+
+  --ibid-table-header-font-family: var(--font-ui);
+  --ibid-table-header-font-size: var(--text-xs);
+  --ibid-table-header-bg-opacity: var(--glass-wash-opacity, 0.12);
+}

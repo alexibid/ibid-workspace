@@ -76,12 +76,12 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
 
-    expect(document.body.classList.contains('glass-surface')).toBe(true);
+    expect(document.body.classList.contains('sea-glass-pebbles')).toBe(true);
 
     TestBed.inject(ThemeService).select('kirigami');
     await fixture.whenStable();
 
-    expect(document.body.classList.contains('glass-surface')).toBe(false);
+    expect(document.body.classList.contains('sea-glass-pebbles')).toBe(false);
     expect(document.body.classList.contains('kirigami')).toBe(true);
   });
 });

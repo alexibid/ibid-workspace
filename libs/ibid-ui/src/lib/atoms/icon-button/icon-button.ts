@@ -1,14 +1,15 @@
-import { Component, Output, EventEmitter, input, booleanAttribute } from '@angular/core';
+import { Component, Output, EventEmitter, input, booleanAttribute, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   selector: 'ibid-icon-button',
   standalone: true,
   imports: [CommonModule, HandDrawnDirective],
   template: `
     <button
-      ibidHandDrawn
+      [ibidHandDrawn]="4"
       type="button"
       class="a-icon-button"
       [attr.aria-label]="ariaLabel() || title() || null"

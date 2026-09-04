@@ -1,4 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 :host {
   display: block;
@@ -22,33 +23,50 @@
   }
 }
 
-.a-select-field {
+.a-select {
+  display: block;
   width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 
-  .mdc-text-field--outlined {
-    --mdc-shape-small: inherit;
-    border-radius: inherit;
-    height: 36px;
-    padding-left: 12px;
-    padding-right: 8px;
+  &--full {
+    width: 100%;
+  }
+
+  &--fixed {
+    width: 240px;
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+    gap: var(--space-2, 8px);
+    height: var(--ibid-select-height, var(--header-elem-height, 38px));
+    min-height: var(--ibid-select-height, var(--header-elem-height, 38px));
+    padding: 0 8px 0 12px;
+    font-family: var(--ibid-select-font-family, var(--font-ui));
+    font-size: var(--ibid-select-font-size, var(--text-m));
+    font-weight: var(--ibid-select-font-weight, var(--weight-medium, 500));
+    cursor: pointer;
+    color: var(--ibid-select-color, var(--color-text, #2c2c2a));
     background-color: var(--color-surface);
     border: 1px solid var(--color-border, #e5e3dc);
+    border-radius: var(--ibid-select-contour-edges, var(--ibid-contour-edges, var(--ibid-select-radius, var(--radius-control))));
+    clip-path: var(--ibid-select-contour-corners, var(--ibid-contour-corners, none));
+    outline: none;
+    box-sizing: border-box;
     @include transition-standard;
 
-    .mat-mdc-form-field-infix,
-    .mat-mdc-select-value,
-    .a-select-field__custom-arrow {
+    .a-select__value,
+    .a-select__arrow {
       position: relative;
       z-index: 1;
-    }
-
-    .mat-mdc-form-field-infix {
-      padding-top: 6px;
-      padding-bottom: 6px;
-      min-height: 36px;
-      display: flex;
-      align-items: center;
-      width: 100%;
     }
 
     &:hover {
@@ -56,105 +74,19 @@
     }
   }
 
-  .mdc-notched-outline {
-    &__leading,
-    &__notch,
-    &__trailing {
-      border: none;
-      border-radius: 0;
-    }
-  }
-
-  .mat-mdc-select-value {
-    font-family: var(--font-ui);
-    font-size: var(--text-m);
-    font-weight: var(--weight-medium, 500);
-    color: var(--color-text, #2c2c2a);
-  }
-
-  .mat-mdc-select-arrow {
-    display: none;
-  }
-}
-
-.cdk-overlay-pane:has(div.m-dropdown-panel) {
-  min-width: max-content !important;
-  width: max-content !important;
-  max-width: 80vw !important;
-}
-
-div.m-dropdown-panel.mat-mdc-select-panel {
-  padding: 6px 8px;
-  width: max-content;
-  min-width: max-content;
-  max-width: 80vw;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  filter: drop-shadow(0 8px 20px rgba(44, 44, 42, 0.12));
-  border-radius: 4px 10px 5px 12px / 10px 4px 12px 6px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border, #e5e3dc);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-
-  @supports not (backdrop-filter: blur(1px)) {
-    background: var(--color-surface-opaque, #ffffff);
-  }
-
-  .mat-mdc-option {
-    position: relative;
-    z-index: 1;
-    min-height: 38px;
-    padding-left: 14px;
-    padding-right: 14px;
-    border-radius: 4px;
-    background: transparent;
-    color: var(--color-teal-text, #085041);
+  &__value {
+    flex: 1;
+    text-align: left;
     white-space: nowrap;
-
-    .mdc-list-item__primary-text {
-      color: inherit;
-      white-space: nowrap;
-      display: inline-block;
-      width: auto;
-    }
-
-    &:hover:not(.mdc-list-item--selected) {
-      background: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
-    }
-
-    &.mdc-list-item--selected {
-      background: var(--color-surface-hover, rgba(0, 0, 0, 0.06));
-      color: var(--color-primary);
-      font-weight: var(--weight-semibold);
-
-      .mdc-list-item__primary-text {
-        color: inherit;
-      }
-    }
-
-    .mat-pseudo-checkbox {
-      --mat-pseudo-checkbox-minimal-selected-checkmark-color: var(--color-primary);
-    }
-  }
-}
-
-.a-select-field {
-  .mat-mdc-select-arrow-wrapper {
-    display: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .mat-mdc-form-field-icon-suffix {
-    padding-right: 2px;
-    display: flex;
-    align-items: center;
-  }
-
-  .a-select-field__custom-arrow {
+  &__arrow {
     display: inline-block;
     width: 10px;
     height: 10px;
-    margin-right: 2px;
+    flex-shrink: 0;
     pointer-events: none;
     background-color: var(--color-text-muted, #8a8a85);
 
@@ -164,6 +96,99 @@ div.m-dropdown-panel.mat-mdc-select-panel {
     &.is-open {
       mask: url('/icons/chevron-up.svg') no-repeat center / contain;
       -webkit-mask: url('/icons/chevron-up.svg') no-repeat center / contain;
+    }
+  }
+
+  &__popover {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    min-width: max-content;
+    max-width: 80vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    filter: drop-shadow(0 8px 20px rgba(44, 44, 42, 0.12));
+    border-radius: var(--ibid-contour-edges, 14px);
+    clip-path: var(--ibid-contour-corners, none);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border, #e5e3dc);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 100;
+
+    @supports not (backdrop-filter: blur(1px)) {
+      background: var(--color-surface-opaque, #ffffff);
+    }
+  }
+
+  &__option {
+    position: relative;
+    z-index: 1;
+    min-height: 38px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--color-text, #2c2c2a);
+    font-family: var(--font-ui);
+    font-size: var(--text-m);
+    font-weight: var(--weight-medium, 500);
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    &:hover:not(.is-selected) {
+      background: var(--color-surface-hover, rgba(0, 0, 0, 0.04));
+    }
+
+    &.is-selected {
+      background: var(--color-surface-hover, rgba(0, 0, 0, 0.06));
+      color: var(--color-primary);
+      font-weight: var(--weight-semibold);
+    }
+  }
+}
+
+.cdk-overlay-pane:has(div.m-dropdown-panel) {
+  min-width: max-content !important;
+  max-width: 80vw !important;
+}
+
+body.sea-glass-pebbles {
+  .a-select__trigger {
+    position: relative;
+    background: transparent;
+    background-color: transparent;
+    border: none;
+    @include glass-pane;
+    --glass-tint: var(--ibid-select-tint, var(--ibid-header-actions-tint, var(--glass-tint-amber)));
+    --glass-edge: var(--ibid-select-edge, var(--ibid-header-actions-edge, var(--glass-edge-amber)));
+    --glass-wash: var(--ibid-select-wash, var(--ibid-header-actions-wash, var(--glass-wash-amber)));
+  }
+
+  .a-select__popover {
+    position: relative;
+    background: transparent;
+    background-color: transparent;
+    border: none;
+    @include glass-pane;
+    --glass-tint: var(--ibid-select-tint, var(--ibid-header-actions-tint, var(--glass-tint-amber)));
+    --glass-edge: var(--ibid-select-edge, var(--ibid-header-actions-edge, var(--glass-edge-amber)));
+    --glass-wash: var(--ibid-select-wash, var(--ibid-header-actions-wash, var(--glass-wash-amber)));
+
+    .a-select__option {
+      &.is-selected {
+        background: var(--glass-white, rgba(255, 255, 255, 0.44));
+        color: var(--color-primary);
+      }
+
+      &:hover:not(.is-selected) {
+        background: rgba(255, 255, 255, 0.22);
+      }
     }
   }
 }

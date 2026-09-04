@@ -2,13 +2,10 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Page, TestInfo } from '@playwright/test';
 import { AppShellSelectors, DEFAULT_APP_SHELL } from './app-shell-selectors';
-import { getDeviceFolder } from './screenshot';
+import { getScreenshotPath } from './screenshot';
 
-const CURTAIN_TIMEOUT_MS = 15_000;
-const PAINT_SETTLE_MS = 150;
-const ANIMATION_TIMEOUT_MS = 1_500;
-const MAX_CAPTURE_HEIGHT_PX = 5_000;
-const FALLBACK_VIEWPORT = { width: 390, height: 844 } as const;
+const CURTAIN_TIMEOUT_MS = 1_000;
+const PAINT_SETTLE_MS = 50;
 
 export class FlowRecorder {
   private readonly shell: AppShellSelectors;
@@ -37,7 +34,7 @@ export class FlowRecorder {
   private buildStepPath(stepNumber: number, action: string, expectedResult: string): string {
     const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
     const filename = `step-${stepNumber}-[${slug(action)}]-[${slug(expectedResult)}].png`;
-    return `test-results/flows/${getDeviceFolder(this.testInfo)}/${this.flowName}/${filename}`;
+    return getScreenshotPath(this.testInfo, this.flowName, filename);
   }
 
   private recordStepLog(
@@ -90,43 +87,9 @@ export class FlowRecorder {
   }
 
   private async captureFullPage(filePath: string): Promise<string> {
-    const initialViewport = this.page.viewportSize() ?? FALLBACK_VIEWPORT;
-    const fullHeight = await this.measureContentHeight();
-    const needsResize = fullHeight > initialViewport.height;
-
-    if (needsResize) {
-      await this.page.setViewportSize({
-        width: initialViewport.width,
-        height: Math.min(fullHeight + 40, MAX_CAPTURE_HEIGHT_PX),
-      });
-      await this.page.waitForTimeout(50);
-    }
-
     await this.scrollToTop();
-    await this.page.screenshot({ path: filePath, fullPage: true });
-
-    if (needsResize) {
-      await this.page.setViewportSize(initialViewport);
-    }
-
+    await this.page.screenshot({ path: filePath, fullPage: true, timeout: 15000, animations: 'disabled' });
     return filePath;
-  }
-
-  private measureContentHeight(): Promise<number> {
-    return this.page.evaluate(
-      ({ scrollContainer, minimumHeight }) => {
-        const scrollable = document.querySelector(scrollContainer) as HTMLElement | null;
-        const mainEl = document.querySelector('main') as HTMLElement | null;
-        return Math.max(
-          document.body.scrollHeight,
-          document.documentElement.scrollHeight,
-          scrollable ? scrollable.scrollHeight : 0,
-          mainEl ? mainEl.scrollHeight : 0,
-          minimumHeight,
-        );
-      },
-      { scrollContainer: this.shell.scrollContainer, minimumHeight: FALLBACK_VIEWPORT.height },
-    );
   }
 
   private async scrollToTop(): Promise<void> {
@@ -137,15 +100,16 @@ export class FlowRecorder {
       const scrollable = document.querySelector(scrollContainer);
       if (scrollable) scrollable.scrollTop = 0;
     }, this.shell.scrollContainer);
-    await this.page.waitForTimeout(50);
   }
 
   private async waitForAnimationsToSettle(): Promise<void> {
     try {
       await this.page.waitForFunction(
-        () => document.getAnimations().every((animation) => animation.playState !== 'running'),
+        () => document.getAnimations()
+          .filter((a) => (a.effect?.getTiming().iterations ?? 1) !== Infinity)
+          .every((a) => a.playState !== 'running'),
         undefined,
-        { polling: 100, timeout: ANIMATION_TIMEOUT_MS },
+        { polling: 50, timeout: 200 },
       );
     } catch {
     }

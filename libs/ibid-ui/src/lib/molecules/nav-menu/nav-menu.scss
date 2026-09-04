@@ -79,3 +79,8 @@
     transition: none;
   }
 }
+
+:host-context(body.sea-glass-pebbles) .m-nav-menu,
+body.sea-glass-pebbles .m-nav-menu {
+  background: transparent;
+}

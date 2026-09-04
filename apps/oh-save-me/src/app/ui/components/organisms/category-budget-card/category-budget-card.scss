@@ -44,21 +44,6 @@
     }
   }
 
-  &__icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-
-    ::ng-deep .a-icon {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
   &__name {
     font-weight: 600;
     font-size: var(--text-m);
@@ -117,3 +102,4 @@
     font-weight: 500;
   }
 }
+

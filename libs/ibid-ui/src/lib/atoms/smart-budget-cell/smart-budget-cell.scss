@@ -1,23 +1,30 @@
+@use '../../../styles/tools/mixins' as *;
+
 .a-smart-budget-cell {
   display: inline-flex;
   align-items: center;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border-radius: var(--radius-pill);
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: var(--text-m);
   white-space: nowrap;
-  background-color: var(--category-color);
   gap: 4px;
+  background-color: color-mix(in srgb, var(--category-color, #a8a29e) 18%, #ffffff);
+  color: color-mix(in srgb, var(--category-color, #1c1917) 80%, #1c1917);
+  border: 1px solid color-mix(in srgb, var(--category-color, #a8a29e) 30%, transparent);
+  transition: background-color 150ms ease, border-color 150ms ease;
 
   &--uncategorized {
     background-color: var(--color-border);
     color: var(--color-text-muted);
+    border-color: transparent;
   }
 
   &--project {
     background-color: var(--color-pink-bg, #fce7f3);
     color: var(--color-pink-text, #be185d);
+    border-color: color-mix(in srgb, var(--color-pink-text, #be185d) 25%, transparent);
   }
 
   &__project-icon {
@@ -32,7 +39,7 @@
     text-overflow: ellipsis;
     font-size: var(--text-m);
     font-weight: 500;
-    opacity: 0.75;
+    opacity: 0.8;
     
     @media (min-width: 768px) {
       max-width: 22ch;
@@ -50,6 +57,22 @@
     height: 12px;
     margin-left: 2px;
     vertical-align: middle;
-    opacity: 0.7;
+    opacity: 0.75;
+  }
+}
+
+:host-context(body.sea-glass-pebbles) .a-smart-budget-cell,
+body.sea-glass-pebbles .a-smart-budget-cell {
+  background-color: color-mix(in srgb, var(--category-color, var(--glass-tint, #0d9488)) 18%, var(--color-glass-surface, rgba(238, 244, 242, 0.75)));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--category-color, var(--glass-tint, #0d9488)) 35%, rgba(255, 255, 255, 0.65));
+  color: color-mix(in srgb, var(--category-color, #1c1917) 85%, #1c1917);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 2px color-mix(in srgb, var(--category-color, transparent) 12%, transparent);
+
+  &--project {
+    background-color: color-mix(in srgb, var(--glass-tint-pink, #f43f5e) 18%, var(--color-glass-surface, rgba(238, 244, 242, 0.75)));
+    border-color: color-mix(in srgb, var(--glass-tint-pink, #f43f5e) 35%, rgba(255, 255, 255, 0.65));
+    color: color-mix(in srgb, var(--color-pink-text, #be185d) 85%, #1c1917);
   }
 }

@@ -1,7 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HandDrawnDirective, HandDrawnIntensity } from './hand-drawn.directive';
-import { MOCK_BAND_SAMPLES, MOCK_CORNER_BANDS } from './hand-drawn.mock';
+import {
+  HandDrawnDirective,
+  generatePebbleNormalizedPath
+} from './hand-drawn.directive';
 
 @Component({
   standalone: true,
@@ -19,22 +21,6 @@ class TestHostComponent {
   @ViewChild('testProg', { read: HandDrawnDirective }) progDir?: HandDrawnDirective;
 }
 
-@Component({
-  standalone: true,
-  imports: [HandDrawnDirective],
-  template: `
-    @for (intensity of samples; track $index) {
-      <div class="band-sample" [attr.data-intensity]="intensity" [ibidHandDrawn]="intensity"></div>
-    }
-  `
-})
-class BandHostComponent {
-  readonly samples = MOCK_BAND_SAMPLES;
-}
-
-const cornerRadiiOf = (element: HTMLElement): readonly number[] =>
-  [...element.style.clipPath.matchAll(/(\d+)px/g)].map(match => Number(match[1]));
-
 describe('HandDrawnDirective', () => {
   let fixture: ComponentFixture<TestHostComponent>;
 
@@ -47,94 +33,57 @@ describe('HandDrawnDirective', () => {
     fixture.detectChanges();
   });
 
-  it('adds o-hand-drawn class to elements', () => {
-    const el = fixture.nativeElement.querySelector('.test-default');
-    expect(el.classList.contains('o-hand-drawn')).toBe(true);
-  });
-
-  it('applies border-radius style on default intensity', () => {
+  it('applies svg clip-path url to elements', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
-    expect(el.style.borderRadius).toContain('%');
+    expect(el.style.clipPath).toMatch(/url\(["']?#ibid-pebble-/);
   });
 
-  it('applies subtle border-radius variation on level 1', () => {
+  it('applies contour custom properties on default intensity', () => {
+    const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
+    expect(el.style.getPropertyValue('--ibid-contour-clip')).toMatch(/url\(["']?#ibid-pebble-/);
+    expect(el.style.getPropertyValue('--ibid-contour-corners')).toMatch(/url\(["']?#ibid-pebble-/);
+    expect(el.style.getPropertyValue('--hand-drawn-intensity')).toBe('3');
+  });
+
+  it('applies level 1 intensity custom property', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-level-1');
-    expect(el.style.borderRadius).toContain('%');
+    expect(el.style.getPropertyValue('--hand-drawn-intensity')).toBe('1');
   });
 
-  it('applies bold border-radius variation on level 5', () => {
+  it('applies level 5 intensity custom property', () => {
     const el: HTMLElement = fixture.nativeElement.querySelector('.test-level-5');
-    expect(el.style.borderRadius).toContain('%');
+    expect(el.style.getPropertyValue('--hand-drawn-intensity')).toBe('5');
   });
 
-  it('applies clip-path inset with corner rounding', () => {
-    const el: HTMLElement = fixture.nativeElement.querySelector('.test-default');
-    expect(el.style.clipPath).toContain('inset');
+  it('generates normalized svg path with valid coordinates', () => {
+    const path = generatePebbleNormalizedPath(2);
+    expect(path.startsWith('M ')).toBe(true);
+    expect(path.endsWith('Z')).toBe(true);
+    expect(path).toContain('Q ');
+    expect(path).toContain('C ');
   });
 
-  it('flattens bottom, left, right edges when edges: ["top"] is used', () => {
-    const sheetEl: HTMLElement = fixture.nativeElement.querySelector('.test-sheet');
-    expect(sheetEl.style.borderRadius).toContain('0 0');
-  });
-
-  it('flattens top, left, right edges when edges: ["bottom"] is used', () => {
-    const headerEl: HTMLElement = fixture.nativeElement.querySelector('.test-header');
-    expect(headerEl.style.borderRadius.startsWith('0 0')).toBe(true);
+  it('flattens corners when partial edges are specified', () => {
+    const sheetPath = generatePebbleNormalizedPath(3, ['top']);
+    expect(sheetPath.startsWith('M ')).toBe(true);
+    expect(sheetPath.endsWith('Z')).toBe(true);
   });
 
   it('supports programmatic setConfiguration', () => {
     const component = fixture.componentInstance;
     component.progDir?.setConfiguration({ intensity: 4, edges: ['top'] });
     const progEl: HTMLElement = fixture.nativeElement.querySelector('.test-programmatic');
-    expect(progEl.style.borderRadius).toContain('0 0');
+    expect(progEl.style.getPropertyValue('--hand-drawn-intensity')).toBe('4');
   });
 
-  describe('intensity bands', () => {
-    let bandFixture: ComponentFixture<BandHostComponent>;
+  it('cleans up clipPath element on destroy', () => {
+    const initialClips = document.querySelectorAll('#ibid-pebble-svg-defs clipPath').length;
+    expect(initialClips).toBeGreaterThan(0);
 
-    const samplesAt = (intensity: HandDrawnIntensity): readonly HTMLElement[] =>
-      [...bandFixture.nativeElement.querySelectorAll(`[data-intensity="${intensity}"]`)];
+    fixture.destroy();
 
-    beforeEach(async () => {
-      TestBed.resetTestingModule();
-      await TestBed.configureTestingModule({ imports: [BandHostComponent] }).compileComponents();
-      bandFixture = TestBed.createComponent(BandHostComponent);
-      bandFixture.detectChanges();
-    });
-
-    it('keeps every corner inside the band its intensity declares', () => {
-      const outOfBand = MOCK_BAND_SAMPLES.flatMap(intensity => {
-        const [min, max] = MOCK_CORNER_BANDS[intensity];
-        return samplesAt(intensity)
-          .flatMap(cornerRadiiOf)
-          .filter(radius => radius < min || radius > max)
-          .map(radius => `intensity ${intensity}: ${radius}px outside ${min}-${max}`);
-      });
-
-      expect(outOfBand).toEqual([]);
-    });
-
-    it('draws four corners for every element', () => {
-      const wrongCount = samplesAt(2).filter(element => cornerRadiiOf(element).length !== 4);
-
-      expect(wrongCount).toEqual([]);
-    });
-
-    it('varies the shape between elements that share an intensity', () => {
-      const shapes = samplesAt(3).map(element => element.style.clipPath);
-
-      expect(new Set(shapes).size).toBeGreaterThan(1);
-    });
-
-    it('keeps the bands apart so the intensities stay distinguishable', () => {
-      const ordered = ([1, 2, 3, 4, 5] as readonly HandDrawnIntensity[]).map(
-        intensity => MOCK_CORNER_BANDS[intensity]
-      );
-      const overlaps = ordered
-        .slice(1)
-        .filter((band, index) => band[0] <= ordered[index][1]);
-
-      expect(overlaps).toEqual([]);
-    });
+    const remainingClips = document.querySelectorAll('#ibid-pebble-svg-defs clipPath').length;
+    expect(remainingClips).toBeLessThan(initialClips);
   });
 });
+

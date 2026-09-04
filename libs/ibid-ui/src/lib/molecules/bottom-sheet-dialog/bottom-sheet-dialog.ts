@@ -24,6 +24,6 @@ export class BottomSheetDialogComponent implements OnInit {
   @Output() readonly closeClicked = new EventEmitter<void>();
 
   ngOnInit(): void {
-    this.handDrawn?.setConfiguration({ intensity: 3, edges: ['top', 'left', 'right'] });
+    this.handDrawn?.setConfiguration({ intensity: 4, edges: ['top', 'left', 'right'] });
   }
 }

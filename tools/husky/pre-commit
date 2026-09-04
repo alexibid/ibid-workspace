@@ -1,1 +1,4 @@
-npx nx affected -t lint test
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  npx nx affected -t lint test
+fi

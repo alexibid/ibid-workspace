@@ -9,7 +9,7 @@ import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
   standalone: true,
   imports: [CommonModule, AppCurrencyPipe, IconComponent, HandDrawnDirective],
   template: `
-    <div class="m-metric-card" ibidHandDrawn>
+    <div class="m-metric-card" [ibidHandDrawn]="4">
       <div class="m-metric-card__header">
         <span class="m-metric-card__title">{{ title }}</span>
         <ibid-icon [name]="icon" [iconClass]="'m-metric-card__icon ' + iconClass"></ibid-icon>

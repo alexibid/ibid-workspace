@@ -46,14 +46,14 @@ describe('SmartBudgetCellComponent', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('Sem categoria');
   });
 
-  it('picks a WCAG-accessible text color instead of a fixed white', () => {
+  it('sets categoryColor property for accessible styling', () => {
     fixture.componentRef.setInput('categoryId', 'Others');
     fixture.componentRef.setInput('categoryName', 'Others');
     fixture.componentRef.setInput('categoryColor', '#cbd5e1');
     fixture.detectChanges();
 
     const el: HTMLElement = fixture.nativeElement.querySelector('.a-smart-budget-cell');
-    expect(el.style.color).toBe('rgb(0, 0, 0)');
+    expect(el.style.getPropertyValue('--category-color')).toBe('#cbd5e1');
   });
 
   it('hides the chevron by default and shows it when showChevron is set', () => {

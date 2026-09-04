@@ -1,11 +1,34 @@
+@use 'sass:list';
 @use '../shared' as *;
 
-/// The four glasses the theme is cut from, each with the angle its gleam falls at, so no two
-/// colours catch the light the same way.
-$glass-variants: (teal: 124deg, amber: 142deg, coral: 108deg, pink: 136deg);
+$glass-variants: (
+  'brand': 136deg,
+  'teal': 124deg,
+  'amber': 142deg,
+  'coral': 108deg,
+  'pink': 136deg,
+  'blue': 132deg,
+  'green': 140deg,
+  'red': 118deg,
+  'purple': 126deg,
+  'indigo': 130deg,
+  'cyan': 122deg,
+  'lime': 138deg,
+  'gray': 116deg
+);
+$gleam-angles: (112deg, 138deg, 124deg, 148deg, 106deg, 132deg, 118deg, 142deg);
+$wash-angles:  (136deg, 118deg, 144deg, 122deg, 152deg, 110deg, 128deg, 140deg);
 
-/// Selects one of them. It only sets custom properties, which is what lets a variant be declared
-/// on a component host and still reach the pane rendered inside it.
+@mixin glass-gleam-scatter {
+  @for $i from 1 through list.length($gleam-angles) {
+    &:nth-child(#{list.length($gleam-angles)}n + #{$i}),
+    &:nth-of-type(#{list.length($gleam-angles)}n + #{$i}) {
+      --glass-gleam-angle: #{list.nth($gleam-angles, $i)};
+      --glass-angle: #{list.nth($wash-angles, $i)};
+    }
+  }
+}
+
 @mixin glass-variant($name, $angle: null) {
   --glass-tint: var(--glass-tint-#{$name});
   --glass-edge: var(--glass-edge-#{$name});
@@ -15,23 +38,19 @@ $glass-variants: (teal: 124deg, amber: 142deg, coral: 108deg, pink: 136deg);
   }
 }
 
-/// The pane every glass surface is cut from. Emits nothing on its own: both the page surfaces and
-/// the feature value pull it in, so a card and a figure are the same material.
-///
-/// Sea glass, not frosted white: the tint is translucent enough that the ground still reads
-/// through it, and it carries a green cast of its own rather than washing everything out.
-
 @mixin glass-pane {
   @include decorated-surface;
+  @include glass-gleam-scatter;
   background-color: transparent;
   border-color: var(--glass-edge);
   box-shadow: none;
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
+  clip-path: var(--ibid-contour-clip, var(--ibid-contour-corners, none));
 
   &::after {
     @include decorative-layer;
-    border-radius: inherit;
+    clip-path: inherit;
     background-color: var(--glass-tint);
     background-image:
       linear-gradient(
@@ -51,3 +70,4 @@ $glass-variants: (teal: 124deg, amber: 142deg, coral: 108deg, pink: 136deg);
     }
   }
 }
+

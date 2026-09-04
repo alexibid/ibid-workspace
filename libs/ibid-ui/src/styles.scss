@@ -3,6 +3,9 @@
 @use 'styles/settings/elevation';
 @use 'styles/settings/spacing';
 @use 'styles/settings/breakpoints';
+@use 'styles/settings/tokens-atoms';
+@use 'styles/settings/tokens-molecules';
+@use 'styles/settings/tokens-organisms';
 
 @use 'styles/tools/mixins';
 
@@ -13,7 +16,6 @@
 @use 'styles/elements/icons';
 
 @use 'styles/objects/layout';
-@use 'styles/objects/hand-drawn';
 @use 'styles/objects/bottom-sheet-dialog';
 
 @use 'styles/components/buttons';

@@ -1,7 +1,15 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 :host {
   display: inline-flex;
+  width: var(--ibid-icon-button-size, auto);
+  height: var(--ibid-icon-button-height, var(--ibid-icon-button-size, 38px));
+  min-width: var(--ibid-icon-button-min-width, var(--ibid-icon-button-size, 38px));
+  min-height: var(--ibid-icon-button-height, var(--ibid-icon-button-size, 38px));
+  box-sizing: border-box;
+  vertical-align: middle;
+  pointer-events: auto;
 }
 
 .a-icon-button {
@@ -10,14 +18,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: var(--ibid-icon-button-bg, var(--color-surface));
   border: none;
-  padding: 0;
+  border-radius: var(--ibid-icon-button-contour-edges, var(--ibid-contour-edges, var(--ibid-icon-button-radius, var(--radius-control, 10px))));
+  clip-path: var(--ibid-icon-button-contour-corners, var(--ibid-contour-corners, none));
+  padding: var(--ibid-icon-button-padding, 0 8px);
   margin: 0;
   font: inherit;
-  color: inherit;
+  color: var(--ibid-icon-button-color, var(--color-text));
   cursor: pointer;
   outline: none;
+  box-sizing: border-box;
   @include focus-ring;
   gap: 8px;
+}
+
+:host-context(body.sea-glass-pebbles) .a-icon-button,
+body.sea-glass-pebbles .a-icon-button,
+body.sea-glass-pebbles ibid-icon-button button {
+  position: relative;
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  @include glass-pane;
+  --glass-tint: var(--ibid-icon-button-tint, var(--ibid-header-actions-tint, var(--glass-tint-amber)));
+  --glass-edge: var(--ibid-icon-button-edge, var(--ibid-header-actions-edge, var(--glass-edge-amber)));
+  --glass-wash: var(--ibid-icon-button-wash, var(--ibid-header-actions-wash, var(--glass-wash-amber)));
+  color: var(--ibid-icon-button-color, var(--ibid-header-actions-color, var(--color-amber-text)));
+  box-shadow: 0 2px 8px rgba(44, 44, 42, 0.08);
 }

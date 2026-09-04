@@ -2,9 +2,7 @@
   @for (item of detailedCards(); track item.category.id) {
     <ibid-card customClass="m-allocation-detailed-cards__card">
       <div class="m-allocation-detailed-cards__header">
-        <div class="m-allocation-detailed-cards__icon" [style.background-color]="item.category.color">
-          <ibid-icon [name]="item.category.icon"></ibid-icon>
-        </div>
+        <ibid-feature-icon [name]="item.category.icon" [color]="item.category.color" size="md" />
         <h3 class="m-allocation-detailed-cards__title">{{ i18n.getCategoryName(item.category.id) }}</h3>
       </div>
 
@@ -39,8 +37,8 @@
           </div>
         </div>
         <div class="m-allocation-detailed-cards__progress-text">
-          <span><ibid-currency-display [value]="item.progress.spent" size="sm" /> {{ 'budgetCardSpent' | translate }}</span>
-          <span>{{ 'budgetOf' | translate }} <ibid-currency-display [value]="item.progress.periodAllocation" size="sm" /></span>
+          <span><ibid-currency-display [value]="item.progress.spent" size="sm" status="negative" /> {{ 'budgetCardSpent' | translate }}</span>
+          <span>{{ 'budgetOf' | translate }} <ibid-currency-display [value]="item.progress.periodAllocation" size="sm" status="warning" /></span>
         </div>
       </div>
 
@@ -66,9 +64,7 @@
   @for (asset of assetCards(); track asset.id) {
     <ibid-card customClass="m-allocation-detailed-cards__card">
       <div class="m-allocation-detailed-cards__header">
-        <div class="m-allocation-detailed-cards__icon m-allocation-detailed-cards__icon--asset">
-          <ibid-icon [name]="assetKindIcon(asset.kind)"></ibid-icon>
-        </div>
+        <ibid-feature-icon [name]="assetKindIcon(asset.kind)" color="var(--color-primary)" size="md" />
         <h3 class="m-allocation-detailed-cards__title">{{ asset.name }}</h3>
         <div class="m-allocation-detailed-cards__actions">
           <button type="button" class="m-allocation-detailed-cards__movements-btn"
@@ -89,7 +85,7 @@
       <div class="m-allocation-detailed-cards__math">
         <div class="m-allocation-detailed-cards__math-row">
           <span>{{ assetKindLabel(asset.kind) | translate }}</span>
-          <strong [style.color]="asset.investedCost > 0 ? 'var(--color-success, #10b981)' : 'var(--color-danger, #ef4444)'"><ibid-currency-display [value]="asset.investedCost" size="sm" /></strong>
+          <strong [style.color]="asset.investedCost > 0 ? 'var(--color-success, #10b981)' : 'var(--color-danger, #ef4444)'"><ibid-currency-display [value]="asset.investedCost" size="sm" [status]="asset.investedCost >= 0 ? 'positive' : 'negative'" /></strong>
         </div>
         @if (asset.contractedInstalments) {
           <div class="m-allocation-detailed-cards__math-row m-allocation-detailed-cards__math-row--sub">
@@ -105,18 +101,18 @@
         @if (asset.outstandingDebt !== undefined) {
           <div class="m-allocation-detailed-cards__math-row m-allocation-detailed-cards__math-row--sub">
             <span>{{ 'walletOutstandingDebtLabel' | translate }}</span>
-            <ibid-currency-display [value]="asset.outstandingDebt" size="sm" />
+            <ibid-currency-display [value]="asset.outstandingDebt" size="sm" status="negative" />
           </div>
         }
         @if (asset.result !== 0) {
           <div class="m-allocation-detailed-cards__math-row">
             <span>{{ 'walletValuationLabel' | translate }}</span>
-            <ibid-currency-display [value]="asset.currentValue" size="sm" />
+            <ibid-currency-display [value]="asset.currentValue" size="sm" status="positive" />
           </div>
           <div class="m-allocation-detailed-cards__math-row">
             <span>{{ 'walletResultLabel' | translate }}</span>
             <strong [style.color]="asset.result > 0 ? 'var(--color-success, #10b981)' : 'var(--color-danger, #ef4444)'">
-              <ibid-currency-display [value]="asset.result" size="sm" />
+              <ibid-currency-display [value]="asset.result" size="sm" [status]="asset.result >= 0 ? 'positive' : 'negative'" />
             </strong>
           </div>
         }
@@ -126,7 +122,7 @@
           </div>
           <div class="m-allocation-detailed-cards__math-row m-allocation-detailed-cards__math-row--sub">
             <span>{{ 'walletSpeculativeBalanceLabel' | translate }} ({{ asset.appreciationPercent }}%)</span>
-            <ibid-currency-display [value]="asset.appreciatedEstimate" size="sm" />
+            <ibid-currency-display [value]="asset.appreciatedEstimate" size="sm" status="positive" />
           </div>
         }
       </div>

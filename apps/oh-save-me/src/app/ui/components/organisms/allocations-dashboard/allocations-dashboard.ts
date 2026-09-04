@@ -8,18 +8,31 @@ import { Budget } from '@domain/models/budget';
 import { I18N_SHARED, I18nService } from '@ui/shared/i18n-shared';
 import { AllocationMovementsDialogComponent } from '@ui/components/organisms/allocation-movements-dialog/allocation-movements-dialog';
 import { AllocationEditDialogComponent } from '@ui/components/organisms/allocation-edit-dialog/allocation-edit-dialog';
-import { ButtonComponent, CardComponent, CurrencyDisplayComponent, FormFieldComponent, IconButtonComponent, IconComponent } from 'ibid-ui';
+import {
+  ButtonComponent,
+  CardComponent,
+  CurrencyDisplayComponent,
+  FormFieldComponent,
+  HandDrawnDirective,
+  IconButtonComponent,
+  IconComponent,
+  ToggleTabItem,
+  ToggleTabsComponent
+} from 'ibid-ui';
 
 export type AllocationsSource = 'projects' | 'investments';
 
 @Component({
   selector: 'ohsaveme-allocations-dashboard',
   standalone: true,
-  imports: [CurrencyDisplayComponent,
+  imports: [
+    CurrencyDisplayComponent,
     CommonModule,
     DialogModule,
+    HandDrawnDirective,
     IconComponent,
     IconButtonComponent,
+    ToggleTabsComponent,
     ...I18N_SHARED
   ],
   templateUrl: './allocations-dashboard.html',
@@ -38,6 +51,19 @@ export class AllocationsDashboard {
   protected readonly filterState = signal<'all' | 'active' | 'expired' | 'closed'>('active');
 
   protected readonly isPortfolio = computed<boolean>(() => this.source() === 'investments');
+
+  protected readonly tabItems = computed<readonly ToggleTabItem<'all' | 'active' | 'expired' | 'closed'>[]>(() => {
+    const portfolio = this.isPortfolio();
+    const items: ToggleTabItem<'all' | 'active' | 'expired' | 'closed'>[] = [
+      { value: 'all', label: this.i18n.translate('budgetFilterAll') },
+      { value: 'active', label: this.i18n.translate('budgetFilterActive') },
+      { value: 'expired', label: this.i18n.translate('budgetFilterExpired') }
+    ];
+    if (!portfolio) {
+      items.push({ value: 'closed', label: this.i18n.translate('budgetFilterClosed') });
+    }
+    return items;
+  });
 
   protected readonly filteredWallets = computed<readonly WalletEntry[]>(() => {
     const filter = this.filterState();

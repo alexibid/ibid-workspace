@@ -50,8 +50,17 @@ export * from './lib/molecules/progress-row/progress-row';
 export * from './lib/molecules/segmented-control/segmented-control';
 export * from './lib/molecules/stat-card/stat-card';
 export * from './lib/molecules/summary-row/summary-row';
+export * from './lib/atoms/icon-toggle/icon-toggle';
+export * from './lib/atoms/sort-button/sort-button';
+export * from './lib/molecules/collection-header/collection-header';
+export * from './lib/molecules/collection-list/collection-list';
+export * from './lib/molecules/searchable-select/searchable-select';
 export * from './lib/organisms/bar-chart/bar-chart';
 export * from './lib/organisms/chart/chart';
 export * from './lib/organisms/header/header';
 export * from './lib/organisms/header-nav/header-nav';
 export * from './lib/organisms/line-chart/line-chart';
+export * from './lib/atoms/feature-icon/feature-icon';
+export * from './lib/molecules/toggle-tabs/toggle-tabs';
+
+

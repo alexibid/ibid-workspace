@@ -1,4 +1,5 @@
 import { IconComponent } from '../icon/icon';
+import { HandDrawnDirective } from '../../directives/hand-drawn.directive';
 import { Component, EventEmitter, Output, computed, input, signal, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
@@ -23,7 +24,7 @@ const LATEST_SELECTABLE_YEAR = 2100;
   encapsulation: ViewEncapsulation.None,
   selector: 'ibid-date-input',
   standalone: true,
-  imports: [CommonModule, IconComponent, OverlayModule],
+  imports: [CommonModule, IconComponent, OverlayModule, HandDrawnDirective],
   template: `
     <div class="a-date-input-wrapper"
       [class.is-single]="effectiveMode === 'single'"
@@ -32,6 +33,7 @@ const LATEST_SELECTABLE_YEAR = 2100;
       <button
         #trigger="cdkOverlayOrigin"
         cdkOverlayOrigin
+        [ibidHandDrawn]="3"
         type="button"
         class="a-date-input__trigger"
         [disabled]="disabled()"
@@ -63,7 +65,7 @@ const LATEST_SELECTABLE_YEAR = 2100;
         [cdkConnectedOverlayViewportMargin]="8"
         (overlayOutsideClick)="close()"
       >
-        <div class="a-date-input__popover">
+        <div class="a-date-input__popover" [ibidHandDrawn]="3">
           <header class="a-date-input__nav">
             <button type="button" class="a-date-input__nav-btn" (click)="previous()" [disabled]="!canGoPrevious()">
               <ibid-icon name="chevron-left"></ibid-icon>

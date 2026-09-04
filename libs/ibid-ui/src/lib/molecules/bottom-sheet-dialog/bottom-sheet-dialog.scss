@@ -1,4 +1,5 @@
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 .m-bottom-sheet-dialog {
   &__actions {
@@ -8,5 +9,19 @@
   &__icon {
     height: 42px;
     width: 42px;
+  }
+}
+
+body.sea-glass-pebbles {
+  .m-bottom-sheet-dialog {
+    @include glass-pane;
+    --glass-tint: var(--ibid-dialog-surface-tint);
+    --glass-edge: var(--ibid-dialog-surface-edge);
+    --glass-wash: var(--ibid-dialog-surface-wash);
+  }
+
+  .m-bottom-sheet-dialog__footer {
+    background-color: transparent;
+    border-top-color: var(--glass-edge);
   }
 }

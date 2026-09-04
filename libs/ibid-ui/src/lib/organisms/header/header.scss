@@ -1,3 +1,6 @@
+@use '../../../styles/tools/mixins' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
+
 :host {
   display: block;
   width: 100%;
@@ -6,7 +9,12 @@
 .o-header-shell {
   width: 100%;
   box-sizing: border-box;
-  z-index: 30;
+  font-family: var(--ibid-header-font-family, var(--font-sans));
+  font-size: var(--ibid-header-font-size, var(--text-l));
+  font-weight: var(--ibid-header-font-weight, var(--weight-bold));
+  color: var(--ibid-header-color, var(--color-text));
+  background-color: var(--ibid-header-bg, var(--color-surface));
+  border-bottom: 1px solid var(--ibid-header-border-color, var(--color-border));
 }
 
 .o-header-shell__bar {
@@ -39,9 +47,53 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm, 0.5rem);
+
+  .a-button,
+  .a-icon-button,
+  .a-select-field .mdc-text-field--outlined,
+  .a-date-input__trigger {
+    height: var(--header-elem-height, 38px);
+    min-height: var(--header-elem-height, 38px);
+    box-sizing: border-box;
+  }
 }
 
 .o-header-shell__filters:empty,
 .o-header-shell__context:empty {
   display: none;
+}
+
+body.sea-glass-pebbles {
+  .o-header-shell {
+    position: fixed;
+    @include glass-pane;
+    --glass-tint: var(--ibid-header-surface-tint);
+    --glass-edge: var(--ibid-header-surface-edge);
+    --glass-wash: var(--ibid-header-surface-wash);
+    --glass-gleam-angle: var(--ibid-header-surface-gleam);
+    border-bottom-color: var(--glass-edge);
+
+    .o-header-shell__actions,
+    .o-header-shell__navigation,
+    .o-header-shell__filters,
+    .o-header-shell__context {
+      --glass-tint: var(--ibid-header-actions-tint);
+      --glass-edge: var(--ibid-header-actions-edge);
+      --glass-wash: var(--ibid-header-actions-wash);
+      --glass-gleam-angle: var(--ibid-header-actions-gleam);
+    }
+  }
+
+  .o-header--is-open .o-header-shell {
+    @include respond-to('tablet-down') {
+      background: transparent;
+      border-bottom-color: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      &::after {
+        display: none !important;
+      }
+    }
+  }
 }

@@ -52,7 +52,7 @@ body.kirigami {
     border-bottom: 1px dashed var(--kirigami-paper-edge);
   }
 
-  .o-hand-drawn {
+  [style*="--hand-drawn-intensity"] {
     border-radius: 0 !important;
     position: relative;
     clip-path: var(--kirigami-cut-2) !important;

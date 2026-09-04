@@ -1,0 +1,50 @@
+<div
+  class="m-collection-header"
+  [class.m-collection-header--sticky]="sticky"
+  [class.m-collection-header--compact]="compact"
+>
+  @if ((showTitle && title) || showSearch) {
+    <div class="m-collection-header__header-row">
+      @if (showTitle && title) {
+        <h3
+          class="m-collection-header__title"
+          [class.m-collection-header__title--sticky]="sticky"
+        >
+          {{ title }}
+        </h3>
+      }
+      <ng-content select="[collection-title]"></ng-content>
+
+      @if (showSearch) {
+        <ibid-search-input
+          class="m-collection-header__search"
+          [class.m-collection-header__search--sticky]="!sticky"
+          [value]="searchQuery"
+          [placeholder]="searchPlaceholder"
+          [clearLabel]="clearLabel"
+          (valueChange)="searchQueryChange.emit($event)"
+        ></ibid-search-input>
+      }
+    </div>
+  }
+
+  @if (showTabs && tabOptions.length > 0) {
+    <ibid-segmented-control
+      class="m-collection-header__tabs"
+      [value]="activeTab"
+      [options]="tabOptions"
+      (valueChange)="tabChange.emit($event)"
+    ></ibid-segmented-control>
+  }
+  <ng-content select="[collection-tabs]"></ng-content>
+
+  <div class="m-collection-header__controls-row">
+    <div class="m-collection-header__controls-start">
+      <ng-content select="[collection-toggle], [collection-controls-start]"></ng-content>
+    </div>
+    <div class="m-collection-header__controls-end">
+      <ng-content select="[collection-sort], [collection-actions], [collection-controls-end]"></ng-content>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

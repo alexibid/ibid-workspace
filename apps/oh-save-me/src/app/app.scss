@@ -1,5 +1,19 @@
 @use 'libs/ibid-ui/src/styles/tools/mixins' as *;
 
+ohsaveme-header {
+  display: block;
+  position: relative;
+  z-index: var(--z-header);
+
+  &:has(.o-header--is-open) {
+    z-index: var(--z-card);
+
+    @include respond-to('desktop') {
+      z-index: var(--z-header);
+    }
+  }
+}
+
 .app-sidenav-container {
   width: 100vw;
   height: 100vh;
@@ -14,11 +28,16 @@
   transform: none;
   left: -280px;
   transition: left 300ms ease-in-out;
+  z-index: var(--z-drawer-mobile);
 
   &.mat-drawer-opened {
     border-radius: 0px;
     left: 0;
   }
+}
+
+.mat-drawer-backdrop {
+  z-index: var(--z-backdrop);
 }
 
 @include respond-to('desktop') {
@@ -30,6 +49,7 @@
     height: auto;
     max-height: calc(100vh - var(--header-height));
     overflow: hidden;
+    z-index: var(--z-drawer-desktop);
 
     .o-sidenav__drawer {
       display: block;
@@ -48,7 +68,7 @@
   flex-direction: column;
   background-color: var(--color-bg);
   position: relative;
-  z-index: 1;
+  z-index: 0;
   isolation: isolate;
 }
 

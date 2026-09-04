@@ -23,3 +23,7 @@
     border-bottom: none;
   }
 }
+
+body.sea-glass-pebbles .o-table th {
+  border-bottom-color: var(--glass-edge);
+}

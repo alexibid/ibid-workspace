@@ -1,0 +1,58 @@
+@use 'libs/ibid-ui/src/styles/tools/mixins' as *;
+@use 'libs/ibid-ui/src/themes/sea-glass-pebbles/pane' as *;
+
+.boilerplate-data-page {
+  &__views {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  &__view-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__view-title {
+    font-family: var(--font-brand);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  &__list-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: var(--color-surface, #fff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--color-surface-hover, rgba(0, 0, 0, 0.02));
+    }
+  }
+
+  &__list-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 2px;
+  }
+}
+
+:host-context(body.sea-glass-pebbles) .boilerplate-data-page__list-row,
+body.sea-glass-pebbles .boilerplate-data-page__list-row {
+  position: relative;
+  @include glass-pane;
+  --glass-tint: var(--glass-tint-cyan);
+  --glass-edge: var(--glass-edge-cyan);
+  --glass-wash: var(--glass-wash-cyan);
+  border: 1px solid var(--glass-edge, rgba(255, 255, 255, 0.4));
+}

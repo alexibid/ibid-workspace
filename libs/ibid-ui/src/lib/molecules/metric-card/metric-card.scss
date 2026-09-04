@@ -1,5 +1,6 @@
 @use '../../../styles/settings/colors' as *;
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 .m-metric-card {
   @include card-surface;
@@ -60,4 +61,14 @@
     border-radius: 4px;
     transition: width 0.3s ease, background-color 0.3s ease;
   }
+}
+
+:host-context(body.sea-glass-pebbles) .m-metric-card,
+body.sea-glass-pebbles .m-metric-card {
+  position: relative;
+  @include glass-pane;
+  @include glass-gleam-scatter;
+  --glass-tint: var(--ibid-metric-card-surface-tint, var(--glass-tint-teal));
+  --glass-edge: var(--ibid-card-surface-edge, var(--glass-edge-teal));
+  --glass-wash: var(--ibid-card-surface-wash, var(--glass-wash-teal));
 }

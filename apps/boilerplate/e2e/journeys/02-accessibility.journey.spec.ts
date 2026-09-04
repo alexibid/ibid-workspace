@@ -8,13 +8,13 @@ test.describe('Accessibility', () => {
     const name = path || 'home';
 
     test(`the ${name} page has no critical or serious violations`, async ({ page }) => {
-      await page.goto(`/${path}`);
+      await page.goto(`/${path}`, { waitUntil: 'commit' });
       await page.waitForLoadState('networkidle');
       await page
         .waitForFunction(
           () => document.getAnimations().every((animation) => animation.playState !== 'running'),
           undefined,
-          { polling: 100, timeout: 5000 }
+          { polling: 100, timeout: 500 }
         )
         .catch(() => undefined);
 

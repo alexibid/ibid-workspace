@@ -1,4 +1,7 @@
+@use 'sass:list';
+@use 'sass:map';
 @use '../../../styles/tools/mixins' as *;
+@use '../../../themes/sea-glass-pebbles/pane' as *;
 
 :host {
   display: inline-flex;
@@ -8,7 +11,6 @@
 
 .a-button {
   background-color: var(--color-surface, #d1cfc7);
-  border: 1px solid var(--color-border, #2c2c2a);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,11 +18,12 @@
   height: 100%;
   width: 100%;
   padding: 0 1rem;
-  font-family: inherit;
-  font-size: var(--text-m);
-  font-weight: 600;
-  border-radius: 10px;
-  border: 1px solid transparent;
+  font-family: var(--ibid-button-font-family, var(--font-ui));
+  font-size: var(--ibid-button-font-size, var(--text-m));
+  font-weight: var(--ibid-button-font-weight, var(--weight-semibold));
+  border-radius: var(--ibid-button-contour-edges, var(--ibid-contour-edges, var(--ibid-button-radius, var(--radius-control))));
+  clip-path: var(--ibid-button-contour-corners, var(--ibid-contour-corners, none));
+  border: none;
   cursor: pointer;
   box-sizing: border-box;
   text-decoration: none;
@@ -59,12 +62,12 @@
   }
 
   &--highlight {
-    @include glass-highlight-surface(-0.8deg, 4px 18px 6px 16px);
-    color: var(--color-text, #1e293b);
+    background-color: var(--color-amber-mid, #fef3c7);
+    color: var(--color-amber-text, #92400e);
+    border-color: var(--color-amber-mid, #fef3c7);
 
-    span, mat-icon, ibid-icon {
-      position: relative;
-      z-index: 1;
+    &:hover {
+      background-color: var(--color-amber-light, #fde68a);
     }
   }
 
@@ -81,7 +84,52 @@
   &--open ibid-icon {
     transform: rotate(180deg);
   }
+}
 
-  
+:host-context(body.sea-glass-pebbles) .a-button,
+body.sea-glass-pebbles .a-button {
+  position: relative;
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  @include glass-pane;
+  box-shadow: 0 4px 14px rgba(44, 44, 42, 0.1), 0 1px 3px rgba(44, 44, 42, 0.06);
+
+  @each $name, $angle in $glass-variants {
+    &:nth-of-type(4n + #{list.index(map.keys($glass-variants), $name)}) {
+      @include glass-variant($name, $angle);
+      color: var(--color-#{$name}-text);
+    }
+  }
+
+  &.a-button--primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary, #ffffff);
+    --glass-tint: rgba(12, 107, 88, 0.2);
+    --glass-edge: var(--glass-edge-teal);
+    --glass-wash: var(--glass-wash-teal);
+    box-shadow: 0 4px 16px rgba(12, 107, 88, 0.25), 0 1px 3px rgba(12, 107, 88, 0.15);
+  }
+
+  &.a-button--secondary {
+    --glass-tint: var(--glass-tint-teal);
+    --glass-edge: var(--glass-edge-teal);
+    --glass-wash: var(--glass-wash-teal);
+    color: var(--color-teal-text);
+  }
+
+  &.a-button--outlined {
+    --glass-tint: rgba(255, 255, 255, 0.25);
+    --glass-edge: var(--color-border);
+    color: var(--color-text);
+  }
+
+  &.a-button--highlight {
+    --glass-tint: var(--glass-tint-amber);
+    --glass-edge: var(--glass-edge-amber);
+    --glass-wash: var(--glass-wash-amber);
+    color: var(--color-amber-text);
+    box-shadow: 0 2px 8px rgba(239, 155, 39, 0.25);
+  }
 }
 
