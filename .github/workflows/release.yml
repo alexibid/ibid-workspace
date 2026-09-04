@@ -146,7 +146,9 @@ jobs:
   drive:
     name: Deliver · Google Drive
     needs: [inspect, android, desktop]
-    if: "!cancelled() && needs.inspect.outputs.is_app == 'true' && needs.inspect.outputs.has_drive == 'true'"
+    if: >-
+      !cancelled() && needs.inspect.outputs.has_drive == 'true' &&
+      (needs.inspect.outputs.has_android == 'true' || needs.inspect.outputs.has_desktop == 'true')
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
