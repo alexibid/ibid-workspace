@@ -49,7 +49,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: npm }
       - run: npm ci
-      - run: npx nx build $APP
+      - run: npx nx build "$APP"
       - uses: actions/upload-artifact@v4
         with:
           name: web
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: zulu, java-version: '21' }
       - run: npm ci
-      - run: npx nx build $APP
+      - run: npx nx build "$APP"
       - name: Sync Capacitor
         working-directory: apps/oh-save-me/platforms/mobile
         run: |
@@ -84,7 +84,7 @@ jobs:
       # Renames the file to <app>.<version>.apk and places it next to the other builds.
       - name: Collect into dist/
         run: |
-          node tools/builder/collect-artifact.mjs --project $APP \
+          node tools/builder/collect-artifact.mjs --project "$APP" \
             --from apps/oh-save-me/platforms/mobile/android/app/build/outputs/apk/debug --ext apk
       - uses: actions/upload-artifact@v4
         with:
@@ -146,6 +146,9 @@ jobs:
     env:
       PROJECT: ${{ needs.inspect.outputs.project }}
       VERSION: ${{ needs.inspect.outputs.version }}
+      RCLONE_CONF_BASE64: ${{ secrets.RCLONE_CONF_BASE64 }}
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      DRIVE_FOLDER: ${{ vars.DRIVE_FOLDER || 'ibid-builds' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -171,22 +174,20 @@ jobs:
       # Uploads only installers carrying the version in their name; the web build and the Cargo
       # target are left out. Requires the RCLONE_CONF_BASE64 secret and DRIVE_FOLDER (see README).
       - name: Install rclone
-        if: ${{ secrets.RCLONE_CONF_BASE64 != '' }}
+        if: env.RCLONE_CONF_BASE64 != ''
         run: sudo apt-get update && sudo apt-get install -y rclone
 
       - name: Upload the installers to Google Drive
-        if: ${{ secrets.RCLONE_CONF_BASE64 != '' }}
-        env:
-          DRIVE_FOLDER: ${{ vars.DRIVE_FOLDER || 'Builds' }}
+        if: env.RCLONE_CONF_BASE64 != ''
         run: |
           mkdir -p ~/.config/rclone
-          echo "${{ secrets.RCLONE_CONF_BASE64 }}" | base64 -d > ~/.config/rclone/rclone.conf
-          rclone copy dist/${{ env.PROJECT }} "gdrive:${DRIVE_FOLDER}/${{ env.PROJECT }}/v${VERSION}" \
+          echo "${{ env.RCLONE_CONF_BASE64 }}" | base64 -d > ~/.config/rclone/rclone.conf
+          rclone copy dist/${{ env.PROJECT }} "gdrive:${{ env.DRIVE_FOLDER }}/${{ env.PROJECT }}/v${{ env.VERSION }}" \
             --include "${{ env.PROJECT }}.*" --progress
           rm -f ~/.config/rclone/rclone.conf
 
       - name: Warn when Drive is not configured
-        if: ${{ secrets.RCLONE_CONF_BASE64 == '' }}
+        if: env.RCLONE_CONF_BASE64 == ''
         run: |
           echo "> **Google Drive is not configured.** The \`RCLONE_CONF_BASE64\` secret is missing; the installers are only on the GitHub release." >> "$GITHUB_STEP_SUMMARY"
 
@@ -198,11 +199,11 @@ jobs:
           path: dist/${{ env.PROJECT }}/browser
 
       - name: Publish no Firebase Hosting
-        if: ${{ startsWith(github.ref, 'refs/tags/') && env.PROJECT == 'oh-save-me' && secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: startsWith(github.ref, 'refs/tags/') && env.PROJECT == 'oh-save-me' && env.FIREBASE_SERVICE_ACCOUNT != ''
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          firebaseServiceAccount: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: ibid-32cbe
 

@@ -336,7 +336,7 @@ collects them into `dist/`.
 | `RELEASE_TOKEN`            | Secret   | Personal token with `contents:write`. Without it the tag is published with `GITHUB_TOKEN`, which does **not** trigger `release.yml` |
 | `RCLONE_CONF_BASE64`       | Secret   | Base64 rclone configuration, for the Google Drive upload                                                                            |
 | `FIREBASE_SERVICE_ACCOUNT` | Secret   | Firebase service account, for publishing the site                                                                                   |
-| `DRIVE_FOLDER`             | Variable | Destination folder on Drive (defaults to `Builds`)                                                                                  |
+| `DRIVE_FOLDER`             | Variable | Destination folder on Drive (defaults to `ibid-builds`)                                                                            |
 
 Every step depending on a missing secret is skipped with a note in the run summary, rather than
 failing the whole release.
