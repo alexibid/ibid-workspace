@@ -1,0 +1,28 @@
+[submodule "apps/oh-save-me"]
+	path = apps/oh-save-me
+	url = https://github.com/alexibid/oh-save-me.git
+	branch = main
+[submodule "apps/boilerplate"]
+	path = apps/boilerplate
+	url = https://github.com/alexibid/boilerplate.git
+	branch = main
+[submodule "libs/ibid-ui"]
+	path = libs/ibid-ui
+	url = https://github.com/alexibid/ibid-ui.git
+	branch = main
+[submodule "libs/services"]
+	path = libs/services
+	url = https://github.com/alexibid/services.git
+	branch = main
+[submodule "libs/testing"]
+	path = libs/testing
+	url = https://github.com/alexibid/testing.git
+	branch = main
+[submodule "libs/utils"]
+	path = libs/utils
+	url = https://github.com/alexibid/utils.git
+	branch = main
+[submodule "apps/camila"]
+	path = apps/camila
+	url = https://github.com/alexibid/camila.git
+	branch = main

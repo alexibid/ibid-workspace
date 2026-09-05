@@ -20,6 +20,32 @@ SERVICE_LABEL="${SERVICE_LABEL:-${DETECTED_LABEL:-actions.runner.alexibid-ibid-w
 WORKSPACE_DIR="${WORKSPACE_DIR:-$HOME/Projects/ibid-workspace}"
 GDRIVE_DIR="${GDRIVE_DIR:-$HOME/Google Drive/My Drive/ibid-builds}"
 LOG_FILE="$HOME/Library/Logs/$SERVICE_LABEL/stdout.log"
+export PATH="$HOME/.n/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+validate_app() {
+  case "$1" in
+    oh-save-me|camila|boilerplate|all) ;;
+    *)
+      echo "Error: Invalid project name '$1'" >&2
+      exit 1
+      ;;
+  esac
+}
+
+notify_user() {
+  local msg="$1"
+  local sub="$2"
+  local snd="${3:-}"
+  if [ -n "$snd" ]; then
+    osascript -e 'on run argv' \
+      -e 'display notification (item 1 of argv) with title "IBID Workspace" subtitle (item 2 of argv) sound name (item 3 of argv)' \
+      -e 'end run' "$msg" "$sub" "$snd" 2>/dev/null || true
+  else
+    osascript -e 'on run argv' \
+      -e 'display notification (item 1 of argv) with title "IBID Workspace" subtitle (item 2 of argv)' \
+      -e 'end run' "$msg" "$sub" 2>/dev/null || true
+  fi
+}
 
 if [ "$1" = "action" ]; then
   case "$2" in
@@ -46,26 +72,114 @@ if [ "$1" = "action" ]; then
         launchctl start "$SERVICE_LABEL"
       fi
       ;;
-    watch-cli)
+    watch-ci)
       cd "$WORKSPACE_DIR" || exit 1
-      export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+      bash tools/ci/launch-dashboard.sh
+      ;;
+    watch-flow)
+      cd "$WORKSPACE_DIR" || exit 1
       node tools/ci/flow.mjs --watch
       ;;
+    watch-gh)
+      cd "$WORKSPACE_DIR" || exit 1
+      RUN_ID=$(gh run list --repo alexibid/ibid-workspace --limit 10 --json databaseId,status \
+        --jq 'map(select(.status=="in_progress" or .status=="queued")) | .[0].databaseId // empty' 2>/dev/null)
+      if [ -z "$RUN_ID" ]; then
+        RUN_ID=$(gh run list --repo alexibid/ibid-workspace --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null)
+      fi
+      if [ -n "$RUN_ID" ]; then
+        gh run watch "$RUN_ID" --repo alexibid/ibid-workspace
+      else
+        echo "No workflow runs found in GitHub Actions."
+        read -p "Press Enter to close..."
+      fi
+      ;;
     watch-runner)
-      tail -f "$LOG_FILE"
+      if [ -f "$LOG_FILE" ]; then
+        tail -f "$LOG_FILE"
+      else
+        echo "Log file not found: $LOG_FILE"
+        read -p "Press Enter to close..."
+      fi
       ;;
     check-fast)
       echo "Running fast affected check..."
       cd "$WORKSPACE_DIR" || exit 1
+      T_START=$(date +%s)
       npm run check:fast
+      T_STATUS=$?
+      T_ELAPSED=$(( $(date +%s) - T_START ))
+      if [ $T_STATUS -eq 0 ]; then
+        echo "✔ Fast check passed in ${T_ELAPSED}s."
+      else
+        echo "✖ Fast check failed after ${T_ELAPSED}s (exit code: $T_STATUS)."
+      fi
+      read -p "Press Enter to close..."
       ;;
     check-build)
       echo "Building all workspace projects..."
       cd "$WORKSPACE_DIR" || exit 1
+      T_START=$(date +%s)
       npm run check:build
+      T_STATUS=$?
+      T_ELAPSED=$(( $(date +%s) - T_START ))
+      if [ $T_STATUS -eq 0 ]; then
+        echo "✔ Workspace build passed in ${T_ELAPSED}s."
+      else
+        echo "✖ Workspace build failed after ${T_ELAPSED}s (exit code: $T_STATUS)."
+      fi
+      read -p "Press Enter to close..."
+      ;;
+    split-sync)
+      echo "Syncing standalone repositories to GitHub (Monorepo Split)..."
+      cd "$WORKSPACE_DIR" || exit 1
+      T_START=$(date +%s)
+      node tools/ci/split.mjs
+      T_STATUS=$?
+      T_ELAPSED=$(( $(date +%s) - T_START ))
+      if [ $T_STATUS -eq 0 ]; then
+        echo "✔ Monorepo split synced in ${T_ELAPSED}s."
+      else
+        echo "✖ Monorepo split failed after ${T_ELAPSED}s (exit code: $T_STATUS)."
+      fi
+      read -p "Press Enter to close..."
+      ;;
+    split-pull)
+      echo "Pulling updates from standalone repositories into workspace..."
+      cd "$WORKSPACE_DIR" || exit 1
+      node tools/ci/split.mjs --pull
+      read -p "Press Enter to close..."
+      ;;
+    deploy-pipeline)
+      echo "=== IBID WORKSPACE · SMART DEPLOY & RELEASE PIPELINE ==="
+      cd "$WORKSPACE_DIR" || exit 1
+      node tools/ci/deploy-pipeline.mjs
+      read -p "Press Enter to close..."
+      ;;
+    submodule-update)
+      echo "=== Updating all Git Submodules to remote main ==="
+      cd "$WORKSPACE_DIR" || exit 1
+      git submodule update --remote --merge
+      echo ""
+      echo "Running fast validation check..."
+      npm run check:fast
+      read -p "Press Enter to close..."
+      ;;
+    submodule-push)
+      echo "=== Pushing all Git Submodules to their origin main ==="
+      cd "$WORKSPACE_DIR" || exit 1
+      git submodule foreach 'git push origin main'
+      read -p "Press Enter to close..."
+      ;;
+    submodule-status)
+      echo "=== Git Submodule Status ==="
+      cd "$WORKSPACE_DIR" || exit 1
+      git submodule status
+      read -p "Press Enter to close..."
       ;;
     build-all)
       APP="${3:-oh-save-me}"
+      validate_app "$APP"
       echo "Building all installers (.dmg + .apk) for $APP..."
       cd "$WORKSPACE_DIR" || exit 1
       export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
@@ -89,6 +203,7 @@ if [ "$1" = "action" ]; then
       ;;
     build|build-desktop)
       APP="${3:-oh-save-me}"
+      validate_app "$APP"
       echo "Building desktop installer for $APP..."
       cd "$WORKSPACE_DIR" || exit 1
       npx nx desktop-build "$APP"
@@ -106,6 +221,7 @@ if [ "$1" = "action" ]; then
       ;;
     install-desktop)
       APP="${3:-oh-save-me}"
+      validate_app "$APP"
       DMG_FILE=$(find "$WORKSPACE_DIR/dist/$APP" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
       if [ -z "$DMG_FILE" ]; then
         DMG_FILE=$(find "$WORKSPACE_DIR/dist" -name "*.dmg" -type f 2>/dev/null | sort -V | tail -n 1)
@@ -128,6 +244,7 @@ if [ "$1" = "action" ]; then
       ;;
     build-apk)
       APP="${3:-oh-save-me}"
+      validate_app "$APP"
       echo "Building Android APK for $APP..."
       cd "$WORKSPACE_DIR" || exit 1
       export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
@@ -144,6 +261,7 @@ if [ "$1" = "action" ]; then
       ;;
     install-mobile)
       APP="${3:-oh-save-me}"
+      validate_app "$APP"
       echo "Installing APK on Android device via USB cable for $APP..."
       cd "$WORKSPACE_DIR" || exit 1
       export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
@@ -165,7 +283,7 @@ if [ "$1" = "action" ]; then
       adb devices -l
       DEVICE_COUNT=$(adb devices | grep -v "List of devices" | grep "device$" | wc -l | tr -d ' ')
       if [ "$DEVICE_COUNT" -eq "0" ]; then
-        echo "⚠️ Nenhum telemóvel detetado via USB. Por favor ligue o telemóvel com depuração USB ativa."
+        echo "⚠️ No mobile device detected via USB. Please connect device with USB debugging enabled."
       else
         echo "Installing $APK_FILE on device..."
         adb install -r "$APK_FILE"
@@ -179,12 +297,14 @@ if [ "$1" = "action" ]; then
       ;;
     build-web)
       APP="${3:-boilerplate}"
+      validate_app "$APP"
       echo "Building web bundle for $APP..."
       cd "$WORKSPACE_DIR" || exit 1
       npx nx build "$APP"
       ;;
     deploy-web)
       APP="${3:-oh-save-me}"
+      validate_app "$APP"
       echo "Deploying web app for $APP to Firebase Hosting..."
       cd "$WORKSPACE_DIR" || exit 1
       if [ "$APP" = "all" ]; then
@@ -240,22 +360,27 @@ else
 fi
 
 echo "---"
-echo "ibid-workspace — Runner & Delivery | size=13 bash=/usr/bin/open param1=\"$WORKSPACE_DIR\" terminal=false"
+echo "🚀 DEPLOY & RELEASE (Auto-PR & Publish) | bash=\"$SELF\" param1=action param2=deploy-pipeline terminal=true"
+echo "⌁ Open CI Dashboard (Graph + Logs) | bash=\"$SELF\" param1=action param2=watch-ci terminal=false"
 
+echo "---"
 if [ "$IS_BUILDING" = true ]; then
-  echo "⟳ Estado: Em compilação... | refresh=true bash=/usr/bin/true terminal=false"
+  echo "⟳ Runner: Compiling... | bash=\"$SELF\" param1=action param2=watch-runner terminal=true refresh=true"
 elif [ "$IS_RUNNING" = true ]; then
-  echo "● Runner CI: À escuta (PID: $RUNNER_PID) | refresh=true bash=/usr/bin/true terminal=false"
+  echo "● Runner: Listening (PID $RUNNER_PID) | bash=\"$SELF\" param1=action param2=watch-runner terminal=true"
+  echo "-- ■ Stop Runner | bash=\"$SELF\" param1=action param2=stop terminal=false refresh=true"
+  echo "-- ↺ Restart Runner | bash=\"$SELF\" param1=action param2=restart terminal=false refresh=true"
 else
-  echo "○ Runner CI: Desligado | refresh=true bash=/usr/bin/true terminal=false"
+  echo "○ Runner: Stopped | bash=\"$SELF\" param1=action param2=start terminal=false refresh=true"
+  echo "-- ▶ Start Runner | bash=\"$SELF\" param1=action param2=start terminal=false refresh=true"
 fi
 
-FLOW_CACHE="/tmp/ibid-xbar-flow"
+CACHE_DIR="${TMPDIR:-/tmp}/ibid-xbar-$(id -u)"
+mkdir -p -m 700 "$CACHE_DIR" 2>/dev/null
+FLOW_CACHE="$CACHE_DIR/flow.txt"
 
 if [ -f "$FLOW_CACHE" ]; then
   cat "$FLOW_CACHE"
-else
-  echo "○ Sem execuções · em repouso | size=11 color=#8b949e"
 fi
 
 if [ ! -f "$FLOW_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$FLOW_CACHE" 2>/dev/null || echo 0) )) -gt 20 ]; then
@@ -270,120 +395,58 @@ if [ ! -f "$FLOW_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$FLOW_CACHE" 2>/d
   fi
 fi
 
-NOTIF_STATE_FILE="/tmp/ibid-runner-last-notif.txt"
-GH="/opt/homebrew/bin/gh"
-COST_CACHE="/tmp/ibid-xbar-cost"
-
-if [ -x "$GH" ]; then
-  ACTIVE=$("$GH" run list --repo alexibid/ibid-workspace --limit 1 --json workflowName,status,startedAt \
-    --jq '.[] | select(.status=="in_progress") | "\(.workflowName)|\(.startedAt)"' 2>/dev/null)
-
-  if [ -n "$ACTIVE" ]; then
-    STARTED=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "${ACTIVE##*|}" +%s 2>/dev/null)
-    if [ -n "$STARTED" ]; then
-      ELAPSED=$(( ($(date -u +%s) - STARTED) / 60 ))
-      if pgrep -f "Runner.Worker" > /dev/null 2>&1; then
-        echo "⟳ ${ACTIVE%%|*} — ${ELAPSED}m, no teu Mac (grátis) | size=11 color=#2ea043"
-      else
-        echo "⟳ ${ACTIVE%%|*} — ${ELAPSED}m, runner do GitHub (faturado) | size=11 color=#d29922"
-      fi
-    fi
-  fi
-
-  if [ ! -f "$COST_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$COST_CACHE" 2>/dev/null || echo 0) )) -gt 300 ]; then
-    if [ ! -f "$COST_CACHE.lock" ] || [ $(( $(date +%s) - $(stat -f %m "$COST_CACHE.lock" 2>/dev/null || echo 0) )) -gt 120 ]; then
-      touch "$COST_CACHE.lock"
-      (
-        TODAY=$(date -u +%Y-%m-%d)
-        TOTAL=0
-        for RID in $("$GH" api "repos/alexibid/ibid-workspace/actions/runs?per_page=60" --jq ".workflow_runs[] | select(.created_at | startswith(\"$TODAY\")) | .id" 2>/dev/null); do
-          M=$("$GH" api "repos/alexibid/ibid-workspace/actions/runs/$RID/jobs" --jq '[.jobs[] | select(.completed_at != null) | ((((.completed_at|fromdate)-(.started_at|fromdate))/60)|ceil) * (if (.runner_name // "")=="MAC ALEX" then 0 elif (.name|test("windows")) then 2 elif (.name|test("macos")) then 10 else 1 end)] | add // 0' 2>/dev/null)
-          TOTAL=$(( TOTAL + ${M:-0} ))
-        done
-        echo "$TOTAL" > "$COST_CACHE"
-        rm -f "$COST_CACHE.lock"
-      ) >/dev/null 2>&1 &
-    fi
-  fi
-
-  echo "Faturado hoje: $(cat "$COST_CACHE" 2>/dev/null || echo 0) min de 2000 | size=11 bash=/usr/bin/open param1=\"https://github.com/settings/billing\" terminal=false"
-fi
-
-if [ -f "$LOG_FILE" ]; then
-  CURRENT_LINE=$(tail -n 1 "$LOG_FILE" 2>/dev/null)
-  LAST_LOG=$(echo "$CURRENT_LINE" | cut -c 1-50)
-  if [ -n "$LAST_LOG" ]; then
-    echo "Último evento: $LAST_LOG | size=11 bash=/usr/bin/open param1=\"$LOG_FILE\" terminal=false"
-  fi
-
-  LAST_NOTIFIED=""
-  if [ -f "$NOTIF_STATE_FILE" ]; then
-    LAST_NOTIFIED=$(cat "$NOTIF_STATE_FILE" 2>/dev/null)
-  fi
-  if [ -n "$CURRENT_LINE" ] && [ "$CURRENT_LINE" != "$LAST_NOTIFIED" ]; then
-    echo "$CURRENT_LINE" > "$NOTIF_STATE_FILE"
-    if echo "$CURRENT_LINE" | grep -q "Running job:"; then
-      JOB_NAME=$(echo "$CURRENT_LINE" | sed -n 's/.*Running job: //p')
-      osascript -e "display notification \"${JOB_NAME}\" with title \"IBID Workspace\" subtitle \"Execução em curso\" sound name \"Glass\"" 2>/dev/null
-    elif echo "$CURRENT_LINE" | grep -q "completed with result: Succeeded"; then
-      JOB_NAME=$(echo "$CURRENT_LINE" | sed -n 's/.*Job \(.*\) completed with result: Succeeded/\1/p')
-      osascript -e "display notification \"${JOB_NAME}: Concluído\" with title \"IBID Workspace\" subtitle \"Etapa concluída\"" 2>/dev/null
-    elif echo "$CURRENT_LINE" | grep -q "completed with result: Failed"; then
-      JOB_NAME=$(echo "$CURRENT_LINE" | sed -n 's/.*Job \(.*\) completed with result: Failed/\1/p')
-      osascript -e "display notification \"${JOB_NAME}: Falhou\" with title \"IBID Workspace\" subtitle \"Erro na etapa\" sound name \"Basso\"" 2>/dev/null
-    fi
-  fi
-fi
-
 echo "---"
-echo "⌁ Seguir o fluxo ponta a ponta | bash=\"$SELF\" param1=action param2=watch-cli terminal=true"
-echo "≡ Seguir a máquina local | bash=\"$SELF\" param1=action param2=watch-runner terminal=true"
-echo "---"
-if [ "$IS_RUNNING" = true ]; then
-  echo "■ Parar Runner | bash=\"$SELF\" param1=action param2=stop terminal=false refresh=true"
-  echo "↺ Reiniciar Runner | bash=\"$SELF\" param1=action param2=restart terminal=false refresh=true"
-else
-  echo "▶ Iniciar Runner | bash=\"$SELF\" param1=action param2=start terminal=false refresh=true"
-fi
-
-echo "---"
-echo "Workspace (ibid-workspace)"
-echo "-- ⌁ Verificação Rápida (check:fast) | bash=\"$SELF\" param1=action param2=check-fast terminal=true"
-echo "-- ⚙ Compilar Workspace (check:build) | bash=\"$SELF\" param1=action param2=check-build terminal=true"
-echo "-- ↑ Publicar Todas as Web Apps no Firebase | bash=\"$SELF\" param1=action param2=deploy-web param3=all terminal=true refresh=true"
-echo "-- ↑ Sincronizar Instaladores para o Drive | bash=\"$SELF\" param1=action param2=sync-drive terminal=true refresh=true"
-echo "-- ↗ Abrir Pasta do Workspace | bash=/usr/bin/open param1=\"$WORKSPACE_DIR\" terminal=false"
-echo "-- ↗ Abrir Pasta Dist | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/dist\" terminal=false"
-echo "-- ↗ Abrir GitHub Actions | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
-
 echo "Oh Save Me!"
-echo "-- ⚙ Compilar Tudo (.dmg + .apk) | bash=\"$SELF\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
-echo "-- ⚙ Compilar Desktop (.dmg) | bash=\"$SELF\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
-echo "-- ⚙ Compilar Android (.apk) | bash=\"$SELF\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
-echo "-- ↓ Instalar Desktop (.dmg) | bash=\"$SELF\" param1=action param2=install-desktop param3=oh-save-me terminal=true refresh=true"
-echo "-- ↓ Instalar APK no Telemóvel (USB) | bash=\"$SELF\" param1=action param2=install-mobile param3=oh-save-me terminal=true refresh=true"
-echo "-- ↑ Publicar no Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=oh-save-me terminal=true refresh=true"
-echo "-- ↗ Abrir Web App (ibid-ohsaveme.web.app) | bash=/usr/bin/open param1=\"https://ibid-ohsaveme.web.app\" terminal=false"
-echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
-
-echo "Boilerplate"
-echo "-- ⚙ Compilar Web | bash=\"$SELF\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
-echo "-- ↑ Publicar no Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
-echo "-- ↗ Abrir Web App (ibid-boilerplate.web.app) | bash=/usr/bin/open param1=\"https://ibid-boilerplate.web.app\" terminal=false"
-echo "-- ↗ Abrir Storybook Showcase | bash=/usr/bin/open param1=\"http://localhost:6006\" terminal=false"
-echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
+echo "-- ⚙ Build All (.dmg + .apk) | bash=\"$SELF\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Build Desktop (.dmg) | bash=\"$SELF\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
+echo "-- ⚙ Build Android (.apk) | bash=\"$SELF\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
+echo "-- ↓ Install Desktop (.dmg) | bash=\"$SELF\" param1=action param2=install-desktop param3=oh-save-me terminal=true refresh=true"
+echo "-- ↓ Install APK on Device (USB) | bash=\"$SELF\" param1=action param2=install-mobile param3=oh-save-me terminal=true refresh=true"
+echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=oh-save-me terminal=true refresh=true"
+echo "-- 🌐 Open Web (ibid-ohsaveme.web.app) | bash=/usr/bin/open param1=\"https://ibid-ohsaveme.web.app\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
 
 echo "Camila"
-echo "-- ↑ Publicar no Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
-echo "-- ↗ Abrir Web App (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
-echo "-- ↗ Abrir Pasta do Projeto | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
+echo "-- 🌐 Open Web (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+
+echo "Boilerplate"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
+echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
+echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
+echo "-- 🌐 Open Web (ibid-boilerplate.web.app) | bash=/usr/bin/open param1=\"https://ibid-boilerplate.web.app\" terminal=false"
+echo "-- 🎨 Storybook Showcase | bash=/usr/bin/open param1=\"http://localhost:6006\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
+
+echo "ibid-ui (Design System)"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/libs/ibid-ui\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/libs/ibid-ui\" terminal=false"
 
 echo "---"
+echo "Workspace"
+echo "-- ⌁ Fast Check (check:fast) | bash=\"$SELF\" param1=action param2=check-fast terminal=true"
+echo "-- ⚙ Build Workspace (check:build) | bash=\"$SELF\" param1=action param2=check-build terminal=true"
+echo "-- ⤓ Pull All Submodules (update --remote) | bash=\"$SELF\" param1=action param2=submodule-update terminal=true refresh=true"
+echo "-- ↑ Push All Submodules | bash=\"$SELF\" param1=action param2=submodule-push terminal=true refresh=true"
+echo "-- ≡ Submodule Status | bash=\"$SELF\" param1=action param2=submodule-status terminal=true"
+echo "-- ⌥ Sync Monorepo to GitHub (Push Split) | bash=\"$SELF\" param1=action param2=split-sync terminal=true refresh=true"
+echo "-- ⌥ Pull Repositories into Monorepo | bash=\"$SELF\" param1=action param2=split-pull terminal=true refresh=true"
+echo "-- ↑ Deploy All Web Apps to Firebase | bash=\"$SELF\" param1=action param2=deploy-web param3=all terminal=true refresh=true"
+echo "-- ☁ Sync Installers to Google Drive | bash=\"$SELF\" param1=action param2=sync-drive terminal=true refresh=true"
+
+echo "---"
+echo "Links & Folders"
+echo "-- 📁 Workspace Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR\" terminal=false"
+echo "-- 📦 Dist Folder (Installers) | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/dist\" terminal=false"
 if [ -d "$GDRIVE_DIR" ]; then
-  echo "↗ Abrir Google Drive (ibid-builds) | bash=/usr/bin/open param1=\"$GDRIVE_DIR\" terminal=false"
+  echo "-- ☁ Google Drive (ibid-builds) | bash=/usr/bin/open param1=\"$GDRIVE_DIR\" terminal=false"
 fi
-echo "↗ Abrir Pasta Dist | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/dist\" terminal=false"
 if [ -f "$LOG_FILE" ]; then
-  echo "≡ Ver Logs do Runner | bash=/usr/bin/open param1=\"$LOG_FILE\" terminal=false"
+  echo "-- ≡ Local Runner Log File | bash=/usr/bin/open param1=\"$LOG_FILE\" terminal=false"
 fi
-echo "↗ Abrir GitHub Actions | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
+echo "-- ---"
+echo "-- 🐙 GitHub Actions (CI/CD) | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
+echo "-- 💳 GitHub Billing | bash=/usr/bin/open param1=\"https://github.com/settings/billing\" terminal=false"

@@ -1,5 +1,3 @@
-# Local AI and editor tooling configuration — never committed.
-# Unanchored so they cover the workspace root and every apps/* and libs/*.
 AGENTS.md
 CLAUDE.md
 GEMINI.md
@@ -10,21 +8,17 @@ GEMINI.md
 .gemini/
 .opencode/
 opencode.json
-
-# Nx-generated agent skills and prompts under .github — ci.yml stays tracked.
 /.github/agents/
 /.github/prompts/
 /.github/skills/
 /.performance/
 
-# Build output and dependencies
 dist
 tmp
 out-tsc
 node_modules
 *.tsbuildinfo
 
-# Editors
 /.idea
 .project
 .classpath
@@ -38,7 +32,6 @@ node_modules
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Misc
 /.sass-cache
 /connect.lock
 /coverage
@@ -50,7 +43,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# Nx and Angular caches
 .nx/cache
 .nx/workspace-data
 .nx/polygraph
@@ -61,7 +53,6 @@ Thumbs.db
 __screenshots__/
 vitest.config.*.timestamp*
 
-# Environment
 .env
 .env.production
 .env.development
@@ -69,7 +60,6 @@ vitest.config.*.timestamp*
 .env.*.local
 !.env.example
 
-# Test artifacts, distribution output and local data
 test-results/
 .playwright-artifacts/
 playwright-report/
@@ -82,19 +72,36 @@ documentation.json
 coverage/
 .firebase/
 apps/*/platforms/desktop/src-tauri/target/
+platforms/desktop/src-tauri/target/
 apps/*/platforms/mobile/android/.gradle/
+platforms/mobile/android/.gradle/
 apps/*/platforms/mobile/android/build/
+platforms/mobile/android/build/
 apps/*/platforms/mobile/android/app/build/
+platforms/mobile/android/app/build/
 apps/*/platforms/mobile/android/local.properties
+platforms/mobile/android/local.properties
 apps/*/platforms/mobile/android/app/local.properties
+platforms/mobile/android/app/local.properties
 apps/*/platforms/mobile/android/app/src/main/assets/public/
+platforms/mobile/android/app/src/main/assets/public/
 apps/*/platforms/mobile/ios/Pods/
+platforms/mobile/ios/Pods/
 apps/*/platforms/mobile/ios/build/
+platforms/mobile/ios/build/
 apps/*/platforms/mobile/ios/.symlinks/
+platforms/mobile/ios/.symlinks/
 apps/*/platforms/mobile/ios/App/public/
+platforms/mobile/ios/App/public/
+platforms/mobile/node_modules/
+platforms/dist/
 apps/*/uploads/*
+uploads/*
 !apps/*/uploads/.gitkeep
+!uploads/.gitkeep
 apps/*/imports/*
+imports/*
 !apps/*/imports/.gitkeep
+!imports/.gitkeep
 *.log
 dist/*/desktop/

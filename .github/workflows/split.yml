@@ -1,0 +1,48 @@
+name: Monorepo Split
+
+on:
+  workflow_run:
+    workflows: [Automatic versioning]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Target project to split (e.g. oh-save-me, ibid-ui, or blank for all)
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monorepo-split
+  cancel-in-progress: false
+
+jobs:
+  split:
+    name: Split · Sync standalone repositories
+    timeout-minutes: 15
+    runs-on: [self-hosted, macOS, ARM64]
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: split
+
+      - name: Synchronize repositories
+        env:
+          SPLIT_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          PROJECT_FILTER: ${{ inputs.project }}
+        run: |
+          if [ -n "$PROJECT_FILTER" ]; then
+            node tools/ci/split.mjs "--project=$PROJECT_FILTER"
+          else
+            node tools/ci/split.mjs
+          fi

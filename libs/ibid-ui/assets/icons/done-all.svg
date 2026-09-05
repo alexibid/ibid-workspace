@@ -1,7 +1,0 @@
-<svg width="100%" height="100%" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <g transform="matrix(9.844449999038625, 0, 0, 9.844449999038625, -11502.914017678902, -20358.61793151185)">
-    <defs><linearGradient id="_maqgh80" gradientUnits="userSpaceOnUse" x1="1118.03" y1="1013.15" x2="1117.03" y2="1003.47"><stop offset="0" stop-color="#525050"/><stop offset="1" stop-color="#6f6969"/></linearGradient><linearGradient id="_maqgh81" gradientUnits="userSpaceOnUse" x1="1729.67" y1="717.773" x2="1757.36" y2="706.845"><stop offset="0" stop-color="#9fa198"/><stop offset="1" stop-color="#b6c0ad"/></linearGradient><linearGradient id="_maqgh82" gradientUnits="userSpaceOnUse" x1="1110.4" y1="262.461" x2="1134.11" y2="311.772"><stop offset="0" stop-color="#e8e5d6"/><stop offset="1" stop-color="#f7f2f5"/></linearGradient></defs>
-  <path d="M1213.405 2083.791L1216.001 2086.17 1216.026 2088.412C1207.921 2099.885 1195.994 2110.052 1186.013 2120.039L1174.286 2109.355C1172.457 2106.779 1170.767 2104.974 1170.986 2101.657L1173.044 2101.084C1178.667 2103.213 1181.922 2106.885 1185.912 2111.139 1194.903 2101.85 1204.068 2092.735 1213.405 2083.791z" fill="var(--color-teal-text)" />
-  <path d="M1215.356 2068.03L1217.95 2070.409 1217.976 2072.65C1209.871 2084.123 1197.944 2094.29 1187.964 2104.279L1176.236 2093.593C1174.407 2091.019 1172.716 2089.213 1172.935 2085.895L1174.994 2085.322C1180.618 2087.452 1183.871 2091.124 1187.862 2095.377 1196.852 2086.089 1206.018 2076.974 1215.356 2068.03z" fill="var(--color-teal-text)" />
-  </g>
-</svg>

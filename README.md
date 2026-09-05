@@ -13,6 +13,7 @@ infrastructure services — lives under `libs/` and is consumed through imports.
 | :------------------------------------ | :----: | :------------------------------------------------------------- |
 | **[boilerplate](./apps/boilerplate)** | `app`  | Minimal Angular skeleton, the starting point for new products. |
 | **[oh-save-me](./apps/oh-save-me)**   | `app`  | Personal and family finance assistant (PT: Oh poupa-me!).      |
+| **[camila](./apps/camila)**           | `app`  | Children's habits and positive reinforcement app.               |
 | **[ibid-ui](./libs/ibid-ui)**         | `lib`  | Design system: components, global styles, and icons.           |
 | **[services](./libs/services)**       | `lib`  | Infrastructure services (i18n, authentication, sync).          |
 | **[testing](./libs/testing)**         | `lib`  | Generic test engines (accessibility, screenshots, flows).      |
@@ -44,6 +45,7 @@ A selector's prefix says where the element comes from. `app-` is banned across t
 | `libs/ibid-ui`     | `ibid-`        |
 | `apps/oh-save-me`  | `ohsaveme-`    |
 | `apps/boilerplate` | `boilerplate-` |
+| `apps/camila`      | `camila-`      |
 
 ## Applications
 
@@ -79,6 +81,13 @@ An empty Angular application that serves as the mould for new products: routing 
 `styles.scss` already importing the design system, and the navigation shell assembled from
 `ibid-header` and `ibid-header-nav`. Copy this folder to start a new app instead of generating
 everything from scratch.
+
+### `apps/camila`
+
+Children's habits and positive reinforcement app, designed for mobile-first parent-child
+interaction with origami-style paper themes (`kirigami`), domain-based goal tracking, and
+on-device natural language classification. Published to Firebase Hosting at
+`https://ibid-camila.web.app`.
 
 ## Libraries
 
@@ -288,13 +297,58 @@ See the dependency graph:
 npx nx graph
 ```
 
+Worktree management (isolated development per component):
+
+```bash
+node tools/workspace/worktree.mjs create-all    # Creates isolated worktrees for all 8 components
+node tools/workspace/worktree.mjs list          # Lists active worktrees and branches
+```
+
+Standalone repository synchronization (Monorepo Split):
+
+```bash
+npm run split                 # Sync all standalone repositories to GitHub
+npm run split:dry             # Dry-run simulation
+npm run split:pull            # Pull updates from standalone repositories into monorepo
+```
+
+## Isolated Worktrees & Focused Workflow
+
+To work on an application, library, or tooling without monorepo noise (avoiding mixed `git status` in GitHub Desktop or seeing other projects in your IDE):
+
+```bash
+node tools/workspace/worktree.mjs create <name>  # e.g. oh-save-me, camila, ibid-ui, tools
+node tools/workspace/worktree.mjs create-all     # Set up all 8 isolated worktrees at once
+```
+
+Under the hood, `tools/workspace/worktree.mjs`:
+1. Creates a linked Git worktree on its own dedicated branch (matching the component name: `oh-save-me`, `camila`, `ibid-ui`, etc.).
+2. Configures Git **Cone-mode Sparse-Checkout** so that other projects do not exist on disk in that folder.
+3. Symlinks `node_modules` from the monorepo root for instantaneous readiness without extra disk space.
+4. Allows opening each component in **GitHub Desktop** (`File -> Add Local Repository`) and **VS Code** (`code ~/Projects/<name>`) as a completely isolated project.
+
+## Standalone Repositories on GitHub (Monorepo Split)
+
+Every application, shared library, and tooling infrastructure is mirrored as an independent, private repository on GitHub under `alexibid`:
+
+- [alexibid/oh-save-me](https://github.com/alexibid/oh-save-me) (Personal finance app)
+- [alexibid/camila](https://github.com/alexibid/camila) (Children's habits app)
+- [alexibid/boilerplate](https://github.com/alexibid/boilerplate) (Angular template & showcase)
+- [alexibid/ibid-ui](https://github.com/alexibid/ibid-ui) (Design system and UI atoms)
+- [alexibid/services](https://github.com/alexibid/services) (Shared domain services)
+- [alexibid/testing](https://github.com/alexibid/testing) (Testing utilities & engines)
+- [alexibid/utils](https://github.com/alexibid/utils) (Shared base helpers)
+- [alexibid/tools](https://github.com/alexibid/tools) (Build, CI, and automation infrastructure)
+
+Synchronization is automated via `.github/workflows/split.yml` on push to `main` and can be manually triggered locally with `npm run split`. Updates can be pulled back into the monorepo using `npm run split:pull`.
+
 ## macOS Menu Bar Integration (xbar)
 
 A lightweight macOS menu bar plugin lives in `tools/xbar/ibid-runner.10s.sh` to manage workspace builds, local runner services, and deliveries:
 
 - **Minimal template icon**: Uses the `.i` design token favicon with dynamic status indicators (`⟳` building, `○` stopped, or clean icon when running).
 - **Background Runner Control**: Start, stop, restart, and inspect logs for the local GitHub Actions runner (auto-detects `actions.runner.*`, e.g. `actions.runner.alexibid-ibid-workspace.<runner-name>`).
-- **Workspace Actions**: Run fast affected checks (`check:fast`), full workspace builds (`check:build`), or deploy all web apps to Firebase Hosting.
+- **Workspace Actions**: Run fast affected checks (`check:fast`), full workspace builds (`check:build`), create isolated worktrees, trigger monorepo split, or deploy all web apps to Firebase Hosting.
 - **Product Actions (Oh Save Me!, Boilerplate, Camila)**:
   - 1-click native installer builds (`.dmg` + `.apk`).
   - Automatic mounting of macOS `.dmg` installers.
@@ -339,13 +393,14 @@ name that identifies project and version.
 
 ## Publishing
 
-Three workflows, chained:
+Four workflows, chained:
 
 | Workflow           | Triggered by                    | Does                                                                                                                                |
 | ------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `ci.yml`           | Pull request and push to `main` | Lint, tests, and build, only on affected projects                                                                                   |
-| `auto-version.yml` | Push to `main`                  | Derives the version from conventional commits, writes the changelog, publishes the tag                                              |
+| `auto-version.yml` | Push to `main` (after CI green) | Derives the version from conventional commits, writes the changelog, publishes the tag                                              |
 | `release.yml`      | A `v*` tag                      | Builds web, Android APK, and desktop installers; attaches them to the release, uploads them to Google Drive, and publishes the site |
+| `split.yml`        | After `auto-version.yml`        | Extracts subtrees and pushes to 7 standalone GitHub repos (`oh-save-me`, `camila`, `boilerplate`, `ibid-ui`, etc.)                 |
 
 Installers come out with the version already in the name — `oh-save-me.1.2.3.apk`,
 `oh-save-me.1.2.3.dmg` — because `tools/builder/collect-artifact.mjs` renames them as it
