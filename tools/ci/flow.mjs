@@ -130,7 +130,17 @@ function isMeaningfulStep(step) {
   if (/^Run actions\/(checkout|upload-artifact|download-artifact)/.test(step.name)) return false;
   if (/^Run \.\/\.github\/actions\/setup-workspace/.test(step.name)) return false;
   if (/^Run nrwl\/nx-set-shas/.test(step.name)) return false;
+  if (/^(Refuse to run|Decide the scope|Summary|Skip when)/.test(step.name)) return false;
   return true;
+}
+
+function cleanStepName(name) {
+  if (/Lint/i.test(name)) return 'Lint budget';
+  if (/^Types/i.test(name)) return 'TypeScript check';
+  if (/^Unit tests/i.test(name)) return 'Unit tests';
+  if (/^Build/i.test(name)) return 'Nx Build';
+  if (/Resolve the affected/i.test(name)) return 'Resolve affected';
+  return shorten(name);
 }
 
 function stepDuration(step) {
@@ -247,93 +257,205 @@ function timeAgo(isoString) {
 
 function renderForXbar() {
   jobCache.clear();
-  const runs = api('/actions/runs?per_page=30').workflow_runs;
-  const active = runs.filter((run) => run.status !== 'completed');
+  const runs = api('/actions/runs?per_page=30').workflow_runs || [];
+  const now = new Date().toISOString();
 
-  if (active.length > 0) {
-    const running = active.find((run) => run.status === 'in_progress') ?? active[0];
-    const label = running.name === 'Release' ? `Release ${running.head_branch}` : running.name;
-    const waiting = active.length - 1;
-    const queue = waiting > 0 ? ` · ${waiting} queued` : '';
-    const runDur = formatSeconds(elapsedSeconds(running.run_started_at || running.created_at, new Date().toISOString()));
-    const jobs = jobsOf(running);
-    const runUrl = `https://github.com/${REPO}/actions/runs/${running.id}`;
+  const activeCi = runs.find((r) => r.name === 'CI' && r.status !== 'completed');
+  const lastCompletedCi = runs.find((r) => r.name === 'CI' && r.status === 'completed');
+  const ciRun = activeCi || lastCompletedCi;
 
-    console.log(`⟳ ${label}${queue} · ${runDur} | bash=/usr/bin/open param1="${runUrl}" terminal=false`);
+  const activeVersion = runs.find((r) => r.name === 'Automatic versioning' && r.status !== 'completed');
+  const lastCompletedVersion = runs.find((r) => r.name === 'Automatic versioning' && r.status === 'completed');
+  const versionRun = activeVersion || lastCompletedVersion;
 
-    for (const job of jobs) {
-      const state = job.conclusion ?? job.status;
-      const mark = state === 'success' ? '✔' : state === 'failure' ? '✖' : state === 'in_progress' ? '▸' : '·';
-      const time = job.completed_at ? formatSeconds(jobSeconds(job)) : state === 'in_progress' ? 'running' : '—';
-      const jobUrl = job.html_url || `https://github.com/${REPO}/actions/runs/${running.id}/job/${job.id}`;
-      console.log(`-- ${mark} ${shorten(job.name)} · ${time} | bash=/usr/bin/open param1="${jobUrl}" terminal=false`);
+  const activeRelease = runs.find((r) => r.name === 'Release' && r.status !== 'completed');
+  const lastCompletedRelease = runs.find((r) => r.name === 'Release' && r.status === 'completed');
+  const releaseRun = activeRelease || lastCompletedRelease;
+
+  let rootTitle = '⚡ CI / CD & Deploy Pipeline Flow (All passed ✔)';
+  if (activeRelease) {
+    const target = resolveTargetName(activeRelease);
+    const dur = formatSeconds(elapsedSeconds(activeRelease.run_started_at || activeRelease.created_at, now));
+    const activeJob = jobsOf(activeRelease).find((j) => j.status === 'in_progress');
+    const phase = activeJob ? shorten(activeJob.name) : 'Release';
+    rootTitle = `⚡ Pipeline Flow · ⟳ ${phase} (${target} · ${dur})`;
+  } else if (activeVersion) {
+    const dur = formatSeconds(elapsedSeconds(activeVersion.run_started_at || activeVersion.created_at, now));
+    rootTitle = `⚡ Pipeline Flow · ⟳ Auto-Versioning (${dur})`;
+  } else if (activeCi) {
+    const dur = formatSeconds(elapsedSeconds(activeCi.run_started_at || activeCi.created_at, now));
+    const activeJob = jobsOf(activeCi).find((j) => j.status === 'in_progress');
+    const phase = activeJob ? shorten(activeJob.name) : 'CI';
+    rootTitle = `⚡ Pipeline Flow · ⟳ ${phase} (${dur})`;
+  }
+
+  console.log('---');
+  console.log(`${rootTitle} | bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
+
+  if (ciRun) {
+    const isCiActive = ciRun.status !== 'completed';
+    const ciMark = isCiActive ? '▸' : ciRun.conclusion === 'success' ? '✔' : '✖';
+    const ciDur = isCiActive
+      ? `${formatSeconds(elapsedSeconds(ciRun.run_started_at || ciRun.created_at, now))} running`
+      : formatSeconds(elapsedSeconds(ciRun.run_started_at || ciRun.created_at, ciRun.updated_at));
+    const ciBranch = ciRun.head_branch ? ` · ${ciRun.head_branch}` : '';
+    const ciUrl = `https://github.com/${REPO}/actions/runs/${ciRun.id}`;
+
+    console.log(`-- ┌─ ${ciMark} 1. CI · Quality Gate (${ciDur}${ciBranch}) | font=Menlo size=11 bash=/usr/bin/open param1="${ciUrl}" terminal=false`);
+
+    const ciJobs = jobsOf(ciRun);
+    const verifyJob = ciJobs.find((j) => j.name.includes('Verify') || j.name.includes('Static'));
+    const verifyMark = !verifyJob ? '·' : verifyJob.status === 'in_progress' ? '▸' : verifyJob.conclusion === 'success' ? '✔' : verifyJob.conclusion === 'failure' ? '✖' : '·';
+    const verifyTime = !verifyJob ? 'queued' : verifyJob.status === 'in_progress' ? `${formatSeconds(elapsedSeconds(verifyJob.started_at, now))} ▸` : formatSeconds(jobSeconds(verifyJob));
+    const verifyUrl = verifyJob ? (verifyJob.html_url || `https://github.com/${REPO}/actions/runs/${ciRun.id}/job/${verifyJob.id}`) : ciUrl;
+
+    printTreeRow('│   ├─', verifyMark, 'Verify · Static, tests and build', verifyTime, verifyUrl);
+
+    if (verifyJob && verifyJob.steps && verifyJob.steps.length > 0) {
+      const steps = verifyJob.steps.filter(isMeaningfulStep);
+      steps.forEach((step, sIdx) => {
+        const isLastStep = sIdx === steps.length - 1;
+        const sPrefix = isLastStep ? '│   │   └─' : '│   │   ├─';
+        const sState = step.conclusion ?? step.status;
+        const sMark = sState === 'success' ? '✔' : sState === 'failure' ? '✖' : sState === 'in_progress' ? '▸' : '·';
+        const sTime = stepDuration(step);
+        printTreeRow(sPrefix, sMark, cleanStepName(step.name), sTime, verifyUrl);
+      });
     }
 
-    const lastCi = runs.find((r) => r.name === 'CI' && r.status === 'completed');
-    if (lastCi) {
-      const lastDur = formatSeconds(elapsedSeconds(lastCi.run_started_at || lastCi.created_at, lastCi.updated_at));
-      const lastMark = lastCi.conclusion === 'success' ? '✔' : '✖';
-      const lastCiUrl = `https://github.com/${REPO}/actions/runs/${lastCi.id}`;
-      console.log('-----');
-      console.log(`-- ⏱ Benchmark: Last CI ${lastMark} took ${lastDur} | bash=/usr/bin/open param1="${lastCiUrl}" terminal=false`);
+    const verifyGate = ciJobs.find((j) => j.name.includes('CI verified'));
+    if (verifyGate) {
+      const gateMark = verifyGate.status === 'in_progress' ? '▸' : verifyGate.conclusion === 'success' ? '✔' : verifyGate.conclusion === 'failure' ? '✖' : '·';
+      const gateTime = verifyGate.status === 'in_progress' ? 'running' : formatSeconds(jobSeconds(verifyGate));
+      const gateUrl = verifyGate.html_url || `https://github.com/${REPO}/actions/runs/${ciRun.id}/job/${verifyGate.id}`;
+      printTreeRow('│   ├─', gateMark, 'CI verified', gateTime, gateUrl);
     }
-    return;
-  }
 
-  const lastCi = runs.find((r) => r.name === 'CI' && r.status === 'completed') ?? runs.find((r) => r.status === 'completed');
-  if (!lastCi) {
-    console.log(`○ No recent runs · Idle | bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
-    return;
-  }
-
-  const mark = lastCi.conclusion === 'success' ? '✔' : '✖';
-  const totalDur = formatSeconds(elapsedSeconds(lastCi.run_started_at || lastCi.created_at, lastCi.updated_at));
-  const ago = timeAgo(lastCi.updated_at);
-  const branch = lastCi.head_branch ? ` (${lastCi.head_branch})` : '';
-  const lastCiUrl = `https://github.com/${REPO}/actions/runs/${lastCi.id}`;
-
-  console.log(`○ Last CI: ${mark} ${totalDur} (${ago}) | bash=/usr/bin/open param1="${lastCiUrl}" terminal=false`);
-  console.log(`-- ⏱ CI #${lastCi.run_number ?? ''}${branch} · ${totalDur} · ${mark} | bash=/usr/bin/open param1="${lastCiUrl}" terminal=false`);
-  console.log(`-- ---`);
-
-  const jobs = jobsOf(lastCi);
-  let slowestStep = { name: '', seconds: 0, job: '' };
-
-  for (const job of jobs) {
-    const jState = job.conclusion ?? job.status;
-    const jMark = jState === 'success' ? '✔' : jState === 'failure' ? '✖' : '·';
-    const jTime = formatSeconds(jobSeconds(job));
-    const jobUrl = job.html_url || `https://github.com/${REPO}/actions/runs/${lastCi.id}/job/${job.id}`;
-    console.log(`-- ${jMark} ${shorten(job.name)} · ${jTime} | bash=/usr/bin/open param1="${jobUrl}" terminal=false`);
-
-    const steps = (job.steps || []).filter(isMeaningfulStep);
-    for (const step of steps) {
-      const sDurSec = step.completed_at && step.started_at ? elapsedSeconds(step.started_at, step.completed_at) : 0;
-      if (sDurSec > slowestStep.seconds) {
-        slowestStep = { name: step.name, seconds: sDurSec, job: job.name };
-      }
+    const e2eJob = ciJobs.find((j) => j.name.includes('E2E') || j.name.includes('Journeys'));
+    if (e2eJob) {
+      const e2eMark = e2eJob.status === 'in_progress' ? '▸' : e2eJob.conclusion === 'success' ? '✔' : e2eJob.conclusion === 'failure' ? '✖' : '·';
+      const e2eTime = e2eJob.status === 'in_progress' ? 'running' : formatSeconds(jobSeconds(e2eJob));
+      const e2eUrl = e2eJob.html_url || `https://github.com/${REPO}/actions/runs/${ciRun.id}/job/${e2eJob.id}`;
+      printTreeRow('│   └─', e2eMark, 'Journeys · E2E and accessibility', e2eTime, e2eUrl);
     }
+  } else {
+    console.log(`-- ┌─ · 1. CI · Quality Gate (no runs) | font=Menlo size=11`);
   }
 
-  console.log(`-- ---`);
-  if (slowestStep.seconds > 0) {
-    const totalSec = Math.max(1, elapsedSeconds(lastCi.run_started_at || lastCi.created_at, lastCi.updated_at));
-    const pct = Math.round((slowestStep.seconds / totalSec) * 100);
-    console.log(`-- ⚡ Slowest step: ${shorten(slowestStep.name)} (${formatSeconds(slowestStep.seconds)} · ${pct}%) | bash=/usr/bin/open param1="${lastCiUrl}" terminal=false`);
+  if (activeCi && !activeVersion) {
+    console.log(`-- ├─ … 2. Version · Auto-Tagging (waiting for CI) | font=Menlo size=11`);
+    printTreeRow('│   └─', '…', 'Tag every changed project', 'queued');
+  } else if (versionRun) {
+    const isVActive = versionRun.status !== 'completed';
+    const vMark = isVActive ? '▸' : versionRun.conclusion === 'success' ? '✔' : versionRun.conclusion === 'skipped' ? '·' : '✖';
+    const vDur = isVActive
+      ? `${formatSeconds(elapsedSeconds(versionRun.run_started_at || versionRun.created_at, now))} running`
+      : formatSeconds(elapsedSeconds(versionRun.run_started_at || versionRun.created_at, versionRun.updated_at));
+    const vUrl = `https://github.com/${REPO}/actions/runs/${versionRun.id}`;
+
+    console.log(`-- ├─ ${vMark} 2. Version · Auto-Tagging (${vDur}) | font=Menlo size=11 bash=/usr/bin/open param1="${vUrl}" terminal=false`);
+
+    const vJobs = jobsOf(versionRun);
+    const tagJob = vJobs.find((j) => j.name.includes('Tag') || j.name.includes('Version'));
+    if (tagJob) {
+      const tagMark = tagJob.status === 'in_progress' ? '▸' : tagJob.conclusion === 'success' ? '✔' : tagJob.conclusion === 'failure' ? '✖' : '·';
+      const tagTime = tagJob.status === 'in_progress' ? 'running' : formatSeconds(jobSeconds(tagJob));
+      const tagUrl = tagJob.html_url || `https://github.com/${REPO}/actions/runs/${versionRun.id}/job/${tagJob.id}`;
+      printTreeRow('│   └─', tagMark, 'Tag every changed project', tagTime, tagUrl);
+    } else {
+      printTreeRow('│   └─', vMark, 'Tag every changed project', vDur, vUrl);
+    }
+  } else {
+    console.log(`-- ├─ · 2. Version · Auto-Tagging (no runs) | font=Menlo size=11`);
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const todayRuns = runs.filter((r) => r.created_at.startsWith(today) && r.status === 'completed' && r.name === 'CI');
-  if (todayRuns.length > 0) {
-    const avgSec = Math.round(
-      todayRuns.reduce((sum, r) => sum + elapsedSeconds(r.run_started_at || r.created_at, r.updated_at), 0) / todayRuns.length,
-    );
-    const passCount = todayRuns.filter((r) => r.conclusion === 'success').length;
-    const passRate = Math.round((passCount / todayRuns.length) * 100);
-    console.log(`-- 📈 Today: ${todayRuns.length} runs · avg ${formatSeconds(avgSec)} · ${passRate}% pass | bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
+  const PLANNED_RELEASE_JOBS = [
+    'Inspect · Tag and target',
+    'Package · Web bundle',
+    'Package · Android APK',
+    'Package · Desktop macos',
+    'Deliver · Firebase Hosting',
+    'Deliver · Google Drive',
+    'Release verified',
+  ];
+
+  if ((activeCi || activeVersion) && !activeRelease) {
+    console.log(`-- ├─ … 3. Release · Package & Deploy (queued) | font=Menlo size=11`);
+    PLANNED_RELEASE_JOBS.forEach((jName, idx) => {
+      const isLast = idx === PLANNED_RELEASE_JOBS.length - 1;
+      const prefix = isLast ? '│   └─' : '│   ├─';
+      printTreeRow(prefix, '…', jName, 'queued');
+    });
+  } else if (releaseRun) {
+    const isRelActive = releaseRun.status !== 'completed';
+    const relMark = isRelActive ? '▸' : releaseRun.conclusion === 'success' ? '✔' : '✖';
+    const relTarget = resolveTargetName(releaseRun);
+    const relDur = isRelActive
+      ? `${formatSeconds(elapsedSeconds(releaseRun.run_started_at || releaseRun.created_at, now))} running`
+      : formatSeconds(elapsedSeconds(releaseRun.run_started_at || releaseRun.created_at, releaseRun.updated_at));
+    const relUrl = `https://github.com/${REPO}/actions/runs/${releaseRun.id}`;
+
+    console.log(`-- ├─ ${relMark} 3. Release · Package & Deploy (${relDur} · ${relTarget}) | font=Menlo size=11 bash=/usr/bin/open param1="${relUrl}" terminal=false`);
+
+    const relJobs = jobsOf(releaseRun);
+    if (relJobs.length > 0) {
+      relJobs.forEach((job, idx) => {
+        const isLast = idx === relJobs.length - 1;
+        const prefix = isLast ? '│   └─' : '│   ├─';
+        const jState = job.conclusion ?? job.status;
+        const jMark = jState === 'success' ? '✔' : jState === 'failure' ? '✖' : jState === 'in_progress' ? '▸' : '·';
+        const jTime = job.completed_at ? formatSeconds(jobSeconds(job)) : jState === 'in_progress' ? `${formatSeconds(elapsedSeconds(job.started_at, now))} ▸` : 'queued';
+        const jUrl = job.html_url || `https://github.com/${REPO}/actions/runs/${releaseRun.id}/job/${job.id}`;
+        printTreeRow(prefix, jMark, job.name, jTime, jUrl);
+      });
+    } else {
+      PLANNED_RELEASE_JOBS.forEach((jName, idx) => {
+        const isLast = idx === PLANNED_RELEASE_JOBS.length - 1;
+        const prefix = isLast ? '│   └─' : '│   ├─';
+        printTreeRow(prefix, '…', jName, 'queued', relUrl);
+      });
+    }
+  } else {
+    console.log(`-- ├─ · 3. Release · Package & Deploy (no runs) | font=Menlo size=11`);
   }
 
-  console.log(`-- 💰 Runner: 100% on local Mac ARM64 ($0.00) | bash=/usr/bin/open param1="https://github.com/settings/billing" terminal=false`);
+  console.log(`-- └─ 4. Live Applications & Deliverables | font=Menlo size=11`);
+  console.log(`--     ├─ 🌐 Camila:      https://ibid-camila.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-camila.web.app" terminal=false`);
+  console.log(`--     ├─ 🌐 Oh Save Me:  https://ibid-ohsaveme.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-ohsaveme.web.app" terminal=false`);
+  console.log(`--     ├─ 🌐 Boilerplate: https://ibid-boilerplate.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-boilerplate.web.app" terminal=false`);
+  console.log(`--     └─ 📁 Google Drive: ibid-builds (APKs & DMG) | font=Menlo size=11 bash=/usr/bin/open param1="https://drive.google.com" terminal=false`);
+
+  console.log('-- ---');
+  console.log(`-- ⌁ Open Terminal CI Dashboard | font=Menlo size=11 bash=tools/ci/launch-dashboard.sh terminal=false`);
+  console.log(`-- 🐙 Open GitHub Actions in Browser | font=Menlo size=11 bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
+  console.log(`-- ↻ Refresh Pipeline Status | font=Menlo size=11 bash="${process.env.HOME || ''}/Projects/ibid-workspace/tools/xbar/ibid-runner.10s.sh" param1=action param2=refresh-ci terminal=false refresh=true`);
+}
+
+function printTreeRow(prefix, mark, name, timeStr, url) {
+  const maxLen = 34;
+  const truncated = name.length > maxLen ? `${name.slice(0, maxLen - 1)}…` : name;
+  const paddedName = truncated.padEnd(maxLen);
+  const paddedTime = (timeStr || '—').padStart(8);
+  const lineText = `${prefix} ${mark} ${paddedName} ${paddedTime}`;
+  const action = url
+    ? ` | font=Menlo size=11 bash=/usr/bin/open param1="${url}" terminal=false`
+    : ' | font=Menlo size=11';
+  console.log(`-- ${lineText}${action}`);
+}
+
+function resolveTargetName(run) {
+  if (!run) return 'workspace';
+  if (run.head_branch && run.head_branch !== 'main') {
+    const tagMatch = run.head_branch.match(/^(?<app>[a-z0-9-]+)-v(?<ver>\d+\.\d+\.\d+.*)$/);
+    if (tagMatch?.groups?.app) return `${tagMatch.groups.app} v${tagMatch.groups.ver}`;
+    return run.head_branch;
+  }
+  const title = run.head_commit?.message || run.display_title || '';
+  const apps = ['camila', 'oh-save-me', 'boilerplate', 'ibid-ui'].filter((a) =>
+    new RegExp(`\\b${a}\\b`, 'i').test(title),
+  );
+  if (apps.length > 0) return apps.join(', ');
+  return 'workspace';
 }
 
 function shorten(name) {

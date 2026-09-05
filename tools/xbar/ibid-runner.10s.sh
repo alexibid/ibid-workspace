@@ -21,6 +21,10 @@ WORKSPACE_DIR="${WORKSPACE_DIR:-$HOME/Projects/ibid-workspace}"
 GDRIVE_DIR="${GDRIVE_DIR:-$HOME/Google Drive/My Drive/ibid-builds}"
 LOG_FILE="$HOME/Library/Logs/$SERVICE_LABEL/stdout.log"
 export PATH="$HOME/.n/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+CACHE_DIR="${TMPDIR:-/tmp}/ibid-xbar-$(id -u)"
+mkdir -p -m 700 "$CACHE_DIR" 2>/dev/null
+FLOW_CACHE="$CACHE_DIR/flow.txt"
+PR_CACHE="$CACHE_DIR/prs.txt"
 
 validate_app() {
   case "$1" in
@@ -93,6 +97,13 @@ if [ "$1" = "action" ]; then
         echo "No workflow runs found in GitHub Actions."
         read -p "Press Enter to close..."
       fi
+      ;;
+    refresh-ci)
+      rm -f "$FLOW_CACHE" "$FLOW_CACHE.lock"
+      (
+        cd "$WORKSPACE_DIR" || exit 1
+        CACHE_DIR="$CACHE_DIR" node tools/ci/flow.mjs --xbar > "$FLOW_CACHE" 2>/dev/null
+      )
       ;;
     watch-runner)
       if [ -f "$LOG_FILE" ]; then
@@ -375,9 +386,7 @@ fi
 
 FAVICON_BASE64="iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVR4AcySoQrCUBSGp00MKhaDxSJYBTH5EGLzTQS7iMlo9CVsZg0WfQMxWAxWm98POsYOl3tgZeP/zh135/932U41KXh5Avq84w07MPIEtHE1oAdGnoATrhHMwcgTINOF8gKjWMACxwOesAejWMAKxww60ASjWIAMV5UQnoBKyKx9T4D6gpQvQCcac946uCRDtlHTdmZjA3/pF+q+SzEfNB+ggfnQeAdpS9EosyRDyg2mkCofcORJDdYgLSkDaP2YsB4g1RcAAP//V+4H3AAAAAZJREFUAwBPZRR2rMEpkgAAAABJRU5ErkJggg=="
 
-if [ "$IS_BUILDING" = true ]; then
-  echo " ⟳ | templateImage=$FAVICON_BASE64 dropdown=false"
-elif [ "$IS_RUNNING" = true ]; then
+if [ "$IS_RUNNING" = true ]; then
   echo " | templateImage=$FAVICON_BASE64 dropdown=false"
 else
   echo " ○ | templateImage=$FAVICON_BASE64 dropdown=false"
@@ -399,10 +408,6 @@ else
   echo "-- ▶ Start Runner | bash=\"$SELF\" param1=action param2=start terminal=false refresh=true"
 fi
 
-CACHE_DIR="${TMPDIR:-/tmp}/ibid-xbar-$(id -u)"
-mkdir -p -m 700 "$CACHE_DIR" 2>/dev/null
-FLOW_CACHE="$CACHE_DIR/flow.txt"
-
 if [ -f "$FLOW_CACHE" ]; then
   cat "$FLOW_CACHE"
 fi
@@ -412,7 +417,7 @@ if [ ! -f "$FLOW_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$FLOW_CACHE" 2>/d
     touch "$FLOW_CACHE.lock"
     (
       cd "$WORKSPACE_DIR" && PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" \
-        node tools/ci/flow.mjs --xbar > "$FLOW_CACHE.tmp" 2>/dev/null \
+        CACHE_DIR="$CACHE_DIR" node tools/ci/flow.mjs --xbar > "$FLOW_CACHE.tmp" 2>/dev/null \
         && mv "$FLOW_CACHE.tmp" "$FLOW_CACHE"
       rm -f "$FLOW_CACHE.lock"
     ) >/dev/null 2>&1 &
