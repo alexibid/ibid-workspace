@@ -21,12 +21,18 @@ jobs:
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       !startsWith(github.event.workflow_run.head_commit.message, 'chore(release)')
+    env:
+      GIT_AUTHOR_NAME: github-actions[bot]
+      GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+      GIT_COMMITTER_NAME: github-actions[bot]
+      GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
     steps:
       - uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          submodules: recursive
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Skip when main has already moved on
         id: guard
@@ -41,34 +47,21 @@ jobs:
             echo "proceed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Refuse to run against empty submodules
+        if: steps.guard.outputs.proceed == 'true'
+        run: node tools/ci/verify-submodules.mjs
+
       - uses: ./.github/actions/setup-workspace
         if: steps.guard.outputs.proceed == 'true'
         with:
           nx-cache-key: version
 
-      - name: Git identity
-        if: steps.guard.outputs.proceed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Compute the independent versions and changelogs
+      - name: Version every changed project and publish it
         if: steps.guard.outputs.proceed == 'true'
         env:
           HUSKY: 0
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           NPM_CONFIG_LOGLEVEL: error
-        run: |
-          BEFORE="$(git tag --list)"
-          npx nx release --skip-publish
-          comm -13 <(echo "$BEFORE" | sort) <(git tag --list | sort) > created-tags.txt
-          cat created-tags.txt
-
-          git push origin main
-
-          while IFS= read -r tag; do
-            [ -n "$tag" ] && git push origin "refs/tags/$tag"
-          done < created-tags.txt
+        run: node tools/ci/release.mjs
 
       - name: Summary
         if: always() && steps.guard.outputs.proceed == 'true'

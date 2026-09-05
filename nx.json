@@ -171,22 +171,15 @@
     "releaseTag": {
       "pattern": "{projectName}-v{version}"
     },
-    "git": {
-      "commit": true,
-      "commitMessage": "chore(release): {projectName} v{version}",
-      "tag": true
-    },
     "version": {
-      "conventionalCommits": true,
       "fallbackCurrentVersionResolver": "disk",
       "generatorOptions": {
         "updateDependents": "auto"
-      }
-    },
-    "changelog": {
-      "automaticFromRef": true,
-      "projectChangelogs": {
-        "createChangelog": true
+      },
+      "git": {
+        "commit": false,
+        "tag": false,
+        "stageChanges": false
       }
     }
   }

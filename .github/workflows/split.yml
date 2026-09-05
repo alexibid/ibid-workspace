@@ -1,10 +1,6 @@
 name: Monorepo Split
 
 on:
-  workflow_run:
-    workflows: [Automatic versioning]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
     inputs:
       project:
@@ -24,13 +20,12 @@ jobs:
     name: Split · Sync standalone repositories
     timeout-minutes: 15
     runs-on: [self-hosted, macOS, ARM64]
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - uses: ./.github/actions/setup-workspace
         with:

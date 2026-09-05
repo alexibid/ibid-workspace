@@ -393,14 +393,20 @@ name that identifies project and version.
 
 ## Publishing
 
-Four workflows, chained:
+Three workflows, chained, plus one kept for manual use:
 
 | Workflow           | Triggered by                    | Does                                                                                                                                |
 | ------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `ci.yml`           | Pull request and push to `main` | Lint, tests, and build, only on affected projects                                                                                   |
-| `auto-version.yml` | Push to `main` (after CI green) | Derives the version from conventional commits, writes the changelog, publishes the tag                                              |
-| `release.yml`      | A `v*` tag                      | Builds web, Android APK, and desktop installers; attaches them to the release, uploads them to Google Drive, and publishes the site |
-| `split.yml`        | After `auto-version.yml`        | Extracts subtrees and pushes to 7 standalone GitHub repos (`oh-save-me`, `camila`, `boilerplate`, `ibid-ui`, etc.)                 |
+| `auto-version.yml` | Push to `main` (after CI green) | Runs `tools/ci/release.mjs`: reads each submodule's own conventional commits, lets Nx write the versions, publishes each submodule and tags the container |
+| `release.yml`      | A `{project}-v*` tag            | Builds web, Android APK, and desktop installers; attaches them to the release, uploads them to Google Drive, and publishes the site |
+| `split.yml`        | Manual dispatch only            | Subtree split of the paths that are still plain folders. It refuses any path that is a submodule, since the split would resolve to the pre-migration snapshot |
+
+Every app and library is a **git submodule**, so their files are not in this repository's
+history — only a pointer to a commit. That is why `nx release` cannot drive git here: it writes
+`package.json` and `CHANGELOG.md` inside the submodules, which the container cannot stage. Nx
+still resolves the versions and the dependent ranges; `tools/ci/release.mjs` supplies the
+specifier read from each submodule's own history, and does the git work in both repositories.
 
 Installers come out with the version already in the name — `oh-save-me.1.2.3.apk`,
 `oh-save-me.1.2.3.dmg` — because `tools/builder/collect-artifact.mjs` renames them as it

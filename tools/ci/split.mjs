@@ -11,11 +11,17 @@ const TARGETS = [
   { name: 'tools', prefix: 'tools', repo: 'alexibid/tools' },
 ];
 
+const REF_NAME = /^[A-Za-z0-9][A-Za-z0-9._/-]*$/;
+const MIRROR_BRANCH = 'main';
+
 const args = process.argv.slice(2);
 const isDryRun = args.includes('--dry-run');
 const isPull = args.includes('--pull');
 const skipTags = args.includes('--skip-tags');
 const projectFilter = args.find((arg) => arg.startsWith('--project='))?.split('=')[1];
+const sourceRef = readRefOption('--ref') ?? 'HEAD';
+const targetBranch = readRefOption('--branch') ?? MIRROR_BRANCH;
+const isMirror = targetBranch === MIRROR_BRANCH;
 
 const selectedTargets = projectFilter
   ? TARGETS.filter((target) => projectFilter.split(',').includes(target.name))
@@ -27,6 +33,10 @@ if (selectedTargets.length === 0) {
 }
 
 const token = process.env['SPLIT_TOKEN'] || process.env['RELEASE_TOKEN'] || process.env['GITHUB_TOKEN'] || getGhToken();
+
+for (const target of selectedTargets) {
+  assertPrefixIsFiles(target, sourceRef);
+}
 
 if (isPull) {
   console.log(`Starting Subtree Pull for ${selectedTargets.length} project(s)...`);
@@ -44,12 +54,40 @@ if (isPull) {
 
 console.log('\n✔ All target operations completed successfully.');
 
+function readRefOption(flag) {
+  const raw = args.find((arg) => arg.startsWith(`${flag}=`))?.slice(flag.length + 1);
+  if (raw === undefined) return undefined;
+
+  if (!REF_NAME.test(raw) || raw.includes('..')) {
+    throw new Error(`${flag} accepts a git ref name only, received: ${raw}`);
+  }
+
+  return raw;
+}
+
+function assertPrefixIsFiles(target, ref) {
+  const entry = git(`ls-tree ${ref} "${target.prefix}"`).trim();
+
+  if (!entry) {
+    throw new Error(`${target.prefix} does not exist at ${ref}, so there is nothing to split.`);
+  }
+
+  if (!entry.startsWith('160000')) return;
+
+  throw new Error(
+    `${target.prefix} is a git submodule at ${ref}, so its files are not in this history. ` +
+      `A subtree split there resolves to the snapshot taken before the migration and would ` +
+      `overwrite ${target.repo}, discarding every commit made there since. Split from a ref ` +
+      `that predates the migration, or publish from the submodule working tree instead.`,
+  );
+}
+
 function pullSubtree(target) {
   const start = Date.now();
-  console.log(`\n▶ Pulling ${target.name} from ${target.repo}:main -> ${target.prefix}...`);
+  console.log(`\n▶ Pulling ${target.name} from ${target.repo}:${targetBranch} -> ${target.prefix}...`);
   const remoteUrl = resolveRemote(target.repo, token);
   try {
-    git(`subtree pull --prefix=${target.prefix} "${remoteUrl}" main -m "sync(${target.name}): pull updates from standalone repo" --squash`);
+    git(`subtree pull --prefix=${target.prefix} "${remoteUrl}" ${targetBranch} -m "sync(${target.name}): pull updates from standalone repo" --squash`);
     const duration = ((Date.now() - start) / 1000).toFixed(1);
     console.log(`✔ Successfully pulled ${target.name} in ${duration}s`);
   } catch (err) {
@@ -59,21 +97,22 @@ function pullSubtree(target) {
 
 function splitAndPush(target) {
   const start = Date.now();
-  console.log(`\n▶ Splitting ${target.name} (${target.prefix}) -> ${target.repo}...`);
+  console.log(`\n▶ Splitting ${target.name} (${target.prefix}@${sourceRef}) -> ${target.repo}:${targetBranch}...`);
 
-  const branchSha = git(`subtree split --prefix=${target.prefix} HEAD`).trim();
+  const branchSha = git(`subtree split --prefix=${target.prefix} ${sourceRef}`).trim();
   console.log(`  Tree SHA: ${branchSha}`);
 
   const remoteUrl = resolveRemote(target.repo, token);
+  const refspec = `${branchSha}:refs/heads/${targetBranch}`;
 
   if (!isDryRun) {
-    git(`push "${remoteUrl}" ${branchSha}:refs/heads/main --force`);
-    console.log(`  ✔ Branch main pushed to ${target.repo}`);
+    git(`push "${remoteUrl}" ${isMirror ? `${refspec} --force` : refspec}`);
+    console.log(`  ✔ Branch ${targetBranch} pushed to ${target.repo}`);
   } else {
-    console.log(`  [dry-run] Would push ${branchSha} to ${target.repo}:main`);
+    console.log(`  [dry-run] Would push ${branchSha} to ${target.repo}:${targetBranch}`);
   }
 
-  if (!skipTags) {
+  if (isMirror && !skipTags) {
     syncTags(target, remoteUrl);
   }
 
