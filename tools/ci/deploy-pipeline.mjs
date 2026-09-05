@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import readline from 'node:readline';
 
@@ -8,6 +8,8 @@ const args = process.argv.slice(2);
 const isDryRun = args.includes('--dry-run');
 const autoApprove = args.includes('--yes') || args.includes('-y');
 const forceAll = args.includes('--all') || args.includes('--force');
+const prMode = args.includes('--pr');
+const directPush = args.includes('--push') || args.includes('--direct');
 const specificAppArg = args.find((arg) => arg.startsWith('--app='));
 const specificApp = specificAppArg ? specificAppArg.split('=')[1] : null;
 
@@ -119,24 +121,70 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('\n▶ Step 2/4: Updating Submodules and Workspace State...');
+  console.log('\n▶ Step 2/4: Syncing Submodules and Remote State...');
+  ensureSubmodulesPushed(affectedApps);
   try {
-    git('submodule update --init --recursive');
+    for (const app of affectedApps) {
+      git(`submodule update --remote --merge apps/${app.name}`);
+    }
   } catch {
   }
 
-  console.log('\n▶ Step 3/4: Creating Release Commit & Pushing to GitHub...');
-  const currentBranch = git('branch --show-current').trim();
-  if (currentBranch !== 'main') {
-    console.log(`Note: Currently on branch "${currentBranch}". Pushing to origin/${currentBranch}...`);
+  console.log('\n▶ Step 3/4: Staging Submodule Bumps & Delivering to GitHub...');
+  for (const app of affectedApps) {
+    try { git(`add apps/${app.name}`); } catch {}
+  }
+  for (const lib of TARGET_LIBS) {
+    if (affectedAll.includes(lib)) {
+      try { git(`add libs/${lib}`); } catch {}
+    }
   }
 
-  try {
-    git('push origin ' + currentBranch);
-    console.log('✔ Pushed latest commits to GitHub origin/' + currentBranch + '.');
-  } catch (err) {
-    console.error('✖ Push failed:', err.message);
-    process.exit(1);
+  const staged = git('diff --staged --name-only').trim();
+  const commitMsg = affectedApps.length === 1
+    ? `chore(workspace): bump ${affectedApps[0].name} submodule`
+    : `chore(workspace): bump submodules (${affectedApps.map((a) => a.name).join(', ')})`;
+
+  if (staged) {
+    git(`commit -m "${commitMsg}"`);
+    console.log(`✔ Committed workspace changes: ${commitMsg}`);
+  }
+
+  const usePr = prMode || !directPush;
+  if (usePr) {
+    const timestamp = Math.floor(Date.now() / 1000);
+    const prBranch = `bump/${affectedApps.map((a) => a.name).join('-')}-${timestamp}`;
+    console.log(`\n• Creating PR branch: ${prBranch}...`);
+    git(`checkout -b ${prBranch}`);
+    git(`push -u origin ${prBranch}`);
+
+    const prTitle = commitMsg;
+    const prBody = buildPrDescription(affectedApps);
+    const prBodyFile = join(rootDir, '.pr-description.tmp');
+    writeFileSync(prBodyFile, prBody, 'utf8');
+
+    console.log(`• Opening Pull Request via GitHub CLI...`);
+    try {
+      const prUrl = execSync(
+        `gh pr create --base main --head ${prBranch} --title "${prTitle}" --body-file "${prBodyFile}"`,
+        { cwd: rootDir, encoding: 'utf8' },
+      ).trim();
+      console.log(`\n🎉 Pull Request created: ${prUrl}`);
+      console.log(`⌁ CI workflow is now executing on this PR in GitHub Actions.`);
+    } catch (err) {
+      console.warn(`⚠ Note on PR creation: ${err.message}`);
+    } finally {
+      rmSync(prBodyFile, { force: true });
+    }
+
+    git('checkout main');
+  } else {
+    const currentBranch = git('branch --show-current').trim();
+    if (currentBranch !== 'main') {
+      console.log(`Note: Currently on branch "${currentBranch}". Pushing to origin/${currentBranch}...`);
+    }
+    git(`push origin ${currentBranch}`);
+    console.log(`✔ Pushed latest commits to GitHub origin/${currentBranch}.`);
   }
 
   console.log('\n▶ Step 4/4: Building and Deploying Affected Firebase Hosting Targets...');
@@ -207,6 +255,79 @@ function resolveTargetApps(affectedProjects) {
     return TARGET_APPS.filter((a) => a.name === specificApp);
   }
   return TARGET_APPS.filter((app) => affectedProjects.includes(app.name));
+}
+
+function ensureSubmodulesPushed(apps) {
+  for (const app of apps) {
+    const subPath = `apps/${app.name}`;
+    if (existsSync(subPath)) {
+      try {
+        const ahead = git(`-C ${subPath} rev-list origin/main..HEAD --count`).trim();
+        if (Number(ahead) > 0) {
+          console.log(`• Pushing ${ahead} unpushed commit(s) in ${subPath} to its origin/main...`);
+          git(`-C ${subPath} push origin main`);
+        }
+      } catch {
+      }
+    }
+  }
+}
+
+function buildPrDescription(affectedApps) {
+  const lines = [
+    '## 🚀 Automated Submodule Release PR',
+    '',
+    'This pull request updates the submodule pointers in `ibid-workspace` to trigger CI verification and auto-versioning.',
+    '',
+    '### 📋 Submodule Changelog',
+    '',
+  ];
+
+  for (const app of affectedApps) {
+    const pkg = readPackageJson(`apps/${app.name}/package.json`);
+    const version = pkg?.version || '0.0.1';
+    const commits = getSubmoduleChangelog(app);
+
+    lines.push(`#### \`${app.name}\` (v${version})`);
+    if (commits.length > 0) {
+      for (const line of commits) {
+        const [sha, ...rest] = line.split(' ');
+        lines.push(`- \`${sha}\` ${rest.join(' ')}`);
+      }
+    } else {
+      lines.push('- Pointer bump to latest commit.');
+    }
+    lines.push('');
+  }
+
+  lines.push('---');
+  lines.push('*Triggered automatically via IBID Workspace Runner.*');
+  return lines.join('\n');
+}
+
+function getSubmoduleChangelog(app) {
+  const subPath = `apps/${app.name}`;
+  if (!existsSync(subPath)) return [];
+  try {
+    let baseSha = '';
+    try {
+      baseSha = git(`rev-parse origin/main:${subPath}`).trim();
+    } catch {
+      try {
+        baseSha = git(`rev-parse HEAD:${subPath}`).trim();
+      } catch {
+      }
+    }
+
+    const currentSha = git(`-C ${subPath} rev-parse HEAD`).trim();
+    if (!currentSha) return [];
+
+    const range = (baseSha && baseSha !== currentSha) ? `${baseSha}..${currentSha}` : '-n 5';
+    const log = git(`-C ${subPath} log ${range} --oneline`).trim();
+    return log ? log.split('\n') : [];
+  } catch {
+    return [];
+  }
 }
 
 function getSubmoduleStatus() {

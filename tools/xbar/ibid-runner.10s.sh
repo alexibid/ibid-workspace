@@ -156,6 +156,14 @@ if [ "$1" = "action" ]; then
       node tools/ci/deploy-pipeline.mjs
       read -p "Press Enter to close..."
       ;;
+    auto-pr)
+      APP="${3:-camila}"
+      validate_app "$APP"
+      echo "=== IBID WORKSPACE · AUTO-PR & CI FOR $APP ==="
+      cd "$WORKSPACE_DIR" || exit 1
+      node tools/ci/deploy-pipeline.mjs --app="$APP" --pr
+      read -p "Press Enter to close..."
+      ;;
     submodule-update)
       echo "=== Updating all Git Submodules to remote main ==="
       cd "$WORKSPACE_DIR" || exit 1
@@ -403,6 +411,7 @@ fi
 echo "---"
 echo "Oh Save Me!"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
+echo "-- 🔀 Create PR to Monorepo (Auto-PR) | bash=\"$SELF\" param1=action param2=auto-pr param3=oh-save-me terminal=true refresh=true"
 echo "-- ⚙ Build All (.dmg + .apk) | bash=\"$SELF\" param1=action param2=build-all param3=oh-save-me terminal=true refresh=true"
 echo "-- ⚙ Build Desktop (.dmg) | bash=\"$SELF\" param1=action param2=build-desktop param3=oh-save-me terminal=true refresh=true"
 echo "-- ⚙ Build Android (.apk) | bash=\"$SELF\" param1=action param2=build-apk param3=oh-save-me terminal=true refresh=true"
@@ -414,6 +423,7 @@ echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-s
 
 echo "Camila"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+echo "-- 🔀 Create PR to Monorepo (Auto-PR) | bash=\"$SELF\" param1=action param2=auto-pr param3=camila terminal=true refresh=true"
 echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=camila terminal=true refresh=true"
 echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
 echo "-- 🌐 Open Web (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
@@ -421,6 +431,7 @@ echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/cami
 
 echo "Boilerplate"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
+echo "-- 🔀 Create PR to Monorepo (Auto-PR) | bash=\"$SELF\" param1=action param2=auto-pr param3=boilerplate terminal=true refresh=true"
 echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=boilerplate terminal=true refresh=true"
 echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=boilerplate terminal=true refresh=true"
 echo "-- 🌐 Open Web (ibid-boilerplate.web.app) | bash=/usr/bin/open param1=\"https://ibid-boilerplate.web.app\" terminal=false"
