@@ -1,0 +1,17 @@
+:root {
+  --bp-mobile: 640px;
+  --bp-tablet: 1024px;
+  --bp-desktop: 1024px;
+  --bp-desktop-lg: 1366px;
+  --bp-wide: 1440px;
+
+  --layout-content-max-width: 1440px;
+  --layout-gutter-mobile: var(--space-2);
+  --layout-gutter-tablet: var(--space-4);
+  --layout-gutter-desktop: var(--space-6);
+
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}

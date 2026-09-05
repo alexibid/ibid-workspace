@@ -40,7 +40,6 @@ $wash-angles:  (136deg, 118deg, 144deg, 122deg, 152deg, 110deg, 128deg, 140deg);
 
 @mixin glass-pane {
   @include decorated-surface;
-  @include glass-gleam-scatter;
   background-color: transparent;
   border-color: var(--glass-edge);
   box-shadow: none;

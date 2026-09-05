@@ -11,6 +11,7 @@ export * from './lib/atoms/chart-marker-dot/chart-marker-dot';
 export * from './lib/atoms/chart-tooltip/chart-tooltip';
 export * from './lib/atoms/feature-display/feature-display';
 export * from './lib/atoms/date-input/date-input';
+export * from './lib/atoms/date-picker-panel/date-picker-panel';
 export * from './lib/atoms/divider/divider';
 export * from './lib/atoms/drag-handle/drag-handle.component';
 export * from './lib/atoms/empty-state/empty-state';
