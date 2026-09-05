@@ -25,6 +25,62 @@ CACHE_DIR="${TMPDIR:-/tmp}/ibid-xbar-$(id -u)"
 mkdir -p -m 700 "$CACHE_DIR" 2>/dev/null
 FLOW_CACHE="$CACHE_DIR/flow.txt"
 PR_CACHE="$CACHE_DIR/prs.txt"
+FLOW_TTL_SECONDS=15
+PR_TTL_SECONDS=25
+STALE_SECONDS=90
+LOCK_TTL_SECONDS=60
+
+cache_age_seconds() {
+  local stamp
+  stamp=$(stat -f %m "$1" 2>/dev/null || echo 0)
+  echo $(( $(date +%s) - stamp ))
+}
+
+format_age() {
+  local seconds="$1"
+  if [ "$seconds" -lt 60 ]; then
+    echo "${seconds}s"
+  else
+    echo "$(( seconds / 60 ))m"
+  fi
+}
+
+spawn_cache_refresh() {
+  local cache="$1"
+  local ttl="$2"
+  shift 2
+  if [ -f "$cache" ] && [ "$(cache_age_seconds "$cache")" -le "$ttl" ]; then
+    return 0
+  fi
+  if [ -f "$cache.lock" ] && [ "$(cache_age_seconds "$cache.lock")" -le "$LOCK_TTL_SECONDS" ]; then
+    return 0
+  fi
+  touch "$cache.lock"
+  (
+    local pending="$cache.$$.tmp"
+    cd "$WORKSPACE_DIR" && node "$@" > "$pending" 2>/dev/null && mv "$pending" "$cache"
+    rm -f "$pending" "$cache.lock"
+  ) >/dev/null 2>&1 &
+}
+
+render_pipeline_flow() {
+  if [ ! -f "$FLOW_CACHE" ]; then
+    echo "---"
+    echo "⚡ Pipeline Flow · loading… | bash=\"$SELF\" param1=action param2=refresh-ci terminal=false refresh=true"
+    return 0
+  fi
+
+  local age
+  age=$(cache_age_seconds "$FLOW_CACHE")
+
+  cat "$FLOW_CACHE"
+  echo "-- ---"
+  echo "-- ⟲ Updated $(date -r "$FLOW_CACHE" +%H:%M:%S) · $(format_age "$age") ago | font=Menlo size=11 color=#8b949e"
+
+  if [ "$age" -gt "$STALE_SECONDS" ]; then
+    echo "⚠ Pipeline status frozen for $(format_age "$age") | color=#f85149 bash=\"$SELF\" param1=action param2=refresh-ci terminal=false refresh=true"
+  fi
+}
 
 validate_app() {
   case "$1" in
@@ -99,10 +155,12 @@ if [ "$1" = "action" ]; then
       fi
       ;;
     refresh-ci)
-      rm -f "$FLOW_CACHE" "$FLOW_CACHE.lock"
+      rm -f "$FLOW_CACHE.lock"
       (
         cd "$WORKSPACE_DIR" || exit 1
-        CACHE_DIR="$CACHE_DIR" node tools/ci/flow.mjs --xbar > "$FLOW_CACHE" 2>/dev/null
+        node tools/ci/flow.mjs --xbar > "$FLOW_CACHE.$$.tmp" 2>/dev/null \
+          && mv "$FLOW_CACHE.$$.tmp" "$FLOW_CACHE"
+        rm -f "$FLOW_CACHE.$$.tmp"
       )
       ;;
     watch-runner)
@@ -386,7 +444,9 @@ fi
 
 FAVICON_BASE64="iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVR4AcySoQrCUBSGp00MKhaDxSJYBTH5EGLzTQS7iMlo9CVsZg0WfQMxWAxWm98POsYOl3tgZeP/zh135/932U41KXh5Avq84w07MPIEtHE1oAdGnoATrhHMwcgTINOF8gKjWMACxwOesAejWMAKxww60ASjWIAMV5UQnoBKyKx9T4D6gpQvQCcac946uCRDtlHTdmZjA3/pF+q+SzEfNB+ggfnQeAdpS9EosyRDyg2mkCofcORJDdYgLSkDaP2YsB4g1RcAAP//V+4H3AAAAAZJREFUAwBPZRR2rMEpkgAAAABJRU5ErkJggg=="
 
-if [ "$IS_RUNNING" = true ]; then
+if [ "$IS_BUILDING" = true ]; then
+  echo " ⟳ | templateImage=$FAVICON_BASE64 dropdown=false"
+elif [ "$IS_RUNNING" = true ]; then
   echo " | templateImage=$FAVICON_BASE64 dropdown=false"
 else
   echo " ○ | templateImage=$FAVICON_BASE64 dropdown=false"
@@ -408,39 +468,13 @@ else
   echo "-- ▶ Start Runner | bash=\"$SELF\" param1=action param2=start terminal=false refresh=true"
 fi
 
-if [ -f "$FLOW_CACHE" ]; then
-  cat "$FLOW_CACHE"
-fi
-
-if [ ! -f "$FLOW_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$FLOW_CACHE" 2>/dev/null || echo 0) )) -gt 20 ]; then
-  if [ ! -f "$FLOW_CACHE.lock" ] || [ $(( $(date +%s) - $(stat -f %m "$FLOW_CACHE.lock" 2>/dev/null || echo 0) )) -gt 120 ]; then
-    touch "$FLOW_CACHE.lock"
-    (
-      cd "$WORKSPACE_DIR" && PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" \
-        CACHE_DIR="$CACHE_DIR" node tools/ci/flow.mjs --xbar > "$FLOW_CACHE.tmp" 2>/dev/null \
-        && mv "$FLOW_CACHE.tmp" "$FLOW_CACHE"
-      rm -f "$FLOW_CACHE.lock"
-    ) >/dev/null 2>&1 &
-  fi
-fi
-
-PR_CACHE="$CACHE_DIR/prs.txt"
+render_pipeline_flow
+spawn_cache_refresh "$FLOW_CACHE" "$FLOW_TTL_SECONDS" tools/ci/flow.mjs --xbar
 
 if [ -f "$PR_CACHE" ]; then
   cat "$PR_CACHE"
 fi
-
-if [ ! -f "$PR_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$PR_CACHE" 2>/dev/null || echo 0) )) -gt 25 ]; then
-  if [ ! -f "$PR_CACHE.lock" ] || [ $(( $(date +%s) - $(stat -f %m "$PR_CACHE.lock" 2>/dev/null || echo 0) )) -gt 120 ]; then
-    touch "$PR_CACHE.lock"
-    (
-      cd "$WORKSPACE_DIR" && PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" \
-        node tools/ci/prs.mjs > "$PR_CACHE.tmp" 2>/dev/null \
-        && mv "$PR_CACHE.tmp" "$PR_CACHE"
-      rm -f "$PR_CACHE.lock"
-    ) >/dev/null 2>&1 &
-  fi
-fi
+spawn_cache_refresh "$PR_CACHE" "$PR_TTL_SECONDS" tools/ci/prs.mjs
 
 echo "---"
 echo "Oh Save Me!"

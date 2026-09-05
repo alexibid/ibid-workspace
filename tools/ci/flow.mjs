@@ -14,6 +14,16 @@ const ICONS = {
   pending: '\x1b[38;2;139;148;158m…\x1b[0m',
 };
 
+const XBAR_COLORS = {
+  '✔': '#3fb950',
+  '✖': '#f85149',
+  '▸': '#d29922',
+  '…': '#8b949e',
+  '·': '#8b949e',
+};
+
+const XBAR_NEUTRAL = '#8b949e';
+
 const watching = process.argv.includes('--watch');
 const forXbar = process.argv.includes('--xbar');
 const expanded = process.argv.includes('--steps');
@@ -25,7 +35,7 @@ function out(text = '') {
 }
 
 if (forXbar) {
-  renderForXbar();
+  renderXbar();
 } else if (watching) {
   process.stdout.write('\x1b[?25l\x1b[2J\x1b[H');
   const restoreCursor = () => {
@@ -273,24 +283,34 @@ function renderForXbar() {
   const releaseRun = activeRelease || lastCompletedRelease;
 
   let rootTitle = '⚡ CI / CD & Deploy Pipeline Flow (All passed ✔)';
+  let rootMark = '✔';
   if (activeRelease) {
     const target = resolveTargetName(activeRelease);
     const dur = formatSeconds(elapsedSeconds(activeRelease.run_started_at || activeRelease.created_at, now));
     const activeJob = jobsOf(activeRelease).find((j) => j.status === 'in_progress');
     const phase = activeJob ? shorten(activeJob.name) : 'Release';
     rootTitle = `⚡ Pipeline Flow · ⟳ ${phase} (${target} · ${dur})`;
+    rootMark = '▸';
   } else if (activeVersion) {
     const dur = formatSeconds(elapsedSeconds(activeVersion.run_started_at || activeVersion.created_at, now));
     rootTitle = `⚡ Pipeline Flow · ⟳ Auto-Versioning (${dur})`;
+    rootMark = '▸';
   } else if (activeCi) {
     const dur = formatSeconds(elapsedSeconds(activeCi.run_started_at || activeCi.created_at, now));
     const activeJob = jobsOf(activeCi).find((j) => j.status === 'in_progress');
     const phase = activeJob ? shorten(activeJob.name) : 'CI';
     rootTitle = `⚡ Pipeline Flow · ⟳ ${phase} (${dur})`;
+    rootMark = '▸';
+  } else {
+    const brokenRun = [ciRun, versionRun, releaseRun].find((run) => run?.conclusion === 'failure');
+    if (brokenRun) {
+      rootTitle = `⚡ Pipeline Flow · ✖ ${brokenRun.name} failed (${timeAgo(brokenRun.updated_at)})`;
+      rootMark = '✖';
+    }
   }
 
   console.log('---');
-  console.log(`${rootTitle} | bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
+  console.log(`${rootTitle} | color=${colorFor(rootMark)} bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
 
   if (ciRun) {
     const isCiActive = ciRun.status !== 'completed';
@@ -301,7 +321,7 @@ function renderForXbar() {
     const ciBranch = ciRun.head_branch ? ` · ${ciRun.head_branch}` : '';
     const ciUrl = `https://github.com/${REPO}/actions/runs/${ciRun.id}`;
 
-    console.log(`-- ┌─ ${ciMark} 1. CI · Quality Gate (${ciDur}${ciBranch}) | font=Menlo size=11 bash=/usr/bin/open param1="${ciUrl}" terminal=false`);
+    console.log(`-- ┌─ ${ciMark} 1. CI · Quality Gate (${ciDur}${ciBranch}) | font=Menlo size=11 color=${colorFor(ciMark)} bash=/usr/bin/open param1="${ciUrl}" terminal=false`);
 
     const ciJobs = jobsOf(ciRun);
     const verifyJob = ciJobs.find((j) => j.name.includes('Verify') || j.name.includes('Static'));
@@ -339,11 +359,11 @@ function renderForXbar() {
       printTreeRow('│   └─', e2eMark, 'Journeys · E2E and accessibility', e2eTime, e2eUrl);
     }
   } else {
-    console.log(`-- ┌─ · 1. CI · Quality Gate (no runs) | font=Menlo size=11`);
+    console.log(`-- ┌─ · 1. CI · Quality Gate (no runs) | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
   }
 
   if (activeCi && !activeVersion) {
-    console.log(`-- ├─ … 2. Version · Auto-Tagging (waiting for CI) | font=Menlo size=11`);
+    console.log(`-- ├─ … 2. Version · Auto-Tagging (waiting for CI) | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
     printTreeRow('│   └─', '…', 'Tag every changed project', 'queued');
   } else if (versionRun) {
     const isVActive = versionRun.status !== 'completed';
@@ -353,7 +373,7 @@ function renderForXbar() {
       : formatSeconds(elapsedSeconds(versionRun.run_started_at || versionRun.created_at, versionRun.updated_at));
     const vUrl = `https://github.com/${REPO}/actions/runs/${versionRun.id}`;
 
-    console.log(`-- ├─ ${vMark} 2. Version · Auto-Tagging (${vDur}) | font=Menlo size=11 bash=/usr/bin/open param1="${vUrl}" terminal=false`);
+    console.log(`-- ├─ ${vMark} 2. Version · Auto-Tagging (${vDur}) | font=Menlo size=11 color=${colorFor(vMark)} bash=/usr/bin/open param1="${vUrl}" terminal=false`);
 
     const vJobs = jobsOf(versionRun);
     const tagJob = vJobs.find((j) => j.name.includes('Tag') || j.name.includes('Version'));
@@ -366,7 +386,7 @@ function renderForXbar() {
       printTreeRow('│   └─', vMark, 'Tag every changed project', vDur, vUrl);
     }
   } else {
-    console.log(`-- ├─ · 2. Version · Auto-Tagging (no runs) | font=Menlo size=11`);
+    console.log(`-- ├─ · 2. Version · Auto-Tagging (no runs) | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
   }
 
   const PLANNED_RELEASE_JOBS = [
@@ -380,7 +400,7 @@ function renderForXbar() {
   ];
 
   if ((activeCi || activeVersion) && !activeRelease) {
-    console.log(`-- ├─ … 3. Release · Package & Deploy (queued) | font=Menlo size=11`);
+    console.log(`-- ├─ … 3. Release · Package & Deploy (queued) | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
     PLANNED_RELEASE_JOBS.forEach((jName, idx) => {
       const isLast = idx === PLANNED_RELEASE_JOBS.length - 1;
       const prefix = isLast ? '│   └─' : '│   ├─';
@@ -395,7 +415,7 @@ function renderForXbar() {
       : formatSeconds(elapsedSeconds(releaseRun.run_started_at || releaseRun.created_at, releaseRun.updated_at));
     const relUrl = `https://github.com/${REPO}/actions/runs/${releaseRun.id}`;
 
-    console.log(`-- ├─ ${relMark} 3. Release · Package & Deploy (${relDur} · ${relTarget}) | font=Menlo size=11 bash=/usr/bin/open param1="${relUrl}" terminal=false`);
+    console.log(`-- ├─ ${relMark} 3. Release · Package & Deploy (${relDur} · ${relTarget}) | font=Menlo size=11 color=${colorFor(relMark)} bash=/usr/bin/open param1="${relUrl}" terminal=false`);
 
     const relJobs = jobsOf(releaseRun);
     if (relJobs.length > 0) {
@@ -416,7 +436,7 @@ function renderForXbar() {
       });
     }
   } else {
-    console.log(`-- ├─ · 3. Release · Package & Deploy (no runs) | font=Menlo size=11`);
+    console.log(`-- ├─ · 3. Release · Package & Deploy (no runs) | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
   }
 
   console.log(`-- └─ 4. Live Applications & Deliverables | font=Menlo size=11`);
@@ -428,7 +448,28 @@ function renderForXbar() {
   console.log('-- ---');
   console.log(`-- ⌁ Open Terminal CI Dashboard | font=Menlo size=11 bash=tools/ci/launch-dashboard.sh terminal=false`);
   console.log(`-- 🐙 Open GitHub Actions in Browser | font=Menlo size=11 bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
-  console.log(`-- ↻ Refresh Pipeline Status | font=Menlo size=11 bash="${process.env.HOME || ''}/Projects/ibid-workspace/tools/xbar/ibid-runner.10s.sh" param1=action param2=refresh-ci terminal=false refresh=true`);
+  printXbarRefreshRow();
+}
+
+function renderXbar() {
+  try {
+    renderForXbar();
+  } catch (error) {
+    renderXbarUnavailable(error);
+  }
+}
+
+function renderXbarUnavailable(error) {
+  const reason = String(error?.message ?? error).split('\n')[0].slice(0, 90);
+  console.log('---');
+  console.log(`⚠ Pipeline Flow · unavailable | color=${colorFor('✖')} bash=/usr/bin/open param1="https://github.com/${REPO}/actions" terminal=false`);
+  console.log(`-- ${reason} | font=Menlo size=11 color=${colorFor('✖')}`);
+  printXbarRefreshRow();
+}
+
+function printXbarRefreshRow() {
+  const plugin = `${process.env.HOME || ''}/Projects/ibid-workspace/tools/xbar/ibid-runner.10s.sh`;
+  console.log(`-- ↻ Refresh Pipeline Status | font=Menlo size=11 bash="${plugin}" param1=action param2=refresh-ci terminal=false refresh=true`);
 }
 
 function printTreeRow(prefix, mark, name, timeStr, url) {
@@ -437,10 +478,13 @@ function printTreeRow(prefix, mark, name, timeStr, url) {
   const paddedName = truncated.padEnd(maxLen);
   const paddedTime = (timeStr || '—').padStart(8);
   const lineText = `${prefix} ${mark} ${paddedName} ${paddedTime}`;
-  const action = url
-    ? ` | font=Menlo size=11 bash=/usr/bin/open param1="${url}" terminal=false`
-    : ' | font=Menlo size=11';
+  const style = `font=Menlo size=11 color=${colorFor(mark)}`;
+  const action = url ? ` | ${style} bash=/usr/bin/open param1="${url}" terminal=false` : ` | ${style}`;
   console.log(`-- ${lineText}${action}`);
+}
+
+function colorFor(mark) {
+  return XBAR_COLORS[mark] ?? XBAR_NEUTRAL;
 }
 
 function resolveTargetName(run) {

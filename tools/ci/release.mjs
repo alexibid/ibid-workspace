@@ -92,15 +92,20 @@ function publishContainer(released) {
   stage('.', released.map((project) => project.root));
   commit('.', `chore(release): ${released.map(describe).join(', ')}`);
 
-  const refspecs = ['origin', 'HEAD:refs/heads/main'];
+  const names = [];
   for (const project of released) {
     const name = containerTag(project);
     if (tagExistsIn('.', name)) continue;
     tag('.', name);
-    refspecs.push(`refs/tags/${name}`);
+    names.push(name);
   }
 
-  push('.', refspecs);
+  push('.', ['origin', 'HEAD:refs/heads/main']);
+  pushTagsSeparatelyToTriggerRelease('.', names);
+}
+
+function pushTagsSeparatelyToTriggerRelease(root, names) {
+  for (const name of names) push(root, ['origin', `refs/tags/${name}`]);
 }
 
 function readOwnCommits(project) {

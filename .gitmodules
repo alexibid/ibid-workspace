@@ -26,3 +26,7 @@
 	path = apps/camila
 	url = https://github.com/alexibid/camila.git
 	branch = main
+[submodule "apps/kirigami-studio"]
+	path = apps/kirigami-studio
+	url = https://github.com/alexibid/kirigami-studio.git
+	branch = main

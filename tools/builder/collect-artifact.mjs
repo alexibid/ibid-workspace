@@ -44,10 +44,17 @@ const version = readVersion(project);
 const outDir = resolve('dist', project);
 mkdirSync(outDir, { recursive: true });
 
-const artifacts = findArtifacts(resolve(from));
+let artifacts = findArtifacts(resolve(from));
 if (artifacts.length === 0) {
   console.error(`Nenhum artefacto encontrado em ${from}` +
     (wantedExtensions.length ? ` com extensão ${wantedExtensions.join(', ')}` : ''));
+  process.exit(1);
+}
+
+if (artifacts.some((a) => !a.includes('-unsigned.apk') && a.endsWith('.apk'))) {
+  artifacts = artifacts.filter((a) => !a.includes('-unsigned.apk'));
+} else if (artifacts.some((a) => a.includes('-unsigned.apk'))) {
+  console.error('Erro: Apenas foram encontrados APKs não assinados (*-unsigned.apk). O APK tem de ser assinado.');
   process.exit(1);
 }
 

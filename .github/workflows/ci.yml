@@ -129,3 +129,20 @@ jobs:
         env:
           JOB_RESULTS: ${{ toJson(needs) }}
         run: node tools/ci/assert-groups-passed.mjs
+
+  automerge:
+    name: Merge · Deploy pull request
+    needs: verified
+    if: >-
+      needs.verified.result == 'success' &&
+      github.event_name == 'pull_request' &&
+      startsWith(github.head_ref, 'bump/')
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge now that every group is green
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: gh pr merge "$PR" --repo "$REPO" --merge --delete-branch
