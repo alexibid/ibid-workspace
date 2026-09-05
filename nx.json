@@ -145,6 +145,85 @@
           "buildTarget": "{projectName}:build:development"
         }
       }
+    },
+    "desktop": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tauri dev --config platforms/desktop/src-tauri/tauri.conf.json",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "desktop-build": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectName}"
+      ],
+      "dependsOn": [
+        "build"
+      ],
+      "options": {
+        "cwd": "{projectRoot}",
+        "env": {
+          "CARGO_TARGET_DIR": "../../dist/{projectName}/desktop"
+        },
+        "commands": [
+          "cd ../.. && node tools/builder/sync-app-version.mjs --project {projectName}",
+          "tauri build --config platforms/desktop/src-tauri/tauri.conf.json",
+          "cd ../.. && node tools/builder/collect-artifact.mjs --project {projectName} --from {projectRoot}/platforms/dist/{projectName}/desktop/release/bundle --ext dmg,msi,exe,deb,rpm,AppImage"
+        ],
+        "parallel": false
+      }
+    },
+    "mobile-sync": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "build"
+      ],
+      "options": {
+        "cwd": "{projectRoot}/platforms/mobile",
+        "commands": [
+          "cd ../../../.. && node tools/builder/sync-app-version.mjs --project {projectName}",
+          "npx cap sync"
+        ],
+        "parallel": false
+      }
+    },
+    "mobile-android": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "mobile-sync"
+      ],
+      "options": {
+        "command": "npx cap run android",
+        "cwd": "{projectRoot}/platforms/mobile"
+      }
+    },
+    "mobile-ios": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "mobile-sync"
+      ],
+      "options": {
+        "command": "npx cap run ios",
+        "cwd": "{projectRoot}/platforms/mobile"
+      }
+    },
+    "mobile-apk": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectName}"
+      ],
+      "dependsOn": [
+        "mobile-sync"
+      ],
+      "options": {
+        "cwd": "{projectRoot}/platforms/mobile/android",
+        "commands": [
+          "chmod +x gradlew && ./gradlew assembleRelease",
+          "cd ../../../../.. && node tools/builder/collect-artifact.mjs --project {projectName} --from {projectRoot}/platforms/mobile/android/app/build/outputs/apk/release --ext apk"
+        ],
+        "parallel": false
+      }
     }
   },
   "generators": {

@@ -11,7 +11,7 @@ on:
 
 permissions:
   contents: read
-  actions: read
+  actions: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -54,6 +54,10 @@ jobs:
             echo "has_hosting=${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
+
   web:
     name: Package · Web bundle
     needs: inspect
@@ -75,6 +79,10 @@ jobs:
         with:
           name: web
           path: dist/${{ env.APP }}/browser
+
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
 
   android:
     name: Package · Android APK
@@ -121,6 +129,10 @@ jobs:
           name: android
           path: dist/${{ env.APP }}/*.apk
 
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
+
   desktop:
     name: Package · Desktop ${{ matrix.platform }}
     needs: inspect
@@ -157,6 +169,10 @@ jobs:
             dist/${{ env.APP }}/*.rpm
             dist/${{ env.APP }}/*.AppImage
           if-no-files-found: ignore
+
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
 
   drive:
     name: Deliver · Google Drive
@@ -207,6 +223,10 @@ jobs:
           echo "drive_url=$LINK" >> "$GITHUB_OUTPUT"
           rm -f ~/.config/rclone/rclone.conf
 
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
+
   hosting:
     name: Deliver · Firebase Hosting
     needs: [inspect, web]
@@ -229,10 +249,16 @@ jobs:
           projectId: ibid-32cbe
           target: ${{ env.PROJECT }}
 
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
+
   storybook:
     name: Deliver · Storybook
     needs: inspect
-    if: needs.inspect.outputs.project == 'boilerplate' && needs.inspect.outputs.has_hosting == 'true'
+    if: >-
+      needs.inspect.outputs.has_hosting == 'true' &&
+      (needs.inspect.outputs.project == 'boilerplate' || needs.inspect.outputs.project == 'ibid-ui')
     timeout-minutes: 30
     runs-on: [self-hosted, macOS, ARM64]
     steps:
@@ -252,10 +278,14 @@ jobs:
           projectId: ibid-32cbe
           target: storybook
 
+      - name: Stop the release and say what was delivered
+        if: failure()
+        uses: ./.github/actions/stop-release
+
   verified:
     name: Release verified
     needs: [inspect, web, android, desktop, drive, hosting, storybook]
-    if: always() && needs.inspect.outputs.is_app == 'true'
+    if: always()
     timeout-minutes: 10
     runs-on: [self-hosted, macOS, ARM64]
     steps:

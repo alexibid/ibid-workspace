@@ -1,0 +1,11 @@
+name: Stop the release
+description: Names what failed, reports what the run already delivered, and cancels the jobs still to come.
+
+runs:
+  using: composite
+  steps:
+    - name: Report the failure and stop the remaining jobs
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: node tools/ci/stop-release.mjs
