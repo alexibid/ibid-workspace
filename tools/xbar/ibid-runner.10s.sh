@@ -305,11 +305,16 @@ if [ "$1" = "action" ]; then
     deploy-web)
       APP="${3:-oh-save-me}"
       validate_app "$APP"
-      echo "Deploying web app for $APP to Firebase Hosting..."
       cd "$WORKSPACE_DIR" || exit 1
       if [ "$APP" = "all" ]; then
+        echo "Building all workspace projects..."
+        npm run check:build
+        echo "Deploying all web apps to Firebase Hosting..."
         npx firebase deploy --only hosting
       else
+        echo "Building web bundle for $APP..."
+        npx nx build "$APP"
+        echo "Deploying $APP to Firebase Hosting..."
         npx firebase deploy --only "hosting:$APP"
       fi
       ;;
@@ -409,6 +414,7 @@ echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-s
 
 echo "Camila"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=camila terminal=true refresh=true"
 echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
 echo "-- 🌐 Open Web (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
 echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"

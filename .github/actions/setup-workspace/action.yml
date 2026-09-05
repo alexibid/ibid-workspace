@@ -19,6 +19,11 @@ runs:
       shell: bash
       run: npm ci --prefer-offline --no-audit --no-fund --loglevel=error
 
-    - name: Keep the Nx cache outside the workspace
+    - name: Keep the Nx cache and the metadata that describes it outside the workspace
       shell: bash
-      run: echo "NX_CACHE_DIRECTORY=$HOME/.cache/nx-${{ inputs.nx-cache-key }}" >> "$GITHUB_ENV"
+      run: |
+        CACHE="$HOME/.cache/nx-${{ inputs.nx-cache-key }}"
+        {
+          echo "NX_CACHE_DIRECTORY=$CACHE"
+          echo "NX_WORKSPACE_DATA_DIRECTORY=$CACHE-data"
+        } >> "$GITHUB_ENV"
