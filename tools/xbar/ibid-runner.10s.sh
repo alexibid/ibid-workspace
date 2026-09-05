@@ -164,6 +164,17 @@ if [ "$1" = "action" ]; then
       node tools/ci/deploy-pipeline.mjs --app="$APP" --pr
       read -p "Press Enter to close..."
       ;;
+    merge-pr)
+      REPO="${3:-alexibid/ibid-workspace}"
+      PR_NUM="$4"
+      STRATEGY="${5:-squash}"
+      echo "=== Merging PR #$PR_NUM in $REPO ($STRATEGY) ==="
+      cd "$WORKSPACE_DIR" || exit 1
+      gh pr merge "$PR_NUM" --repo "$REPO" "--$STRATEGY"
+      echo ""
+      echo "✔ PR #$PR_NUM merged successfully in $REPO!"
+      read -p "Press Enter to close..."
+      ;;
     submodule-update)
       echo "=== Updating all Git Submodules to remote main ==="
       cd "$WORKSPACE_DIR" || exit 1
@@ -404,6 +415,24 @@ if [ ! -f "$FLOW_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$FLOW_CACHE" 2>/d
         node tools/ci/flow.mjs --xbar > "$FLOW_CACHE.tmp" 2>/dev/null \
         && mv "$FLOW_CACHE.tmp" "$FLOW_CACHE"
       rm -f "$FLOW_CACHE.lock"
+    ) >/dev/null 2>&1 &
+  fi
+fi
+
+PR_CACHE="$CACHE_DIR/prs.txt"
+
+if [ -f "$PR_CACHE" ]; then
+  cat "$PR_CACHE"
+fi
+
+if [ ! -f "$PR_CACHE" ] || [ $(( $(date +%s) - $(stat -f %m "$PR_CACHE" 2>/dev/null || echo 0) )) -gt 25 ]; then
+  if [ ! -f "$PR_CACHE.lock" ] || [ $(( $(date +%s) - $(stat -f %m "$PR_CACHE.lock" 2>/dev/null || echo 0) )) -gt 120 ]; then
+    touch "$PR_CACHE.lock"
+    (
+      cd "$WORKSPACE_DIR" && PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" \
+        node tools/ci/prs.mjs > "$PR_CACHE.tmp" 2>/dev/null \
+        && mv "$PR_CACHE.tmp" "$PR_CACHE"
+      rm -f "$PR_CACHE.lock"
     ) >/dev/null 2>&1 &
   fi
 fi
