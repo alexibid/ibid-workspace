@@ -5,6 +5,7 @@ import { join } from 'node:path';
 
 import { LOG_FORMAT, parseCommits, renderChangelogEntry, resolveSpecifier } from './conventional-commits.mjs';
 
+const RELEASE_BRANCH = 'main';
 const RELEASE_FILES = ['package.json', 'CHANGELOG.md'];
 const ORDERED_SPECIFIERS = ['major', 'minor', 'patch'];
 
@@ -72,12 +73,14 @@ function publishSubmodule(project) {
   const version = `v${readVersion(project)}`;
   console.log(`\n▶ ${project.name} · ${project.root}`);
 
+  attachToReleaseBranch(project.root);
+
   if (hasUnreleasedFiles(project)) {
     stage(project.root, releaseFilesOf(project));
     commit(project.root, `chore(release): ${version}`);
   }
 
-  const refspecs = ['origin', 'HEAD:refs/heads/main'];
+  const refspecs = ['origin', releaseRefspec()];
   if (!tagExistsIn(project.root, version)) {
     tag(project.root, version);
     refspecs.push(`refs/tags/${version}`);
@@ -89,6 +92,7 @@ function publishSubmodule(project) {
 function publishContainer(released) {
   console.log(`\n▶ container · recording ${released.length} project(s)`);
 
+  attachToReleaseBranch('.');
   stage('.', released.map((project) => project.root));
   commit('.', `chore(release): ${released.map(describe).join(', ')}`);
 
@@ -100,8 +104,32 @@ function publishContainer(released) {
     names.push(name);
   }
 
-  push('.', ['origin', 'HEAD:refs/heads/main']);
+  push('.', ['origin', releaseRefspec()]);
   pushTagsSeparatelyToTriggerRelease('.', names);
+}
+
+function attachToReleaseBranch(root) {
+  if (checkedOutBranch(root) === RELEASE_BRANCH) return;
+
+  assertNothingLostByAttaching(root);
+  announce(`git -C ${root} switch -C ${RELEASE_BRANCH}`);
+  if (!isDryRun) runSilent('git', ['-C', root, 'switch', '-C', RELEASE_BRANCH]);
+}
+
+function assertNothingLostByAttaching(root) {
+  for (const branch of [RELEASE_BRANCH, `origin/${RELEASE_BRANCH}`]) {
+    if (!revisionExists(root, branch)) continue;
+    if (isAncestor(root, branch, 'HEAD')) continue;
+
+    throw new Error(
+      `${root} is detached at a commit that ${branch} has already moved past. ` +
+        `Attaching would drop commits, so this release stops here.`,
+    );
+  }
+}
+
+function releaseRefspec() {
+  return `${RELEASE_BRANCH}:refs/heads/${RELEASE_BRANCH}`;
 }
 
 function pushTagsSeparatelyToTriggerRelease(root, names) {
@@ -184,6 +212,32 @@ function readSubmodulePaths() {
 
 function readVersion(project) {
   return JSON.parse(readFileSync(join(project.root, 'package.json'), 'utf8')).version;
+}
+
+function checkedOutBranch(root) {
+  try {
+    return runSilent('git', ['-C', root, 'symbolic-ref', '--short', 'HEAD']).trim();
+  } catch {
+    return undefined;
+  }
+}
+
+function revisionExists(root, revision) {
+  try {
+    runSilent('git', ['-C', root, 'rev-parse', '--verify', '--quiet', `${revision}^{commit}`]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isAncestor(root, ancestor, descendant) {
+  try {
+    runSilent('git', ['-C', root, 'merge-base', '--is-ancestor', ancestor, descendant]);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function tagExistsIn(root, name) {

@@ -1,0 +1,25 @@
+[
+  {
+    "id": "piece-1",
+    "axes": 5,
+    "longestAxis": 919.7,
+    "axisMarks": [
+      26,
+      6,
+      10,
+      6,
+      5
+    ],
+    "unassigned": 17
+  },
+  {
+    "id": "piece-2",
+    "axes": 2,
+    "longestAxis": 208.5,
+    "axisMarks": [
+      8,
+      5
+    ],
+    "unassigned": 2
+  }
+]

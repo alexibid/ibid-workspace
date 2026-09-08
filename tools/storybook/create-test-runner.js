@@ -11,8 +11,8 @@ async function captureAt(page, viewport, device, fileName, storyId) {
   );
   if (overflows) {
     throw new Error(
-      `Visual TDD: a story "${storyId}" quebra o layout em ${device} (${viewport.width}px) — ` +
-        `o scrollWidth excede a largura do ecrã.`,
+      `Visual TDD: story "${storyId}" breaks the layout on ${device} (${viewport.width}px) — ` +
+        `scrollWidth exceeds the screen width.`,
     );
   }
 

@@ -54,6 +54,9 @@ jobs:
           NX_HEAD: ${{ steps.shas.outputs.head }}
         run: node tools/ci/affected-scope.mjs >> "$GITHUB_OUTPUT"
 
+      - name: Platform declarations match what each app can build
+        run: node tools/ci/platforms.mjs
+
       - name: Lint against the warning ceiling
         run: node tools/ci/lint-budget.mjs
 

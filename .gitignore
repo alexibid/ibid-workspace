@@ -51,3 +51,8 @@ storybook-static
 documentation.json
 
 *.log
+
+__pycache__/
+*.py[cod]
+
+tools/scratch/

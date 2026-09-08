@@ -10,7 +10,7 @@ for (let i = 2; i < process.argv.length; i += 2) {
 const project = args.get('project');
 const from = args.get('from');
 if (!project || !from) {
-  console.error('Faltam argumentos: --project <nome> --from <ficheiro|pasta>');
+  console.error('Missing arguments: --project <name> --from <file|folder>');
   process.exit(1);
 }
 
@@ -46,15 +46,15 @@ mkdirSync(outDir, { recursive: true });
 
 let artifacts = findArtifacts(resolve(from));
 if (artifacts.length === 0) {
-  console.error(`Nenhum artefacto encontrado em ${from}` +
-    (wantedExtensions.length ? ` com extensão ${wantedExtensions.join(', ')}` : ''));
+  console.error(`No artifact found in ${from}` +
+    (wantedExtensions.length ? ` with extension ${wantedExtensions.join(', ')}` : ''));
   process.exit(1);
 }
 
 if (artifacts.some((a) => !a.includes('-unsigned.apk') && a.endsWith('.apk'))) {
   artifacts = artifacts.filter((a) => !a.includes('-unsigned.apk'));
 } else if (artifacts.some((a) => a.includes('-unsigned.apk'))) {
-  console.error('Erro: Apenas foram encontrados APKs não assinados (*-unsigned.apk). O APK tem de ser assinado.');
+  console.error('Only unsigned APKs were found (*-unsigned.apk). The APK has to be signed.');
   process.exit(1);
 }
 

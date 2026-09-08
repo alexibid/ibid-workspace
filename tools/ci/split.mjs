@@ -1,13 +1,6 @@
 import { execSync } from 'node:child_process';
 
 const TARGETS = [
-  { name: 'oh-save-me', prefix: 'apps/oh-save-me', repo: 'alexibid/oh-save-me' },
-  { name: 'camila', prefix: 'apps/camila', repo: 'alexibid/camila' },
-  { name: 'boilerplate', prefix: 'apps/boilerplate', repo: 'alexibid/boilerplate' },
-  { name: 'ibid-ui', prefix: 'libs/ibid-ui', repo: 'alexibid/ibid-ui' },
-  { name: 'services', prefix: 'libs/services', repo: 'alexibid/services' },
-  { name: 'testing', prefix: 'libs/testing', repo: 'alexibid/testing' },
-  { name: 'utils', prefix: 'libs/utils', repo: 'alexibid/utils' },
   { name: 'tools', prefix: 'tools', repo: 'alexibid/tools' },
 ];
 

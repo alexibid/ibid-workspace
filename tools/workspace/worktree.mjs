@@ -13,6 +13,7 @@ const ALL_TARGETS = [
   { name: 'oh-save-me', type: 'app', path: 'apps/oh-save-me', sparse: ['apps/oh-save-me', 'libs', 'tools'] },
   { name: 'camila', type: 'app', path: 'apps/camila', sparse: ['apps/camila', 'libs', 'tools'] },
   { name: 'boilerplate', type: 'app', path: 'apps/boilerplate', sparse: ['apps/boilerplate', 'libs', 'tools'] },
+  { name: 'kirigami-studio', type: 'app', path: 'apps/kirigami-studio', sparse: ['apps/kirigami-studio', 'libs', 'tools'] },
   { name: 'ibid-ui', type: 'lib', path: 'libs/ibid-ui', sparse: ['libs/ibid-ui', 'libs/utils', 'tools'] },
   { name: 'services', type: 'lib', path: 'libs/services', sparse: ['libs/services', 'libs/utils', 'tools'] },
   { name: 'testing', type: 'lib', path: 'libs/testing', sparse: ['libs/testing', 'libs/utils', 'tools'] },

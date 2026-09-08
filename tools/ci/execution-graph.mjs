@@ -145,7 +145,7 @@ function renderLinks(definition, jobResults) {
 
   const webUrl = resolveWebUrl(project);
   if (webUrl) {
-    links.push(`* 🌐 **Aplicação Web**: [${webUrl}](${webUrl})`);
+    links.push(`* 🌐 **Web App**: [${webUrl}](${webUrl})`);
   }
 
   if (links.length === 0) return '';

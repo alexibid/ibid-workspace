@@ -1,0 +1,436 @@
+[
+  {
+    "at": "2026-09-08T14:10:31.113Z",
+    "id": "factory",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "vision",
+    "offenders": {},
+    "diagnosis": "TripoSR reads dark flat markings as depth and carves eye sockets that the reference draws as flat shapes.",
+    "remedy": "Segment the features with MobileSAM and fill them with the surrounding colour before meshing. Eyes and mouth are never sculpted; they are pasted back afterwards."
+  },
+  {
+    "at": "2026-09-08T14:10:31.113Z",
+    "id": "factory",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "unfold",
+    "offenders": {},
+    "diagnosis": "The paper model add-on calls bm.loops.layers.uv.new(\"Unfolded\") and writes the mesh back, destroying the object UV maps. Any material whose colour arrives through a UV image texture bakes to one flat grey, which caps colour resolution at the face count.",
+    "remedy": "Colour must travel as vertex colours or object coordinates. For detail finer than the face budget, either subdivide locally inside the decal region, or post-process the exported SVG and replace each island image with one rendered at full resolution."
+  },
+  {
+    "at": "2026-09-08T14:10:31.111Z",
+    "id": "tier-4-cat-hybrid",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "The decal machine was built twice and is still wrong. First it invented a synthetic ellipse per eye instead of pasting the reference artwork; then it projected vertices onto the reference and sampled pixels, which is the right mechanism but was published without verifying face by face that the region landed where it should.",
+    "remedy": "A decal is a surface mapping, not a shape. Identify which faces of the figure the image region covers, then paste that region pixels and all, the way a zebra stripe crosses several faces. Verify with a measurement over the covered faces before publishing."
+  },
+  {
+    "at": "2026-09-08T09:00:00.920Z",
+    "id": "tier-4-scanned-cat",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "vision",
+    "offenders": {},
+    "diagnosis": "TripoSR reconstructs from a single view. A three-quarter reference hides the gap between the front legs and the whole back, so the model comes out with fused limbs and an invented belly. Threshold and framing sweeps changed nothing.",
+    "remedy": "Feed a front-on reference. The fox, bear and owl inspirations are front-on and reconstruct with separated limbs; the cat and penguin are three-quarter and come out as blocks. Multiple views need a different model, not a different setting."
+  },
+  {
+    "at": "2026-09-08T09:00:00.919Z",
+    "id": "tier-4-scanned-cat",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "preview",
+    "offenders": {},
+    "diagnosis": "The glTF exporter sRGB-encodes vertex colours on the way out, so a preview built from linear colours came back one gamma too light while the printed net was correct.",
+    "remedy": "Export the preview from a stand-in copy whose colour attribute has been sRGB-decoded first. The printed path keeps the linear values it needs."
+  },
+  {
+    "at": "2026-09-08T09:00:00.919Z",
+    "id": "tier-4-scanned-cat",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "build",
+    "offenders": {},
+    "diagnosis": "Studio._register called paint(), which clears every material and applies one flat tier colour. An adopted mesh lost its vertex colours the moment it was registered, and the net printed a single grey.",
+    "remedy": "Split the tier checks (_admit) from enrolment (_enrol). weld() still paints; adopt() admits and enrols without painting."
+  },
+  {
+    "at": "2026-09-08T09:00:00.917Z",
+    "id": "tier-4-scanned-cat",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "The paper-model addon bakes each island without preserving the object UV map, so any material whose colour comes through a UV-mapped image texture bakes to one flat grey. The hand-built models never showed this because their decals read TexCoord.Object, which is UV independent.",
+    "remedy": "On the printed net, colour must reach the addon through vertex colours or object coordinates, never a UV image texture. For an adopted scan, keep the Color Attribute material on the decimated mesh and let the addon bake it."
+  },
+  {
+    "at": "2026-09-08T08:05:38.939Z",
+    "id": "tier-4-kitten",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "After the voxel remesh the faces are irregular triangles, so mark() sphere zones produce jagged sawtooth edges on socks and tail tip.",
+    "remedy": "On a remeshed part paint every small region with decal(), never mark() or shade(). A sock is an ellipse projected on z with a depth window; the edge then comes from the image, not from the triangulation."
+  },
+  {
+    "at": "2026-09-08T08:05:38.938Z",
+    "id": "tier-4-kitten",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "weld",
+    "offenders": {},
+    "diagnosis": "A boolean union of separate lofts always leaves a hard crease at every joint, so shoulders, hips and ear bases read as steps and gaps rather than one body. No amount of moving spine coordinates fixes it: the reference is a single continuous skin, not welded tubes.",
+    "remedy": "Pass skin=True to studio.weld. After the boolean and the mirror it runs a voxel remesh at min_feature_mm/3.5, a light relax, and a collapse decimate down to the tier face budget. The result is one continuous surface, manifold by construction."
+  },
+  {
+    "at": "2026-09-08T01:12:03.199Z",
+    "id": "tier-4-kitten",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "weld",
+    "offenders": {},
+    "diagnosis": "Moving a limb forward while leaving its shoulder cone behind put the cone tip flush with the leg cap: two near-identical cross-sections at nearly the same place, and the boolean tore ten open boundary edges.",
+    "remedy": "Move a limb and its transition cone together, keeping the 3 to 4 mm offset between the cone tip and the limb axis. The pre-flight cannot see this: it compares whole bounding boxes, not stations."
+  },
+  {
+    "at": "2026-09-08T01:12:03.199Z",
+    "id": "tier-4-kitten",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "The 'lens' decal only fills the middle 50 percent of its box, so eyes requested at 24mm tall rendered as 12mm slits and read as closed.",
+    "remedy": "Use 'almond' for eyes and 'wedge' for a downward-pointing nose. 'lens' is a thin curved band, right for a mouth or an under-eye patch, not for an eye."
+  },
+  {
+    "at": "2026-09-08T01:12:03.199Z",
+    "id": "tier-4-kitten",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "A large flat face plane is one polygon, so shade() and mark() paint it a single colour. Every attempt to build a face mask with axis-aligned zones repainted the whole head.",
+    "remedy": "Paint anything smaller than a polygon with decal(), which is per-pixel through the projected image, and reserve shade()/mark() for regions that span many faces."
+  },
+  {
+    "at": "2026-09-08T01:12:03.197Z",
+    "id": "tier-4-kitten",
+    "tier": "tier-4",
+    "subject": "kitten",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "Face decals were clipped along their projection axis: the depth window ran from x=35 while the upper face polygons sit at x=34.7, so eye tops, highlights and the chin were never painted, and the eyes read as cut-off blobs.",
+    "remedy": "Measure the real face polygons before choosing a depth window. Dump the welded mesh face centres in the region, take the minimum coordinate on the facing axis, and set the window to straddle it with margin."
+  },
+  {
+    "at": "2026-09-08T00:28:38.273Z",
+    "id": "kitten",
+    "tier": "tier-4",
+    "subject": "baby proportions",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "A kitten is not a small cat. Head over total height runs 0.33 to 0.46 against 0.24 to 0.33 for an adult, and the legs are much shorter. Judging one against the other band reports four false failures.",
+    "remedy": "Added a kitten family to the proportion table with its own bands. Choose the family for the subject before reading the ratios."
+  },
+  {
+    "at": "2026-09-08T00:28:38.271Z",
+    "id": "kitten",
+    "tier": "tier-4",
+    "subject": "decals",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "A decal projected along an axis clips in the two axes of its image plane but NOT in the projection axis, so it paints straight through the model. On a rounded skull the eye wraps around the head and shows as a long white band from the side.",
+    "remedy": "A decal needs a depth window as well as its box. Until it has one, place decals only on flat-ish faces that face the projection axis, and expect a smear on anything curved."
+  },
+  {
+    "at": "2026-09-07T21:21:50.347Z",
+    "id": "cat-fixed",
+    "tier": "tier-4",
+    "subject": "the pre-flight",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "The pre-flight warned that upper_arm and belly overlapped by 1 mm, classified it as not load-bearing, and I did not read the warning. Two builds later the boolean produced slivers at exactly that point.",
+    "remedy": "A shallow overlap that is not load-bearing still grazes. Read the warnings, not just the refusals: either push the pair apart so they never touch, or push them together past the depth rule."
+  },
+  {
+    "at": "2026-09-07T21:21:50.345Z",
+    "id": "cat-fixed",
+    "tier": "tier-4",
+    "subject": "sitting animal",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "The cat balanced on its hind paws alone: they reached z=-9 while the haunch floated 12 mm above the ground, so the centre of mass sat behind the footprint and the tipping margin was negative. Nothing in dozens of renders showed me this.",
+    "remedy": "Level the ground contacts. A sitting animal rests its haunches on the table, not only its paws: bring the haunch base and both paw bases within a few millimetres of the same height. Footprint went from 940 to 5925 mm2 and the margin from -0.026 to 0.148."
+  },
+  {
+    "at": "2026-09-07T21:14:05.245Z",
+    "id": "preflight",
+    "tier": "tier-4",
+    "subject": "the pre-flight",
+    "stage": "build",
+    "offenders": {},
+    "diagnosis": "Refusing every pair of solids whose overlap is under the depth rule failed a cat that welds fine, because two solids grazed each other incidentally and were not what held the chain together.",
+    "remedy": "Compare two connectivity graphs — one on any contact, one on contacts that meet the depth rule. Refuse only when the strict graph breaks into more islands than the loose one; otherwise warn."
+  },
+  {
+    "at": "2026-09-07T21:14:05.244Z",
+    "id": "preflight",
+    "tier": "tier-4",
+    "subject": "the pre-flight",
+    "stage": "build",
+    "offenders": {},
+    "diagnosis": "My first mirror-plane check only looked at solids that do not cross the plane. The failure that cost three round trips was a solid crossing it by 1 mm — min_y < 0 < max_y — which the check never examined. I wrote the test beside the problem.",
+    "remedy": "Two separate tests: crossing shallower than 2.4 mm is refused, and stopping short of the plane by under 0.6 mm is refused. Approaching within 2.5 mm is only a warning."
+  },
+  {
+    "at": "2026-09-07T21:01:00.883Z",
+    "id": "cat-v2",
+    "tier": "tier-4",
+    "subject": "segmented limbs",
+    "stage": "validate",
+    "offenders": {
+      "zero_area_faces": 4
+    },
+    "diagnosis": "Consecutive segments butted end to end with matching sections leave two near-coincident surfaces, which the boolean turns into slivers the bounded repair cannot eat.",
+    "remedy": "Every segment must start well inside its predecessor AND be narrower there. Buried and narrower, never butted and equal."
+  },
+  {
+    "at": "2026-09-07T21:01:00.882Z",
+    "id": "cat-v2",
+    "tier": "tier-4",
+    "subject": "limbs",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "A limb built as one tube produces a hard ring exactly where it enters the body — a place no animal has a crease. The ring is the boolean seam and it reads as a defect.",
+    "remedy": "Build the limb as four short tubes — shoulder blade, upper arm, forearm, paw. The rings then fall on the joints, where an animal does have definition, so they read as anatomy instead of as a fault."
+  },
+  {
+    "at": "2026-09-07T20:51:53.767Z",
+    "id": "cmp-fox-hull",
+    "tier": "tier-4",
+    "subject": "the hull builder",
+    "stage": "build",
+    "offenders": {},
+    "diagnosis": "bmesh.ops.convex_hull returns geom_interior, geom_unused and geom_holes that can share the same element, and bmesh.ops.delete refuses a list with duplicates.",
+    "remedy": "Deduplicate the leftovers by object identity before deleting. Fixed in sculpt.py."
+  },
+  {
+    "at": "2026-09-07T20:51:53.767Z",
+    "id": "cmp-fox",
+    "tier": "tier-4",
+    "subject": "mesh character",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "Decimating alone at 0.85 changed the face count but not the character: the quad banding from the lofts and the hard rings at the boolean seams both survive, because collapse removes edges without redistributing them.",
+    "remedy": "The reference character comes from how the mesh is authored, not from a post-process. Irregular triangles come from hull, not from decimating a loft."
+  },
+  {
+    "at": "2026-09-07T20:51:53.766Z",
+    "id": "cmp-fox-refined",
+    "tier": "tier-4",
+    "subject": "mesh character",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "Subdividing then decimating the welded mesh to chase the reference look makes it worse: Catmull-Clark pulls sharp corners inward, so ears become stubs and a pointed muzzle goes blunt. Flat shading afterwards does not bring them back — the loss is geometric.",
+    "remedy": "Do not subdivide a welded papercraft model. If a form needs to flow, author it that way; smoothing after the fact destroys the features that make the silhouette read."
+  },
+  {
+    "at": "2026-09-07T20:24:21.061Z",
+    "id": "verify-collection-tier-4-dog",
+    "tier": "tier-4",
+    "subject": "the modeller",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "I put a 34 mm shoulder at y=16, reaching y=-1, and broke the mirror seam — the exact knife-edge crossing already recorded for the fox. The ledger held the lesson and I did not read it before changing the geometry.",
+    "remedy": "Call kirigami_lessons for the tier and stage before changing any spine, and check every station arithmetically before building."
+  },
+  {
+    "at": "2026-09-07T20:24:21.061Z",
+    "id": "verify-collection-tier-4-dog",
+    "tier": "tier-4",
+    "subject": "sitting quadruped",
+    "stage": "validate",
+    "offenders": {
+      "non_manifold_edges": 2
+    },
+    "diagnosis": "The buried top station was still wider than the body at that height, so its cap exited the surface tangentially and produced non-manifold edges.",
+    "remedy": "The buried station must satisfy two conditions at once: y minus half its width above zero, and y plus half its width inside the body half-width at that height. That leaves it narrower than the body half-width."
+  },
+  {
+    "at": "2026-09-07T20:24:21.060Z",
+    "id": "verify-collection-tier-4-dog",
+    "tier": "tier-4",
+    "subject": "sitting quadruped",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "A foreleg ending in a flat cap flush with the chest reads as a block stuck on, because the leg is far narrower than the ribcage and the cap leaves a hard rim at the surface.",
+    "remedy": "Give the leg five stations: paw, ankle, forearm, a shoulder proud of the ribcage by about half its own width, and a narrow fifth station buried inside the body so the cap never reaches the surface."
+  },
+  {
+    "at": "2026-09-07T19:34:32.582Z",
+    "id": "qa",
+    "tier": "tier-4",
+    "subject": "the QA inspector",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "A fixed colour floor failed the ground slab and the rock, which are single-colour parts by design.",
+    "remedy": "Compare printed colours against what the part declares in the manifest, and fail only when the net carries no baked image at all."
+  },
+  {
+    "at": "2026-09-07T19:34:32.582Z",
+    "id": "qa",
+    "tier": "tier-2",
+    "subject": "the QA inspector",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "Requiring one silhouette blob failed every scene, because a scene of separate glued parts legitimately shows several.",
+    "remedy": "Compare the blob count against the number of welded parts in the manifest, not against one."
+  },
+  {
+    "at": "2026-09-07T19:34:32.582Z",
+    "id": "qa",
+    "tier": "tier-3",
+    "subject": "the QA inspector",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "Every net reported zero colours. The addon writes the embedded PNG with base64.encodebytes, which wraps at 76 characters, so a regex without whitespace in its class stops at the first newline.",
+    "remedy": "Allow whitespace in the base64 character class and strip it before decoding."
+  },
+  {
+    "at": "2026-09-07T19:34:32.581Z",
+    "id": "bake-fox",
+    "tier": "tier-3",
+    "subject": "any painted model",
+    "stage": "paint",
+    "offenders": {},
+    "diagnosis": "The baked texture came out visibly lighter than the palette. A new image defaults to the sRGB colour space, so the linear values written by the bake were encoded again and then read as linear.",
+    "remedy": "Set the bake target image colorspace to Non-Color. The colour then matches the palette exactly in both the GLB and the net."
+  },
+  {
+    "at": "2026-09-07T18:35:17.699Z",
+    "id": "runner",
+    "tier": "tier-1",
+    "subject": "the job runner",
+    "stage": "build",
+    "offenders": {},
+    "diagnosis": "Blender interleaves its own C-level stdout with Python prints, which can split the KIRIGAMI_RESULT marker line and make a successful run look like a crash.",
+    "remedy": "The runner writes result.json to disk and the MCP server reads the file. stdout is for logs only."
+  },
+  {
+    "at": "2026-09-07T18:35:17.698Z",
+    "id": "ccor-probe",
+    "tier": "tier-2",
+    "subject": "any net",
+    "stage": "unfold",
+    "offenders": {},
+    "diagnosis": "nesting_method CCOR raises inside the addon at nesting.py:67 in version 1.4.2, so the tighter raster packing is unavailable.",
+    "remedy": "Stay on BOX nesting and accept the looser packing."
+  },
+  {
+    "at": "2026-09-07T18:35:17.697Z",
+    "id": "verify-tier-4-sitting-fox",
+    "tier": "tier-4",
+    "subject": "any net",
+    "stage": "unfold",
+    "offenders": {},
+    "diagnosis": "The island size cage was set to the full page, so an island could legally exceed the printable area.",
+    "remedy": "Cage = page minus twice the margin minus twice the tab width."
+  },
+  {
+    "at": "2026-09-07T18:35:17.697Z",
+    "id": "verify-tier-4-sitting-fox",
+    "tier": "tier-4",
+    "subject": "any large net",
+    "stage": "unfold",
+    "offenders": {},
+    "diagnosis": "sticker_width sets tabs AND edge-number text with one property. At the 5 mm default the numbers dominated a scaled-down net and collided.",
+    "remedy": "3 mm. Legible in print, and the tabs stop overhanging the packing box."
+  },
+  {
+    "at": "2026-09-07T18:35:17.697Z",
+    "id": "svg-probe",
+    "tier": "tier-2",
+    "subject": "any multi-page net",
+    "stage": "unfold",
+    "offenders": {},
+    "diagnosis": "The addon names multi-page SVG output <name>_page0.svg, so an existence check on the plain filename fails for anything over one page.",
+    "remedy": "Glob for <stem>_*.svg after export and treat the result as a list."
+  },
+  {
+    "at": "2026-09-07T18:35:17.696Z",
+    "id": "verify-tier-4-owl",
+    "tier": "tier-4",
+    "subject": "owl",
+    "stage": "validate",
+    "offenders": {
+      "zero_area_faces": 2
+    },
+    "diagnosis": "Triangulating twisted n-gons manufactures sub-millimetre triangles, and the sliver pass ran before the triangulation, so nothing cleaned them up.",
+    "remedy": "Reordered tidy: triangulate first, dissolve slivers second. Two rounds of debugging bought this ordering."
+  },
+  {
+    "at": "2026-09-07T18:35:17.696Z",
+    "id": "verify-tier-3-fox",
+    "tier": "tier-3",
+    "subject": "sitting fox",
+    "stage": "validate",
+    "offenders": {
+      "open_boundary_edges": 10
+    },
+    "diagnosis": "bmesh.ops.collapse on the shortest edge of every null face tore holes in the shell, even restricted to an independent set of edges.",
+    "remedy": "Replaced collapse with dissolve_degenerate escalating from 0.2 mm, capped at a quarter of the tier minimum feature so repair can never eat a real cut feature."
+  },
+  {
+    "at": "2026-09-07T18:35:17.695Z",
+    "id": "verify-tier-3-bear",
+    "tier": "tier-3",
+    "subject": "walking bear",
+    "stage": "validate",
+    "offenders": {
+      "unwelded_shells": 2
+    },
+    "diagnosis": "The ear hulls cleared the top of the skull by 1 mm, so the union never fused them and they printed as loose shells.",
+    "remedy": "Sink an appendage at least a fifth of its length into its parent. 15 mm of overlap welded it."
+  },
+  {
+    "at": "2026-09-07T18:35:17.695Z",
+    "id": "verify-tier-4-sitting-fox",
+    "tier": "tier-4",
+    "subject": "sitting fox",
+    "stage": "validate",
+    "offenders": {
+      "zero_area_faces": 2
+    },
+    "diagnosis": "The tail first station sat on the body rear surface rather than inside it, so the boolean grazed tangentially and produced a triangle 0.06 mm wide with a 32 mm long edge — too big for the bounded repair to collapse.",
+    "remedy": "Bury the first station of an appendage inside its parent so the boolean cuts decisively instead of skimming."
+  },
+  {
+    "at": "2026-09-07T18:35:17.694Z",
+    "id": "verify-tier-4-sitting-fox",
+    "tier": "tier-4",
+    "subject": "sitting fox",
+    "stage": "validate",
+    "offenders": {
+      "open_boundary_edges": 6
+    },
+    "diagnosis": "Moving the body spine forward to let the legs stand vertical pushed a station across the mirror plane, and the bisect left six open edges at the chest. Reproducible across three attempts.",
+    "remedy": "Move the limb to the body, never the body to the limb. Reverted the chest station and angled the leg instead."
+  },
+  {
+    "at": "2026-09-07T18:35:17.688Z",
+    "id": "verify-tier-4-sitting-fox",
+    "tier": "tier-4",
+    "subject": "sitting fox",
+    "stage": "shape",
+    "offenders": {},
+    "diagnosis": "The tail spine sat entirely on +y — stations 3 and 4 span y=2..36 and y=8..30, never reaching the plane — so it survived the mirror bisect whole and came back twinned.",
+    "remedy": "Every station of a single central feature must straddle y=0: centre_y minus half the section width has to stay negative. Checked per station, not just at the first."
+  }
+]

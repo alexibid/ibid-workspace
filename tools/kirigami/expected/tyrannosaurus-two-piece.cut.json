@@ -1,0 +1,23 @@
+[
+  {
+    "id": "piece-1",
+    "kept": 115,
+    "removed": 4,
+    "removedByRule": {
+      "inside-page-gap": 2,
+      "page-gap": 2
+    },
+    "marks": 70,
+    "gaps": 2,
+    "tabs": 1
+  },
+  {
+    "id": "piece-2",
+    "kept": 72,
+    "removed": 0,
+    "removedByRule": {},
+    "marks": 15,
+    "gaps": 0,
+    "tabs": 2
+  }
+]
