@@ -2,76 +2,130 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
-import numpy as np
-from PIL import Image
-from ultralytics import SAM
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-SEGMENTER = "mobile_sam.pt"
+from store import RESOURCES, SEGMENTER, VIEWS  # noqa: E402
+
+import numpy as np  # noqa: E402
+import rembg  # noqa: E402
+from PIL import Image  # noqa: E402
+from ultralytics import SAM  # noqa: E402
+
+from drawn import marks  # noqa: E402
+
 SMALLEST = 0.0004
 LARGEST = 0.06
 PAIR_TOLERANCE = 0.22
 UPPER_HALF = 0.62
 FILL_RING = 9
-MOUTH_REACH = 1.1
 
 
 class FeatureError(RuntimeError):
     pass
 
 
+class Carving(NamedTuple):
+    view: str
+    image: Path
+    flat: Path
+    catalogue: Path
+    art: Path
+    looksForEyes: bool
+    settings: dict
+
+
 def main() -> int:
     options = read_options()
-    options.out.mkdir(parents=True, exist_ok=True)
-
-    picture = Image.open(options.image).convert("RGB")
-    canvas = np.asarray(picture).astype(np.uint8)
-    subject = _subject(canvas)
-    masks = _segment(options.image, options.device)
-    print(f"MEASURED segment masks={len(masks)}")
-
-    eyes = _eye_pair(masks, canvas, subject)
-    if not eyes:
-        raise FeatureError(
-            "No symmetric pair of eyes was found. Check that the reference is a front view "
-            "with both eyes visible and unoccluded."
-        )
-    features = [_describe("eye", mask, canvas, subject) for mask in eyes]
-    mouth = _mouth(masks, canvas, subject, eyes)
-    if mouth is not None:
-        features.append(_describe("mouth", mouth, canvas, subject))
-
-    for feature in features:
-        print(f"MEASURED feature {feature['kind']:6s} {feature['hex']} "
-              f"at {[round(v, 3) for v in feature['at']]} size {[round(v, 3) for v in feature['size']]}")
-
-    chosen = eyes + ([mouth] if mouth is not None else [])
-    flattened = _flatten(canvas, chosen)
-    Image.fromarray(flattened).save(options.out / "flat.png")
-
-    art = options.out / "regions"
-    art.mkdir(exist_ok=True)
-    for index, (feature, mask) in enumerate(zip(features, chosen)):
-        name = f"{feature['kind']}-{index}.png"
-        _artwork(canvas, mask).save(art / name)
-        feature["art"] = f"regions/{name}"
-
-    (options.out / "features.json").write_text(json.dumps({
-        "source": str(options.image),
-        "subject": {"x0": int(subject[0]), "y0": int(subject[1]),
-                    "x1": int(subject[2]), "y1": int(subject[3])},
-        "features": features,
-    }, indent=2))
-    print(f"CARVED {options.out / 'flat.png'} {len(features)} feature(s)")
+    jobs = _jobs(options)
+    found = sum(_carve(job, options.device) for job in jobs)
+    print(f"MEASURED subject figures={found} across {len(jobs)} view(s)")
     return 0
 
 
 def read_options() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image", type=Path, required=True)
-    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--subject")
+    parser.add_argument("--image", type=Path)
+    parser.add_argument("--out", type=Path)
     parser.add_argument("--device", default="mps")
     return parser.parse_args()
+
+
+def _jobs(options: argparse.Namespace) -> list[Carving]:
+    if options.subject:
+        return _subject_jobs(RESOURCES / options.subject)
+    if not options.image or not options.out:
+        raise FeatureError("Give either --subject, or both --image and --out.")
+    return [Carving("reference", options.image, options.out / "flat.png",
+                    options.out / "features.json", options.out / "regions", True, {})]
+
+
+def _subject_jobs(root: Path) -> list[Carving]:
+    if not root.is_dir():
+        raise FeatureError(f"There is no subject at {root}.")
+    settings = _settings(root)
+    jobs = [Carving(view, source, root / "flat" / f"{view}.png",
+                    root / "figures" / f"{view}.json", root / "figures" / view,
+                    view == "front", settings)
+            for view in VIEWS for source in [_view(root, view)] if source]
+    if not jobs:
+        raise FeatureError(f"{root.name} holds none of the views {', '.join(VIEWS)}.")
+    return jobs
+
+
+def _settings(root: Path) -> dict:
+    contract = root / "model.json"
+    if not contract.exists():
+        return {}
+    return json.loads(contract.read_text()).get("figures", {}).get("detector", {})
+
+
+def _view(root: Path, view: str) -> Path | None:
+    for suffix in (".jpeg", ".jpg", ".png"):
+        candidate = root / f"{view}{suffix}"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _carve(job: Carving, device: str) -> int:
+    picture = Image.open(job.image).convert("RGB")
+    canvas = np.asarray(picture).astype(np.uint8)
+    skin = _cutout(picture)
+    subject = _bounds(skin, job.image.name)
+    masks = _segment(job.image, device)
+
+    eyes = _eye_pair(masks, canvas, subject) if job.looksForEyes else []
+    found = [("eye", mask) for mask in eyes] + marks(canvas, subject, skin, job.settings)
+    features = [_describe(kind, mask, canvas, subject) for kind, mask in found]
+    print(f"MEASURED {job.view} masks={len(masks)} figures={len(features)}")
+    for feature in features:
+        print(f"MEASURED {job.view} {feature['kind']:5s} {feature['hex']} "
+              f"at {[round(v, 3) for v in feature['at']]} "
+              f"size {[round(v, 3) for v in feature['size']]}")
+
+    chosen = [mask for _, mask in found]
+    job.flat.parent.mkdir(parents=True, exist_ok=True)
+    Image.fromarray(_flatten(canvas, chosen)).save(job.flat)
+
+    job.art.mkdir(parents=True, exist_ok=True)
+    for index, (feature, mask) in enumerate(zip(features, chosen)):
+        name = f"{feature['kind']}-{index}.png"
+        _artwork(canvas, mask).save(job.art / name)
+        feature["art"] = f"{job.art.name}/{name}"
+
+    job.catalogue.parent.mkdir(parents=True, exist_ok=True)
+    job.catalogue.write_text(json.dumps({
+        "source": str(job.image),
+        "view": job.view,
+        "subject": {"x0": int(subject[0]), "y0": int(subject[1]),
+                    "x1": int(subject[2]), "y1": int(subject[3])},
+        "features": features,
+    }, indent=2))
+    print(f"CARVED {job.catalogue} {len(features)} figure(s)")
+    return len(features)
 
 
 def _segment(image: Path, device: str) -> list[np.ndarray]:
@@ -82,15 +136,23 @@ def _segment(image: Path, device: str) -> list[np.ndarray]:
     return [mask for mask in found if mask.any()]
 
 
-def _subject(canvas: np.ndarray) -> tuple[int, int, int, int]:
-    lum = canvas.mean(axis=2)
-    edge = np.concatenate([lum[:, :8], lum[:, -8:]], axis=1)
-    ground = float(np.median(edge))
-    body = np.abs(lum - ground) > 18
-    rows = np.where(body.any(axis=1))[0]
-    columns = np.where(body.any(axis=0))[0]
+def _cutout(picture: Image.Image) -> np.ndarray:
+    cut = rembg.remove(picture, session=_session())
+    alpha = np.asarray(cut.convert("RGBA"))[:, :, 3]
+    return alpha > 128
+
+
+def _session():
+    if not hasattr(_session, "held"):
+        _session.held = rembg.new_session()
+    return _session.held
+
+
+def _bounds(skin: np.ndarray, name: str) -> tuple[int, int, int, int]:
+    rows = np.where(skin.any(axis=1))[0]
+    columns = np.where(skin.any(axis=0))[0]
     if not len(rows):
-        raise FeatureError("The reference has no subject against its background.")
+        raise FeatureError(f"The background remover found no subject in {name}.")
     return int(columns[0]), int(rows[0]), int(columns[-1]), int(rows[-1])
 
 
@@ -131,27 +193,6 @@ def _pairing(left: np.ndarray, right: np.ndarray, middle: float) -> float | None
     if reach[0] * reach[1] >= 0:
         return None
     return abs(abs(reach[0]) - abs(reach[1]))
-
-
-def _mouth(masks: list[np.ndarray], canvas: np.ndarray,
-           subject: tuple[int, int, int, int], eyes: list[np.ndarray]) -> np.ndarray | None:
-    boxes = [_box(eye) for eye in eyes]
-    middle = sum((box[0] + box[2]) / 2 for box in boxes) / 2
-    floor = max(box[3] for box in boxes)
-    apart = abs((boxes[0][0] + boxes[0][2]) / 2 - (boxes[1][0] + boxes[1][2]) / 2)
-    widest = max(box[2] - box[0] for box in boxes)
-    found = None
-    for mask in masks:
-        x0, y0, x1, y1 = _box(mask)
-        if y0 < floor or (y0 + y1) / 2 > floor + apart * MOUTH_REACH:
-            continue
-        if abs((x0 + x1) / 2 - middle) > widest * 0.5:
-            continue
-        if x1 - x0 > widest or int(mask.sum()) < 1:
-            continue
-        if found is None or int(mask.sum()) > int(found.sum()):
-            found = mask
-    return found
 
 
 def _describe(kind: str, mask: np.ndarray, canvas: np.ndarray,

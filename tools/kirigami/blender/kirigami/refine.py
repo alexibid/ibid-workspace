@@ -38,11 +38,11 @@ def simplify(obj: bpy.types.Object, triangles: int) -> None:
     if triangles <= 0:
         raise RefineError(f"'{obj.name}' needs a positive triangle target, got {triangles}.")
     activate(obj)
-    _apply(obj, "relax", "SMOOTH", factor=RELAX_FACTOR, iterations=RELAX_PASSES + 2)
     _apply(obj, "facet", "TRIANGULATE")
 
     present = len(obj.data.polygons)
     if present > triangles:
+        _apply(obj, "relax", "SMOOTH", factor=RELAX_FACTOR, iterations=RELAX_PASSES + 2)
         _apply(obj, "thin", "DECIMATE", decimate_type="COLLAPSE", ratio=triangles / present)
         _apply(obj, "refacet", "TRIANGULATE")
     for polygon in obj.data.polygons:

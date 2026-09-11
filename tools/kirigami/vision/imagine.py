@@ -4,15 +4,22 @@ import math
 import sys
 from pathlib import Path
 
-import numpy as np
-import rembg
-import torch
-import trimesh
-from PIL import Image
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-TRIPOSR_ROOT = Path.home() / ".ibid" / "kirigami" / "TripoSR"
+from journal import Timer  # noqa: E402
+from progress import Chunks, Step, announce  # noqa: E402
+from store import TRIPOSR_ROOT  # noqa: E402
+
 sys.path.insert(0, str(TRIPOSR_ROOT))
 
+import numpy as np  # noqa: E402
+import rembg  # noqa: E402
+import torch  # noqa: E402
+import trimesh  # noqa: E402
+from PIL import Image  # noqa: E402
+
+from tsr.models import nerf_renderer  # noqa: E402
 from tsr.system import TSR  # noqa: E402
 from tsr.utils import remove_background, resize_foreground  # noqa: E402
 
@@ -26,19 +33,38 @@ class ImagineError(RuntimeError):
 def main() -> int:
     options = read_options()
     options.out.mkdir(parents=True, exist_ok=True)
+    if options.journal:
+        with Timer(options.journal, f"reconstruct {options.image.stem}",
+                   "vision/imagine.py") as clock:
+            clock.detail = {"checkpoint": CHECKPOINT, "marchingCubes": options.resolution,
+                            "view": options.image.stem}
+            return _sculpt_all(options)
+    return _sculpt_all(options)
 
-    subject = cut_out(options.image, options.foreground)
-    subject.save(options.out / "subject.png")
+
+def _sculpt_all(options: argparse.Namespace) -> int:
+    with Step("cut out"):
+        subject = cut_out(options.image, options.foreground, options.precut, options.cutter)
+        subject.save(options.out / "subject.png")
 
     device = pick_device(options.device)
-    model = load_model(device, options.chunk)
-    mesh = sculpt(model, subject, device, options.resolution, options.threshold)
+    announce("device", f"{device} · chunk {options.chunk:,} · threshold {options.threshold}")
+    with Step("load TripoSR"):
+        model = load_model(device, options.chunk)
+
+    chunks = Chunks(nerf_renderer)
+    chunks.install()
+    mesh = sculpt(model, subject, device, options.resolution, options.threshold, chunks)
+
+    announce("posterise", f"{options.colours} colours")
     posterise(mesh, options.colours)
     linearise(mesh)
+    announce("stand", f"{options.height:.0f} mm tall")
     stand(mesh, options.height)
 
-    target = options.out / "mesh.glb"
-    mesh.export(target)
+    with Step("export glb"):
+        target = options.out / "mesh.glb"
+        mesh.export(target)
     (options.out / "meta.json").write_text(json.dumps({
         "source": str(options.image),
         "checkpoint": CHECKPOINT,
@@ -65,6 +91,9 @@ def read_options() -> argparse.Namespace:
     parser.add_argument("--chunk", type=int, default=8192)
     parser.add_argument("--height", type=float, default=200.0)
     parser.add_argument("--colours", type=int, default=5)
+    parser.add_argument("--precut", action="store_true")
+    parser.add_argument("--cutter", default="birefnet-general")
+    parser.add_argument("--journal", type=Path)
     return parser.parse_args()
 
 
@@ -83,12 +112,14 @@ def load_model(device: str, chunk: int) -> TSR:
     return model
 
 
-def cut_out(path: Path, foreground: float) -> Image.Image:
+def cut_out(path: Path, foreground: float, precut: bool, cutter: str) -> Image.Image:
     if not path.exists():
         raise ImagineError(f"The reference image {path} does not exist.")
     picture = Image.open(path)
-    session = rembg.new_session()
-    picture = remove_background(picture, session)
+    if not precut:
+        picture = remove_background(picture, rembg.new_session(cutter))
+    elif picture.mode != "RGBA":
+        raise ImagineError(f"{path.name} carries no alpha, so it is not a cutout.")
     picture = resize_foreground(picture, foreground)
     flat = np.array(picture).astype(np.float32) / 255.0
     blended = flat[:, :, :3] * flat[:, :, 3:4] + (1 - flat[:, :, 3:4]) * 0.5
@@ -174,12 +205,17 @@ def stand(mesh, height_mm: float) -> None:
     print(f"MEASURED stand size {[round(float(v) * 1000, 1) for v in (high - low)]} mm")
 
 
-def sculpt(model: TSR, subject: Image.Image, device: str, resolution: int, threshold: float):
-    with torch.no_grad():
-        codes = model([subject], device=device)
-    for attempt in (resolution, resolution + 32, resolution - 32, resolution + 64, resolution - 64):
-        if attempt < 96:
-            continue
+def sculpt(model: TSR, subject: Image.Image, device: str, resolution: int, threshold: float,
+           chunks: Chunks):
+    with Step("encode"):
+        with torch.no_grad():
+            codes = model([subject], device=device)
+    ladder = [rung for rung in (resolution, resolution + 32, resolution - 32,
+                                resolution + 64, resolution - 64) if rung >= 96]
+    for place, attempt in enumerate(ladder, start=1):
+        announce(f"attempt {place} of {len(ladder)}",
+                 f"marching cubes at {attempt} · {attempt ** 3:,} points")
+        chunks.begin(attempt)
         meshes = model.extract_mesh(codes, True, resolution=attempt, threshold=threshold)
         if not meshes:
             continue
@@ -188,6 +224,7 @@ def sculpt(model: TSR, subject: Image.Image, device: str, resolution: int, thres
               f"watertight={mesh.is_watertight}")
         if mesh.is_watertight:
             return mesh
+        announce("open surface", f"{attempt} did not close, stepping the ladder")
     raise ImagineError(
         f"No marching cubes resolution near {resolution} produced a closed surface. "
         f"The cut-out probably has holes or touches the frame edge."

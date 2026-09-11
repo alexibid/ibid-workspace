@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { JOBS_ROOT, jobDirectory } from './paths.mjs';
@@ -15,7 +15,9 @@ export function prepare({ id, title, tier, script, mesh, features, part, role, p
     );
   }
   const dir = jobDirectory(id);
-  mkdirSync(dir, { recursive: true });
+  const outDir = join(dir, 'out');
+  rmSync(outDir, { recursive: true, force: true });
+  mkdirSync(outDir, { recursive: true });
 
   if (!script && !mesh) {
     throw new JobError(`Job '${id}' needs either a model script or a mesh to adopt.`);
@@ -38,7 +40,7 @@ export function prepare({ id, title, tier, script, mesh, features, part, role, p
   };
   const jobPath = join(dir, 'job.json');
   writeFileSync(jobPath, JSON.stringify(job, null, 2), 'utf8');
-  return { dir, jobPath, outDir: join(dir, 'out'), resultPath: join(dir, 'result.json') };
+  return { dir, jobPath, outDir, resultPath: join(dir, 'result.json') };
 }
 
 

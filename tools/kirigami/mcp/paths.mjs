@@ -7,9 +7,14 @@ export const WORKSPACE_ROOT = resolve(MCP_ROOT, '../../..');
 export const BLENDER_ROOT = resolve(MCP_ROOT, '../blender');
 export const RUN_JOB = join(BLENDER_ROOT, 'run_job.py');
 export const JOBS_ROOT = join(WORKSPACE_ROOT, 'dist', 'kirigami', 'jobs');
-export const STUDIO_UPLOADS = join(WORKSPACE_ROOT, 'apps', 'kirigami-studio', 'uploads');
-export const STAGES = ['ready', 'draft', 'backup'];
-export const LEDGER = join(WORKSPACE_ROOT, 'tools', 'kirigami', 'ledger', 'lessons.json');
+export const STUDIO_ROOT = join(WORKSPACE_ROOT, 'apps', 'kirigami-studio');
+export const STUDIO_UPLOADS = join(STUDIO_ROOT, 'uploads');
+export const STUDIO_RESOURCES = join(STUDIO_ROOT, 'resources');
+export const STAGES = ['ready', 'draft'];
+export const LEDGER_ROOT = join(WORKSPACE_ROOT, 'tools', 'kirigami', 'ledger');
+export const LEDGER = join(LEDGER_ROOT, 'lessons.json');
+export const RUN_LOG = join(LEDGER_ROOT, 'runs.jsonl');
+export const PERFORMANCE_REPORT = join(STUDIO_ROOT, '.agents', 'performance.md');
 
 const MAC_BLENDER = '/Applications/Blender.app/Contents/MacOS/Blender';
 
@@ -21,9 +26,6 @@ export function blenderBinary() {
   return existsSync(MAC_BLENDER) ? MAC_BLENDER : 'blender';
 }
 
-export function stageDirectory(stage, id) {
-  return join(STUDIO_UPLOADS, stage, id);
-}
 
 export function jobDirectory(id) {
   return join(JOBS_ROOT, id);

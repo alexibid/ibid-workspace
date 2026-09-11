@@ -5,7 +5,9 @@ import { createInterface } from 'node:readline';
 import { createReadStream } from 'node:fs';
 import { join } from 'node:path';
 
-const GALLERY = 'apps/kirigami-studio/.agents/inspirations';
+import { WORKSPACE_ROOT } from './mcp/paths.mjs';
+
+const GALLERY = join(WORKSPACE_ROOT, 'apps', 'kirigami-studio', '.agents', 'inspirations');
 const INCOMING = join(GALLERY, 'incoming');
 const SUFFIX = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
 
@@ -42,7 +44,7 @@ async function main() {
 
 function findTranscripts(sweepEverySession) {
   const root = join(homedir(), '.claude', 'projects',
-    `-${process.cwd().replaceAll('/', '-').replace(/^-/, '')}`);
+    `-${WORKSPACE_ROOT.replaceAll('/', '-').replace(/^-/, '')}`);
   if (!existsSync(root)) {
     return [];
   }

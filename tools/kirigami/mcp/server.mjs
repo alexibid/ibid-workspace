@@ -97,7 +97,7 @@ register('kirigami_publish', {
     + 'folder carries the model script, the GLB, and every PDF and SVG net, so a draft can be '
     + 'reproduced and inspected. The three.js viewer shows draft and ready on separate tabs.',
   inputSchema: { id: z.string(), stage: z.enum(['draft', 'ready', 'backup']).optional() },
-}, ({ id, stage }) => actions.publishJob(id, stage));
+}, ({ id }) => actions.publishJob(id));
 
 register('kirigami_approve', {
   title: 'Move a draft onto the ready shelf',

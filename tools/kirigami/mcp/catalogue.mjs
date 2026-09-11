@@ -2,49 +2,55 @@ import { cpSync, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync,
 import { join } from 'node:path';
 
 import { JobError, manifestOf } from './jobs.mjs';
-import { STAGES, STUDIO_UPLOADS, jobDirectory, stageDirectory } from './paths.mjs';
+import { STUDIO_RESOURCES, STUDIO_UPLOADS, jobDirectory } from './paths.mjs';
 
 const GALLERY = join(STUDIO_UPLOADS, 'gallery.json');
+const MODELS_ROOT = join(STUDIO_UPLOADS, 'models');
 const KEEP = 120;
 
-export function publish(id, stage = 'draft') {
-  assertStage(stage);
+export function publish(id) {
   const manifest = manifestOf(id);
-  const target = stageDirectory(stage, id);
-
-  mkdirSync(target, { recursive: true });
-  cpSync(join(jobDirectory(id), 'out'), target, { recursive: true });
-  const script = join(jobDirectory(id), 'model.py');
-  const authored = existsSync(script);
-  if (authored) {
-    copyFileSync(script, join(target, 'model.py'));
+  const subject = join(STUDIO_RESOURCES, id);
+  if (!existsSync(subject)) {
+    throw new JobError(`'${id}' has no subject folder in resources, so there is nothing to publish onto.`);
   }
-
-  const entry = describe(id, stage, manifest, authored);
-  writeFileSync(GALLERY, JSON.stringify(nextIndex(entry), null, 2), 'utf8');
-  return { entry, directory: target, gallery: GALLERY };
+  const output = join(jobDirectory(id), 'out');
+  copyFileSync(join(output, 'manifest.json'), join(subject, 'manifest.json'));
+  if (existsSync(join(output, 'nets'))) {
+    rmSync(join(subject, 'nets'), { recursive: true, force: true });
+    cpSync(join(output, 'nets'), join(subject, 'nets'), { recursive: true });
+  }
+  rebuildIndex();
+  return { entry: find(id), directory: join(MODELS_ROOT, id), gallery: GALLERY, manifest };
 }
 
 export function approve(id) {
-  const draft = stageDirectory('draft', id);
-  if (!existsSync(draft)) {
-    throw new JobError(`'${id}' is not in the draft shelf, so there is nothing to approve.`);
+  const contract = join(STUDIO_RESOURCES, id, 'model.json');
+  if (!existsSync(contract)) {
+    throw new JobError(`'${id}' has no subject folder in resources, so there is nothing to approve.`);
   }
-  const ready = stageDirectory('ready', id);
-  mkdirSync(ready, { recursive: true });
-  cpSync(draft, ready, { recursive: true });
-  rmSync(draft, { recursive: true, force: true });
+  writeFileSync(contract, `${JSON.stringify({ ...readJson(contract), state: 'ready' }, null, 2)}\n`, 'utf8');
+  rebuildIndex();
+  return { entry: find(id), directory: join(MODELS_ROOT, id) };
+}
 
-  const entry = { ...find(id), state: 'ready', approvedAt: new Date().toISOString() };
-  writeFileSync(GALLERY, JSON.stringify(nextIndex(entry), null, 2), 'utf8');
-  return { entry, directory: ready };
+export function withdraw(id) {
+  const kept = gallery().filter((item) => item.id !== id);
+  if (kept.length === gallery().length) {
+    throw new JobError(`The gallery holds no model called '${id}'.`);
+  }
+  writeFileSync(GALLERY, JSON.stringify(kept, null, 2), 'utf8');
+  rmSync(join(MODELS_ROOT, id), { recursive: true, force: true });
+  return kept.length;
 }
 
 export function rebuildIndex() {
-  const entries = STAGES
-    .flatMap((stage) => shelved(stage).map((id) => describe(id, stage, manifestOnShelf(stage, id))))
+  const entries = subjects()
+    .map(stock)
+    .filter(Boolean)
     .sort((left, right) => (right.createdAt ?? '').localeCompare(left.createdAt ?? ''))
     .slice(0, KEEP);
+  mkdirSync(STUDIO_UPLOADS, { recursive: true });
   writeFileSync(GALLERY, JSON.stringify(entries, null, 2), 'utf8');
   return entries;
 }
@@ -58,58 +64,77 @@ export function gallery(stage) {
   return stage ? rows.filter((row) => row.state === stage) : rows;
 }
 
-export function withdraw(id) {
-  const remaining = gallery().filter((item) => item.id !== id);
-  if (remaining.length === gallery().length) {
-    throw new JobError(`The gallery holds no model called '${id}'.`);
-  }
-  writeFileSync(GALLERY, JSON.stringify(remaining, null, 2), 'utf8');
-  for (const stage of STAGES) {
-    rmSync(stageDirectory(stage, id), { recursive: true, force: true });
-  }
-  return remaining.length;
-}
-
-function shelved(stage) {
-  const shelf = join(STUDIO_UPLOADS, stage);
-  if (!existsSync(shelf)) {
+function subjects() {
+  if (!existsSync(STUDIO_RESOURCES)) {
     return [];
   }
-  return readdirSync(shelf, { withFileTypes: true })
+  return readdirSync(STUDIO_RESOURCES, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
-    .filter((id) => existsSync(join(stageDirectory(stage, id), 'manifest.json')));
+    .filter((name) => existsSync(join(STUDIO_RESOURCES, name, 'grids')));
 }
 
-function manifestOnShelf(stage, id) {
-  return JSON.parse(readFileSync(join(stageDirectory(stage, id), 'manifest.json'), 'utf8'));
-}
+function stock(name) {
+  const source = join(STUDIO_RESOURCES, name);
+  const contract = readJson(join(source, 'model.json'));
+  const manifest = readJson(join(source, 'manifest.json'));
+  const levels = contract?.difficulty?.levels ?? [];
+  if (!contract || !manifest || levels.length === 0) {
+    return undefined;
+  }
 
-function describe(id, stage, manifest, authored = true) {
+  const target = join(MODELS_ROOT, name);
+  rmSync(target, { recursive: true, force: true });
+  mkdirSync(target, { recursive: true });
+
+  const grids = levels
+    .filter((level) => existsSync(join(source, 'grids', `grid-${level.grid}.glb`)))
+    .map((level) => {
+      const file = `grid-${level.intensity}.glb`;
+      copyFileSync(join(source, 'grids', `grid-${level.grid}.glb`), join(target, file));
+      return {
+        intensity: level.intensity,
+        grid: level.grid,
+        spacingMm: level.spacingMm,
+        faces: level.faces,
+        previewPath: `/uploads/models/${name}/${file}`,
+      };
+    });
+  if (grids.length === 0) {
+    rmSync(target, { recursive: true, force: true });
+    return undefined;
+  }
+
+  copyFileSync(join(source, 'manifest.json'), join(target, 'manifest.json'));
+  if (existsSync(join(source, 'nets'))) {
+    cpSync(join(source, 'nets'), join(target, 'nets'), { recursive: true });
+  }
+
   return {
-    id,
-    state: stage,
-    title: manifest.title,
+    id: name,
+    state: contract.state === 'ready' ? 'ready' : 'draft',
+    title: contract.title ?? name,
     tier: manifest.tier,
     createdAt: manifest.createdAt,
     clean: manifest.clean,
-    scriptPath: authored ? `/uploads/${stage}/${id}/model.py` : undefined,
-    previewPath: manifest.preview ? `/uploads/${stage}/${id}/${manifest.preview.file}` : undefined,
+    provenance: manifest.provenance,
+    grids,
+    previewPath: (grids[Math.floor(grids.length / 2)] ?? grids[0]).previewPath,
     parts: manifest.parts.map((part) => ({
       name: part.name,
       role: part.role,
       faces: part.mesh.faces,
       pages: part.net?.pages ?? 0,
       colours: part.colours ?? [{ role: part.role }],
-      netPath: sheetOf(part, stage, id, '.pdf'),
-      vectorPaths: (part.net?.vectors ?? []).map((file) => `/uploads/${stage}/${id}/nets/${file}`),
+      netPath: sheetOf(part, name, '.pdf'),
+      vectorPaths: (part.net?.vectors ?? []).map((file) => `/uploads/models/${name}/nets/${file}`),
     })),
   };
 }
 
-function sheetOf(part, stage, id, suffix) {
+function sheetOf(part, id, suffix) {
   const file = (part.net?.files ?? []).find((name) => name.endsWith(suffix));
-  return file ? `/uploads/${stage}/${id}/nets/${file}` : undefined;
+  return file ? `/uploads/models/${id}/nets/${file}` : undefined;
 }
 
 function find(id) {
@@ -117,28 +142,9 @@ function find(id) {
   if (!entry) {
     throw new JobError(`The gallery holds no model called '${id}'.`);
   }
-  return { ...entry, ...retarget(entry) };
+  return entry;
 }
 
-function retarget(entry) {
-  const swap = (value) => (value ? value.replace('/uploads/draft/', '/uploads/ready/') : value);
-  return {
-    scriptPath: swap(entry.scriptPath),
-    previewPath: swap(entry.previewPath),
-    parts: entry.parts.map((part) => ({
-      ...part,
-      netPath: swap(part.netPath),
-      vectorPaths: (part.vectorPaths ?? []).map(swap),
-    })),
-  };
-}
-
-function assertStage(stage) {
-  if (!STAGES.includes(stage)) {
-    throw new JobError(`Unknown shelf '${stage}'. Known: ${STAGES.join(', ')}.`);
-  }
-}
-
-function nextIndex(entry) {
-  return [entry, ...gallery().filter((item) => item.id !== entry.id)].slice(0, KEEP);
+function readJson(path) {
+  return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : undefined;
 }

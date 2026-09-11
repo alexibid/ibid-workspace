@@ -50,8 +50,8 @@ export function runs(id) {
   return { runs: history(id), pace: pace() };
 }
 
-export function publishJob(id, stage) {
-  return publish(id, stage ?? 'draft');
+export function publishJob(id) {
+  return publish(id);
 }
 
 export function approveJob(id) {

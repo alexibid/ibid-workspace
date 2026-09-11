@@ -1,9 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname } from 'node:path';
 
-import { JOBS_ROOT } from './paths.mjs';
-
-const LOG = join(dirname(JOBS_ROOT), 'runs.jsonl');
+import { RUN_LOG as LOG } from './paths.mjs';
 
 export function note(entry) {
   mkdirSync(dirname(LOG), { recursive: true });

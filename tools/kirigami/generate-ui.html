@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Kirigami reference-view generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #1b1d1f;
+    --muted: #6b7076;
+    --line: #e2e4e7;
+    --paper: #ffffff;
+    --ground: #f5f6f7;
+    --accent: #b5501e;
+    --accent-ink: #ffffff;
+    --ok: #2f7a3d;
+    --warn: #b5501e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  header {
+    padding: 20px 28px 16px; border-bottom: 1px solid var(--line); background: var(--paper);
+  }
+  header h1 { margin: 0 0 4px; font-size: 18px; font-weight: 650; }
+  header p { margin: 0; color: var(--muted); font-size: 13px; }
+  body { overflow-x: hidden; }
+  main {
+    display: grid; grid-template-columns: 380px 1fr; gap: 24px;
+    padding: 24px 28px 48px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; }
+  }
+  main > div { min-width: 0; }
+  .table-wrap { overflow-x: auto; }
+  section {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 18px;
+  }
+  section + section { margin-top: 20px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+    margin: 14px 0 5px; text-transform: uppercase; letter-spacing: .03em; }
+  label:first-child { margin-top: 0; }
+  input[type="text"], select, textarea {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px;
+    font: inherit; background: var(--ground); color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  .views { display: flex; flex-wrap: wrap; gap: 8px; }
+  .views label {
+    display: flex; align-items: center; gap: 6px; margin: 0; text-transform: none;
+    font-weight: 500; font-size: 13px; border: 1px solid var(--line); border-radius: 7px;
+    padding: 6px 10px; background: var(--ground); cursor: pointer;
+  }
+  .row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .row label { margin: 0; text-transform: none; font-weight: 500; font-size: 13px; }
+  button {
+    font: inherit; font-weight: 600; border-radius: 7px; border: 1px solid transparent;
+    padding: 10px 16px; cursor: pointer;
+  }
+  button.primary { background: var(--accent); color: var(--accent-ink); }
+  button.ghost { background: var(--ground); border-color: var(--line); color: var(--ink); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .actions { display: flex; gap: 10px; margin-top: 16px; }
+  #plan { margin-top: 14px; font-size: 13px; color: var(--muted); white-space: pre-line; }
+  #plan.ready { color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .03em; }
+  tfoot td { font-weight: 650; border-top: 2px solid var(--line); border-bottom: none; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px; margin-top: 14px; }
+  figure { margin: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+    background: var(--ground); }
+  figure img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain;
+    background: #ddd; cursor: zoom-in; }
+  figcaption { padding: 6px 8px; font-size: 11px; color: var(--muted); }
+  pre.checks { background: var(--ground); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px; font: 12px/1.5 ui-monospace, SFMono-Regular, monospace; overflow-x: auto;
+    white-space: pre-wrap; }
+  .badge { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px;
+    font-weight: 650; }
+  .badge.ok { background: #e3f1e5; color: var(--ok); }
+  .badge.warn { background: #fbe9e0; color: var(--warn); }
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: none;
+    align-items: center; justify-content: center; z-index: 10; cursor: zoom-out; }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 92vw; max-height: 92vh; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kirigami reference-view generator</h1>
+  <p>Local only — the Gemini key lives in this process and is never sent to the browser.</p>
+</header>
+<main>
+  <div>
+    <section>
+      <label for="subject">Subject folder</label>
+      <input id="subject" type="text" placeholder="e.g. baby-brontosaurus" />
+
+      <label for="brief">Describe the subject</label>
+      <textarea id="brief" placeholder="a fun and colourful brontosaurus"></textarea>
+
+      <label>Views</label>
+      <div class="views" id="views"></div>
+
+      <label for="model">Model</label>
+      <select id="model"></select>
+
+      <div class="row">
+        <input id="wireframe" type="checkbox" checked />
+        <label for="wireframe">Also generate a fold-crease wireframe per view</label>
+      </div>
+      <div class="row">
+        <input id="force" type="checkbox" />
+        <label for="force">Replace views that already exist</label>
+      </div>
+
+      <div class="actions">
+        <button class="ghost" id="estimate">Estimate cost</button>
+        <button class="primary" id="generate" disabled>Generate</button>
+      </div>
+      <div id="plan"></div>
+      <p class="note">Estimating costs nothing. Generating calls the Gemini API and spends real
+        money at the price shown.</p>
+    </section>
+
+    <section>
+      <label style="margin-top:0">Existing subjects</label>
+      <select id="subjects"></select>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <label style="margin-top:0">This session</label>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Image</th><th>Size</th><th>Time</th><th>Prompt tok</th>
+          <th>Output tok</th><th>Total tok</th><th>Cost</th><th>Running total</th></tr></thead>
+        <tbody id="rows"></tbody>
+        <tfoot><tr><td colspan="6">Session total</td><td id="sessionCost">$0.000</td>
+          <td id="sessionTokens">0 tok</td></tr></tfoot>
+      </table>
+      </div>
+      <div id="checks"></div>
+    </section>
+
+    <section>
+      <label style="margin-top:0">Files on disk for this subject</label>
+      <div class="gallery" id="gallery"></div>
+    </section>
+  </div>
+</main>
+<div class="lightbox" id="lightbox"><img id="lightboxImg" /></div>
+<script>
+const VIEWS = ['front', 'back', 'left', 'right', 'top'];
+const MODELS = [
+  ['gemini-3.1-flash-lite-image', '$0.020 · flash-lite'],
+  ['gemini-3.1-flash-image', '$0.067 · flash'],
+  ['gemini-3-pro-image', '$0.134 · pro, 2K'],
+];
+
+const viewsBox = document.getElementById('views');
+for (const view of VIEWS) {
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" value="${view}" checked /> ${view}`;
+  viewsBox.appendChild(label);
+}
+const modelSelect = document.getElementById('model');
+for (const [value, text] of MODELS) {
+  const option = document.createElement('option');
+  option.value = value; option.textContent = text;
+  modelSelect.appendChild(option);
+}
+
+const els = {
+  subject: document.getElementById('subject'),
+  brief: document.getElementById('brief'),
+  force: document.getElementById('force'),
+  wireframe: document.getElementById('wireframe'),
+  estimate: document.getElementById('estimate'),
+  generate: document.getElementById('generate'),
+  plan: document.getElementById('plan'),
+  rows: document.getElementById('rows'),
+  sessionCost: document.getElementById('sessionCost'),
+  sessionTokens: document.getElementById('sessionTokens'),
+  checks: document.getElementById('checks'),
+  gallery: document.getElementById('gallery'),
+  subjects: document.getElementById('subjects'),
+  lightbox: document.getElementById('lightbox'),
+  lightboxImg: document.getElementById('lightboxImg'),
+};
+
+let session = { cost: 0, tokens: 0 };
+let lastPlan = null;
+
+function readForm() {
+  return {
+    subject: els.subject.value.trim(),
+    brief: els.brief.value.trim(),
+    model: modelSelect.value,
+    views: [...viewsBox.querySelectorAll('input:checked')].map((box) => box.value),
+    force: els.force.checked,
+    wireframe: els.wireframe.checked,
+  };
+}
+
+async function loadSubjects() {
+  const found = await fetch('/api/subjects').then((res) => res.json());
+  els.subjects.innerHTML = '<option value="">— pick to browse —</option>'
+    + found.map((name) => `<option value="${name}">${name}</option>`).join('');
+}
+
+async function loadGallery(subject) {
+  els.gallery.innerHTML = '';
+  if (!subject) return;
+  const found = await fetch(`/api/subjects/images?subject=${encodeURIComponent(subject)}`)
+    .then((res) => res.json());
+  for (const item of found) {
+    const figure = document.createElement('figure');
+    figure.innerHTML = `<img src="${item.url}" data-full="${item.url}" />
+      <figcaption>${item.name} · ${item.kb}kb</figcaption>`;
+    els.gallery.appendChild(figure);
+  }
+}
+
+els.subjects.addEventListener('change', () => {
+  els.subject.value = els.subjects.value;
+  loadGallery(els.subjects.value);
+});
+
+els.gallery.addEventListener('click', (event) => {
+  const target = event.target.closest('img');
+  if (!target) return;
+  els.lightboxImg.src = target.dataset.full;
+  els.lightbox.classList.add('open');
+});
+els.lightbox.addEventListener('click', () => els.lightbox.classList.remove('open'));
+
+els.estimate.addEventListener('click', async () => {
+  const form = readForm();
+  els.plan.className = '';
+  if (!form.subject || !form.brief) {
+    els.plan.textContent = 'Name the subject and describe it first.';
+    els.generate.disabled = true;
+    return;
+  }
+  const plan = await fetch('/api/plan', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(form),
+  }).then((res) => res.json());
+  if (plan.error) {
+    els.plan.textContent = plan.error;
+    els.generate.disabled = true;
+    return;
+  }
+  lastPlan = plan;
+  const skipped = form.views.filter((view) => !plan.wanted.includes(view));
+  els.plan.className = 'ready';
+  els.plan.textContent = `${plan.imageCount} image(s) to generate at $${plan.priceEach.toFixed(3)} `
+    + `each ≈ $${plan.estimate.toFixed(3)}`
+    + (skipped.length ? `\nalready on disk, skipped: ${skipped.join(', ')}` : '')
+    + (plan.withinCeiling ? '' : `\nrefused: exceeds the ceiling of ${plan.ceiling} images`);
+  els.generate.disabled = !plan.withinCeiling || plan.imageCount === 0;
+});
+
+els.generate.addEventListener('click', () => {
+  if (!lastPlan) return;
+  const ok = confirm(`This calls the Gemini API and spends about $${lastPlan.estimate.toFixed(3)}. Continue?`);
+  if (!ok) return;
+  runGeneration(readForm());
+});
+
+function runGeneration(form) {
+  els.generate.disabled = true;
+  els.rows.innerHTML = '';
+  els.checks.innerHTML = '';
+  session = { cost: 0, tokens: 0 };
+  paintSession();
+
+  fetch('/api/generate', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(form),
+  }).then((res) => {
+    if (!res.ok || !res.body) {
+      return res.json().then((data) => { throw new Error(data.error ?? 'generation failed'); });
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    function pump() {
+      return reader.read().then(({ done, value }) => {
+        if (done) return;
+        buffer += decoder.decode(value, { stream: true });
+        const chunks = buffer.split('\n\n');
+        buffer = chunks.pop();
+        for (const chunk of chunks) { handleEvent(chunk); }
+        return pump();
+      });
+    }
+    return pump();
+  }).catch((error) => {
+    alert(error.message);
+  }).finally(() => {
+    els.generate.disabled = false;
+    loadGallery(form.subject);
+    loadSubjects();
+  });
+}
+
+function handleEvent(chunk) {
+  const eventLine = /^event: (.+)$/m.exec(chunk);
+  const dataLine = /^data: (.+)$/m.exec(chunk);
+  if (!eventLine || !dataLine) return;
+  const data = JSON.parse(dataLine[1]);
+  if (eventLine[1] === 'image') { addRow(data); }
+  if (eventLine[1] === 'measure') { showChecks(data.text); }
+  if (eventLine[1] === 'error') { alert(data.message); }
+}
+
+function addRow(data) {
+  session.cost = data.runningCost;
+  session.tokens += data.totalTokens;
+  paintSession();
+  const row = document.createElement('tr');
+  row.innerHTML = `<td>${data.label}</td><td>${data.kb}kb</td><td>${data.seconds}s</td>
+    <td>${data.promptTokens}</td><td>${data.candidateTokens}</td><td>${data.totalTokens}</td>
+    <td>$${data.cost.toFixed(3)}</td><td>$${data.runningCost.toFixed(3)}</td>`;
+  els.rows.appendChild(row);
+}
+
+function paintSession() {
+  els.sessionCost.textContent = `$${session.cost.toFixed(3)}`;
+  els.sessionTokens.textContent = `${session.tokens} tok`;
+}
+
+function showChecks(text) {
+  const lines = text.split('\n').map((line) => {
+    if (line.startsWith('CHECK')) {
+      const badge = / OK$/.test(line)
+        ? '<span class="badge ok">OK</span>' : '<span class="badge warn">WARN</span>';
+      return line.replace(/\s(OK|WARN)$/, ' ') + badge;
+    }
+    return line;
+  });
+  els.checks.innerHTML = `<pre class="checks">${lines.join('\n')}</pre>`;
+}
+
+loadSubjects();
+</script>
+</body>
+</html>
