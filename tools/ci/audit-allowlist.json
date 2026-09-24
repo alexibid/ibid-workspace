@@ -21,6 +21,57 @@
       "package": "image-size",
       "reason": "Reached only through less, which is itself build-time only. The advisories are denial of service on malformed images the build never reads.",
       "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "smol-toml",
+      "advisories": [1193945],
+      "reason": "Dev-tooling only: parses Nx's own config TOML at build/CLI time, never a file the shipped app reads. The fix needs nx@22.6.5+, a breaking major bump across the whole @nx/* family — npm audit fix --force is not something to run unattended.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "nx",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/workspace",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/js",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/angular",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/eslint",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/eslint-plugin",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/vitest",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/web",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@nx/vite",
+      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
     }
   ]
 }

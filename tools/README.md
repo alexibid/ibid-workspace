@@ -25,10 +25,9 @@ hand. They are not build configuration, and they are not libraries either.
 | Folder        | Runs                 | Contains                                                                                |
 | ------------- | -------------------- | --------------------------------------------------------------------------------------- |
 | `ci/`         | GitHub Actions       | Release targets, platform declarations, lint ceiling, audit, split, execution graphs     |
-| `qa/`         | `npm run check`      | The tiered runner, its log slicing and reports, plus `svg-diff.py`                       |
+| `qa/`         | `npm run check`      | The tiered runner, its log slicing and reports                                          |
 | `workspace/`  | By hand              | Worktrees, sparse checkout, per-app `.gitignore` generation                              |
 | `xbar/`       | macOS menu bar       | The runner plugin                                                                        |
-| `kirigami/`   | `npm run kirigami:*` | The reference sheet extractor: Python pipeline plus the boolean baker                    |
 
 Language follows the job, not the folder: `.mjs` where it talks to Node tooling, `.sh` for the
 menu bar, `.py` where the work is geometry and image comparison and the library exists there.

@@ -26,7 +26,7 @@ const EDITOR_STATE = [
 
 const OPERATING_SYSTEM = ['.DS_Store', 'Thumbs.db'];
 
-const TOOLCHAIN_CACHE = ['.nx/', '.angular', 'vitest.config.*.timestamp*'];
+const TOOLCHAIN_CACHE = ['.nx/', '.angular', 'vitest.config.*.timestamp*', '__pycache__/'];
 
 const ENVIRONMENT_SECRETS = [
   '.env',
