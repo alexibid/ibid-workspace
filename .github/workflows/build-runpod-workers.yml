@@ -44,8 +44,8 @@ jobs:
         if: inputs.target == 'all' || inputs.target == 'trellis'
         uses: docker/build-push-action@v6
         with:
-          context: apps/kirigami-studio/scripts/runpod
-          file: apps/kirigami-studio/scripts/runpod/Dockerfile.trellis
+          context: tools/runpod
+          file: tools/runpod/Dockerfile.trellis
           platforms: linux/amd64
           push: true
           tags: |
@@ -55,8 +55,8 @@ jobs:
         if: inputs.target == 'all' || inputs.target == 'flux'
         uses: docker/build-push-action@v6
         with:
-          context: apps/kirigami-studio/scripts/runpod
-          file: apps/kirigami-studio/scripts/runpod/Dockerfile.flux
+          context: tools/runpod
+          file: tools/runpod/Dockerfile.flux
           platforms: linux/amd64
           push: true
           tags: |
