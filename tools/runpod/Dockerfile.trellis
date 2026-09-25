@@ -7,6 +7,10 @@ ENV ATTN_BACKEND=sdpa
 ENV SPARSE_ATTN_BACKEND=sdpa
 ENV XFORMERS_DISABLED=1
 
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
+ENV PYOPENGL_PLATFORM=egl
+
 ENV PYTHONPATH="/app/trellis:${PYTHONPATH}"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -14,9 +18,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     ninja-build \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
     build-essential \
+    libgl1 \
+    libglvnd0 \
+    libglvnd-dev \
+    libgl1-mesa-dev \
+    libegl1 \
+    libegl1-mesa-dev \
+    libgles2 \
+    libgles2-mesa-dev \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

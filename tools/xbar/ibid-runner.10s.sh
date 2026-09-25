@@ -25,8 +25,10 @@ CACHE_DIR="${TMPDIR:-/tmp}/ibid-xbar-$(id -u)"
 mkdir -p -m 700 "$CACHE_DIR" 2>/dev/null
 FLOW_CACHE="$CACHE_DIR/flow.txt"
 PR_CACHE="$CACHE_DIR/prs.txt"
+RUNPOD_CACHE="$CACHE_DIR/runpod.txt"
 FLOW_TTL_SECONDS=15
 PR_TTL_SECONDS=25
+RUNPOD_TTL_SECONDS=30
 STALE_SECONDS=90
 LOCK_TTL_SECONDS=60
 
@@ -476,6 +478,11 @@ if [ -f "$PR_CACHE" ]; then
 fi
 spawn_cache_refresh "$PR_CACHE" "$PR_TTL_SECONDS" tools/ci/prs.mjs
 
+if [ -f "$RUNPOD_CACHE" ]; then
+  cat "$RUNPOD_CACHE"
+fi
+spawn_cache_refresh "$RUNPOD_CACHE" "$RUNPOD_TTL_SECONDS" tools/ci/runpod-stats.mjs
+
 echo "---"
 echo "Oh Save Me!"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
@@ -510,6 +517,11 @@ echo "ibid-ui (Design System)"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/libs/ibid-ui\" terminal=false"
 echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/libs/ibid-ui\" terminal=false"
 
+echo "Papikapi Studio"
+echo "-- 🌐 Open Studio (http://localhost:4500) | bash=/usr/bin/open param1=\"http://localhost:4500\" terminal=false"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/kirigami-studio\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/kirigami-studio\" terminal=false"
+
 echo "---"
 echo "Workspace"
 echo "-- ⌁ Fast Check (check:fast) | bash=\"$SELF\" param1=action param2=check-fast terminal=true"
@@ -533,5 +545,9 @@ if [ -f "$LOG_FILE" ]; then
   echo "-- ≡ Local Runner Log File | bash=/usr/bin/open param1=\"$LOG_FILE\" terminal=false"
 fi
 echo "-- ---"
-echo "-- 🐙 GitHub Actions (CI/CD) | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
+echo "-- ☁ RunPod Serverless Console | bash=/usr/bin/open param1=\"https://console.runpod.io/serverless\" terminal=false"
+echo "-- 💳 RunPod Billing & Credits | bash=/usr/bin/open param1=\"https://console.runpod.io/user/billing\" terminal=false"
+echo "-- 🐙 GitHub Actions · Serverless Builds | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions/workflows/build-runpod-workers.yml\" terminal=false"
+echo "-- 📦 GitHub Container Packages | bash=/usr/bin/open param1=\"https://github.com/users/alexibid/packages\" terminal=false"
+echo "-- 🐙 GitHub Actions (All Workflows) | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
 echo "-- 💳 GitHub Billing | bash=/usr/bin/open param1=\"https://github.com/settings/billing\" terminal=false"
