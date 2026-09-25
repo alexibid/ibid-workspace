@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ninja-build \
     build-essential \
+    libusb-1.0-0 \
+    libusb-1.0-0-dev \
     libgl1 \
     libglvnd0 \
     libglvnd-dev \
@@ -28,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgles2 \
     libgles2-mesa-dev \
     libglib2.0-0 \
+    libgomp1 \
     libsm6 \
     libxext6 \
     libxrender1 \
@@ -40,7 +43,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 RUN git clone --recurse-submodules https://github.com/microsoft/TRELLIS.git /app/trellis && \
     cd /app/trellis && \
-    bash setup.sh --basic --spconv --diffoctreerast --nvdiffrast --kaolin
+    bash setup.sh --basic --spconv --diffoctreerast --nvdiffrast --kaolin && \
+    pip install --no-cache-dir "transformers>=4.44.0,<4.46.0"
 
 COPY rp_handler.trellis.py /app/rp_handler.trellis.py
 
