@@ -46,7 +46,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 RUN git clone --recurse-submodules https://github.com/microsoft/TRELLIS.git /app/trellis && \
     cd /app/trellis && \
+    sed -i "1s/^/set -e\n/" setup.sh && \
     sed -i "s/torch.cuda.is_available()/True/g" setup.sh && \
+    sed -i "s/pip install \/tmp\/extensions/pip install --no-build-isolation \/tmp\/extensions/g" setup.sh && \
     bash setup.sh --basic --spconv --diffoctreerast --nvdiffrast --kaolin --mipgaussian && \
     pip install --no-cache-dir "transformers>=4.44.0,<4.46.0" "numpy<2"
 
