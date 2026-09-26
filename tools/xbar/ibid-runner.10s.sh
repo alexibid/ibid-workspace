@@ -547,7 +547,5 @@ fi
 echo "-- ---"
 echo "-- ☁ RunPod Serverless Console | bash=/usr/bin/open param1=\"https://console.runpod.io/serverless\" terminal=false"
 echo "-- 💳 RunPod Billing & Credits | bash=/usr/bin/open param1=\"https://console.runpod.io/user/billing\" terminal=false"
-echo "-- 🐙 GitHub Actions · Serverless Builds | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions/workflows/build-runpod-workers.yml\" terminal=false"
-echo "-- 📦 GitHub Container Packages | bash=/usr/bin/open param1=\"https://github.com/users/alexibid/packages\" terminal=false"
 echo "-- 🐙 GitHub Actions (All Workflows) | bash=/usr/bin/open param1=\"https://github.com/alexibid/ibid-workspace/actions\" terminal=false"
 echo "-- 💳 GitHub Billing | bash=/usr/bin/open param1=\"https://github.com/settings/billing\" terminal=false"

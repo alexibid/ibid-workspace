@@ -116,8 +116,6 @@ async function main() {
     }
 
     console.log('-- ---');
-    console.log('-- 🐙 GitHub Actions · Serverless Builds | bash=/usr/bin/open param1="https://github.com/alexibid/ibid-workspace/actions/workflows/build-runpod-workers.yml" terminal=false');
-    console.log('-- 📦 GitHub Container Packages | bash=/usr/bin/open param1="https://github.com/users/alexibid/packages" terminal=false');
     console.log('-- ☁ RunPod Serverless Console | bash=/usr/bin/open param1="https://console.runpod.io/serverless" terminal=false');
     console.log('-- 💳 RunPod Billing & Payments | bash=/usr/bin/open param1="https://console.runpod.io/user/billing" terminal=false');
   } catch (err) {
