@@ -8,8 +8,12 @@ import torch
 
 os.environ['SPCONV_ALGO'] = 'native'
 os.environ['ATTN_BACKEND'] = 'sdpa'
-os.environ['SPARSE_ATTN_BACKEND'] = 'sdpa'
-os.environ['XFORMERS_DISABLED'] = '1'
+os.environ['SPARSE_ATTN_BACKEND'] = 'xformers'
+
+import xformers.ops as xops
+if not hasattr(xops.fmha, 'BlockDiagonalMask'):
+    import xformers.ops.fmha.attn_bias
+    xops.fmha.BlockDiagonalMask = xformers.ops.fmha.attn_bias.BlockDiagonalMask
 
 from trellis.pipelines import TrellisImageTo3DPipeline
 from trellis.utils import postprocessing_utils
