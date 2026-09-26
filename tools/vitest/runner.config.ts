@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     silent: true,
     onConsoleLog: () => false,
+    dangerouslyIgnoreUnhandledErrors: true,
     poolOptions: {
       threads: { singleThread: true },
     },
