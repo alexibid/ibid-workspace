@@ -446,12 +446,18 @@ fi
 
 FAVICON_BASE64="iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVR4AcySoQrCUBSGp00MKhaDxSJYBTH5EGLzTQS7iMlo9CVsZg0WfQMxWAxWm98POsYOl3tgZeP/zh135/932U41KXh5Avq84w07MPIEtHE1oAdGnoATrhHMwcgTINOF8gKjWMACxwOesAejWMAKxww60ASjWIAMV5UQnoBKyKx9T4D6gpQvQCcac946uCRDtlHTdmZjA3/pF+q+SzEfNB+ggfnQeAdpS9EosyRDyg2mkCofcORJDdYgLSkDaP2YsB4g1RcAAP//V+4H3AAAAAZJREFUAwBPZRR2rMEpkgAAAABJRU5ErkJggg=="
 
+RUNNING_PODS=$(grep -m 1 -oE 'Pods · [0-9]+ running' "$RUNPOD_CACHE" 2>/dev/null | grep -oE '[0-9]+')
+POD_ALERT=""
+if [ "${RUNNING_PODS:-0}" -gt 0 ]; then
+  POD_ALERT=" ⚠"
+fi
+
 if [ "$IS_BUILDING" = true ]; then
-  echo " ⟳ | templateImage=$FAVICON_BASE64 dropdown=false"
+  echo " ⟳$POD_ALERT | templateImage=$FAVICON_BASE64 dropdown=false"
 elif [ "$IS_RUNNING" = true ]; then
-  echo " | templateImage=$FAVICON_BASE64 dropdown=false"
+  echo "$POD_ALERT | templateImage=$FAVICON_BASE64 dropdown=false"
 else
-  echo " ○ | templateImage=$FAVICON_BASE64 dropdown=false"
+  echo " ○$POD_ALERT | templateImage=$FAVICON_BASE64 dropdown=false"
 fi
 
 echo "---"

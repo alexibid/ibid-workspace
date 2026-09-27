@@ -16,6 +16,7 @@
     "stage:0:step:2": "nx run kirigami-studio:stage:0:step:2",
     "stage:1": "nx run kirigami-studio:stage:1",
     "stage:1:step:1": "nx run kirigami-studio:stage:1:step:1",
+    "stage:1:step:2": "nx run kirigami-studio:stage:1:step:2",
     "server:kirigami-studio": "nx run kirigami-studio:server",
     "serve:kirigami-studio": "nx serve kirigami-studio",
     "build:ibid-ui": "nx build ibid-ui",
