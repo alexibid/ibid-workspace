@@ -22,11 +22,11 @@
 	path = libs/utils
 	url = https://github.com/alexibid/utils.git
 	branch = main
-[submodule "apps/camila"]
-	path = apps/camila
-	url = https://github.com/alexibid/camila.git
+[submodule "apps/papikapi"]
+	path = apps/papikapi
+	url = https://github.com/alexibid/papikapi.git
 	branch = main
-[submodule "apps/kirigami-studio"]
-	path = apps/kirigami-studio
-	url = https://github.com/alexibid/kirigami-studio.git
+[submodule "apps/papikapi-studio"]
+	path = apps/papikapi-studio
+	url = git@github.com:alexibid/papikapi-studio.git
 	branch = main
