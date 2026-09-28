@@ -150,7 +150,7 @@ async function printEndpoint(apiKey, endpoint) {
   const endpointUrl = `${CONSOLE_URL}/serverless/endpoint/${endpoint.id}`;
   const isTrellis = endpoint.name.includes('trellis');
   const icon = isTrellis ? '🧊' : '🎨';
-  const costInfo = isTrellis ? '$0.00016/s (~$0.003/model)' : '$0.00015/s (Free on Mac M4)';
+  const costInfo = isTrellis ? '$0.00031/s (~$0.04/model)' : '$0.00015/s (Free on Mac M4)';
 
   console.log(`-- ${icon} ${endpoint.name}: ${status.icon} ${status.text} | font=Menlo color=${status.color} bash=/usr/bin/open param1="${endpointUrl}" terminal=false`);
   console.log(`---- 🌐 Open Endpoint on RunPod | bash=/usr/bin/open param1="${endpointUrl}" terminal=false`);
