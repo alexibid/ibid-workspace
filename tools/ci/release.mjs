@@ -12,6 +12,7 @@ const ORDERED_SPECIFIERS = ['major', 'minor', 'patch'];
 const isDryRun = process.argv.includes('--dry-run');
 
 const submodulePaths = readSubmodulePaths();
+syncSubmodulesToRemote();
 const projects = readReleasableProjects();
 const plans = planReleases();
 
@@ -117,7 +118,14 @@ function attachToReleaseBranch(root) {
 }
 
 function assertNothingLostByAttaching(root) {
-  runSilent('git', ['-C', root, 'fetch', 'origin', RELEASE_BRANCH]);
+  runSilent('git', [
+    '-C',
+    root,
+    'fetch',
+    'origin',
+    `${RELEASE_BRANCH}:refs/remotes/origin/${RELEASE_BRANCH}`,
+    '--force',
+  ]);
 
   for (const branch of [RELEASE_BRANCH, `origin/${RELEASE_BRANCH}`]) {
     if (!revisionExists(root, branch)) continue;
@@ -210,6 +218,26 @@ function readSubmodulePaths() {
   const pattern = '^submodule\\..*\\.path$';
   const output = runSilent('git', ['config', '--file', '.gitmodules', '--get-regexp', pattern]);
   return new Set(output.split('\n').filter(Boolean).map((line) => line.split(' ')[1]));
+}
+
+function syncSubmodulesToRemote() {
+  for (const root of submodulePaths) {
+    runSilent('git', [
+      '-C',
+      root,
+      'fetch',
+      'origin',
+      `${RELEASE_BRANCH}:refs/remotes/origin/${RELEASE_BRANCH}`,
+      '--force',
+    ]);
+
+    const remote = `origin/${RELEASE_BRANCH}`;
+    if (!revisionExists(root, remote)) continue;
+    if (!isAncestor(root, 'HEAD', remote)) continue;
+
+    announce(`git -C ${root} switch -C ${RELEASE_BRANCH} ${remote}`);
+    if (!isDryRun) runSilent('git', ['-C', root, 'switch', '-C', RELEASE_BRANCH, remote]);
+  }
 }
 
 function readVersion(project) {
