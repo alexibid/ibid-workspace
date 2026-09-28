@@ -117,6 +117,8 @@ function attachToReleaseBranch(root) {
 }
 
 function assertNothingLostByAttaching(root) {
+  runSilent('git', ['-C', root, 'fetch', 'origin', RELEASE_BRANCH]);
+
   for (const branch of [RELEASE_BRANCH, `origin/${RELEASE_BRANCH}`]) {
     if (!revisionExists(root, branch)) continue;
     if (isAncestor(root, branch, 'HEAD')) continue;
