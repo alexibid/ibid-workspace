@@ -11,9 +11,9 @@ const branchName = process.argv[4];
 
 const ALL_TARGETS = [
   { name: 'oh-save-me', type: 'app', path: 'apps/oh-save-me', sparse: ['apps/oh-save-me', 'libs', 'tools'] },
-  { name: 'camila', type: 'app', path: 'apps/camila', sparse: ['apps/camila', 'libs', 'tools'] },
+  { name: 'papikapi', type: 'app', path: 'apps/papikapi', sparse: ['apps/papikapi', 'libs', 'tools'] },
   { name: 'boilerplate', type: 'app', path: 'apps/boilerplate', sparse: ['apps/boilerplate', 'libs', 'tools'] },
-  { name: 'kirigami-studio', type: 'app', path: 'apps/kirigami-studio', sparse: ['apps/kirigami-studio', 'libs', 'tools'] },
+  { name: 'papikapi-studio', type: 'app', path: 'apps/papikapi-studio', sparse: ['apps/papikapi-studio', 'libs', 'tools'] },
   { name: 'ibid-ui', type: 'lib', path: 'libs/ibid-ui', sparse: ['libs/ibid-ui', 'libs/utils', 'tools'] },
   { name: 'services', type: 'lib', path: 'libs/services', sparse: ['libs/services', 'libs/utils', 'tools'] },
   { name: 'testing', type: 'lib', path: 'libs/testing', sparse: ['libs/testing', 'libs/utils', 'tools'] },
@@ -249,7 +249,7 @@ Workspace Worktree Manager:
   node tools/workspace/worktree.mjs remove-all
 
 Available components:
-  Apps:  oh-save-me, camila, boilerplate
+  Apps:  oh-save-me, papikapi, boilerplate
   Libs:  ibid-ui, services, testing, utils
   Tools: tools
 `);

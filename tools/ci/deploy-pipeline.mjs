@@ -15,7 +15,7 @@ const specificApp = specificAppArg ? specificAppArg.split('=')[1] : null;
 
 const TARGET_APPS = [
   { name: 'oh-save-me', webUrl: 'https://ibid-ohsaveme.web.app', hasDesktop: true, hasMobile: true },
-  { name: 'camila', webUrl: 'https://ibid-camila.web.app', hasDesktop: false, hasMobile: false },
+  { name: 'papikapi', webUrl: 'https://ibid-papikapi.web.app', hasDesktop: false, hasMobile: false },
   { name: 'boilerplate', webUrl: 'https://ibid-boilerplate.web.app', hasDesktop: false, hasMobile: false },
 ];
 

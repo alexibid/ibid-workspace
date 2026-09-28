@@ -2,7 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const WORKSPACE_DIR = process.cwd();
-const ENV_FILE = join(WORKSPACE_DIR, 'apps/kirigami-studio/.env');
+const ENV_FILE = join(WORKSPACE_DIR, 'apps/papikapi-studio/.env');
 const CONSOLE_URL = 'https://console.runpod.io';
 const SSH_KEY_PATH = '~/.ssh/id_ed25519';
 const MUTED = 'font=Menlo color=#8b949e';

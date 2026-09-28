@@ -440,7 +440,7 @@ function renderForXbar() {
   }
 
   console.log(`-- └─ 4. Live Applications & Deliverables | font=Menlo size=11`);
-  console.log(`--     ├─ 🌐 Camila:      https://ibid-camila.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-camila.web.app" terminal=false`);
+  console.log(`--     ├─ 🌐 Papikapi:    https://ibid-papikapi.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-papikapi.web.app" terminal=false`);
   console.log(`--     ├─ 🌐 Oh Save Me:  https://ibid-ohsaveme.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-ohsaveme.web.app" terminal=false`);
   console.log(`--     ├─ 🌐 Boilerplate: https://ibid-boilerplate.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-boilerplate.web.app" terminal=false`);
   console.log(`--     └─ 📁 Google Drive: ibid-builds (APKs & DMG) | font=Menlo size=11 bash=/usr/bin/open param1="https://drive.google.com" terminal=false`);
@@ -495,7 +495,7 @@ function resolveTargetName(run) {
     return run.head_branch;
   }
   const title = run.head_commit?.message || run.display_title || '';
-  const apps = ['camila', 'oh-save-me', 'boilerplate', 'ibid-ui'].filter((a) =>
+  const apps = ['papikapi', 'oh-save-me', 'boilerplate', 'ibid-ui'].filter((a) =>
     new RegExp(`\\b${a}\\b`, 'i').test(title),
   );
   if (apps.length > 0) return apps.join(', ');

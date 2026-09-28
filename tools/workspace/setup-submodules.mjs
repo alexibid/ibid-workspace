@@ -18,7 +18,7 @@ const SUBMODULES = [
     path: 'apps/boilerplate',
     repo: 'https://github.com/alexibid/boilerplate.git',
   },
-  { name: 'camila', path: 'apps/camila', repo: 'https://github.com/alexibid/camila.git' },
+  { name: 'papikapi', path: 'apps/papikapi', repo: 'https://github.com/alexibid/papikapi.git' },
   { name: 'ibid-ui', path: 'libs/ibid-ui', repo: 'https://github.com/alexibid/ibid-ui.git' },
   { name: 'services', path: 'libs/services', repo: 'https://github.com/alexibid/services.git' },
   { name: 'testing', path: 'libs/testing', repo: 'https://github.com/alexibid/testing.git' },

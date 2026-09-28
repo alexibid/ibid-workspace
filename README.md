@@ -13,7 +13,7 @@ infrastructure services — lives under `libs/` and is consumed through imports.
 | :------------------------------------ | :----: | :------------------------------------------------------------- |
 | **[boilerplate](./apps/boilerplate)** | `app`  | Minimal Angular skeleton, the starting point for new products. |
 | **[oh-save-me](./apps/oh-save-me)**   | `app`  | Personal and family finance assistant (PT: Oh poupa-me!).      |
-| **[camila](./apps/camila)**           | `app`  | Children's habits and positive reinforcement app.               |
+| **[papikapi](./apps/papikapi)**           | `app`  | Children's habits and positive reinforcement app.               |
 | **[ibid-ui](./libs/ibid-ui)**         | `lib`  | Design system: components, global styles, and icons.           |
 | **[services](./libs/services)**       | `lib`  | Infrastructure services (i18n, authentication, sync).          |
 | **[testing](./libs/testing)**         | `lib`  | Generic test engines (accessibility, screenshots, flows).      |
@@ -45,7 +45,7 @@ A selector's prefix says where the element comes from. `app-` is banned across t
 | `libs/ibid-ui`     | `ibid-`        |
 | `apps/oh-save-me`  | `ohsaveme-`    |
 | `apps/boilerplate` | `boilerplate-` |
-| `apps/camila`      | `camila-`      |
+| `apps/papikapi`      | `papikapi-`      |
 
 ## Applications
 
@@ -82,12 +82,12 @@ An empty Angular application that serves as the mould for new products: routing 
 `ibid-header` and `ibid-header-nav`. Copy this folder to start a new app instead of generating
 everything from scratch.
 
-### `apps/camila`
+### `apps/papikapi`
 
 Children's habits and positive reinforcement app, designed for mobile-first parent-child
-interaction with origami-style paper themes (`kirigami`), domain-based goal tracking, and
+interaction with origami-style paper themes (`papikapi`), domain-based goal tracking, and
 on-device natural language classification. Published to Firebase Hosting at
-`https://ibid-camila.web.app`.
+`https://ibid-papikapi.web.app`.
 
 ## Libraries
 
@@ -317,12 +317,12 @@ npm run split:pull            # Pull updates from standalone repositories into m
 To work on an application, library, or tooling without monorepo noise (avoiding mixed `git status` in GitHub Desktop or seeing other projects in your IDE):
 
 ```bash
-node tools/workspace/worktree.mjs create <name>  # e.g. oh-save-me, camila, ibid-ui, tools
+node tools/workspace/worktree.mjs create <name>  # e.g. oh-save-me, papikapi, ibid-ui, tools
 node tools/workspace/worktree.mjs create-all     # Set up all 8 isolated worktrees at once
 ```
 
 Under the hood, `tools/workspace/worktree.mjs`:
-1. Creates a linked Git worktree on its own dedicated branch (matching the component name: `oh-save-me`, `camila`, `ibid-ui`, etc.).
+1. Creates a linked Git worktree on its own dedicated branch (matching the component name: `oh-save-me`, `papikapi`, `ibid-ui`, etc.).
 2. Configures Git **Cone-mode Sparse-Checkout** so that other projects do not exist on disk in that folder.
 3. Symlinks `node_modules` from the monorepo root for instantaneous readiness without extra disk space.
 4. Allows opening each component in **GitHub Desktop** (`File -> Add Local Repository`) and **VS Code** (`code ~/Projects/<name>`) as a completely isolated project.
@@ -332,7 +332,7 @@ Under the hood, `tools/workspace/worktree.mjs`:
 Every application, shared library, and tooling infrastructure is mirrored as an independent, private repository on GitHub under `alexibid`:
 
 - [alexibid/oh-save-me](https://github.com/alexibid/oh-save-me) (Personal finance app)
-- [alexibid/camila](https://github.com/alexibid/camila) (Children's habits app)
+- [alexibid/papikapi](https://github.com/alexibid/papikapi) (Children's habits app)
 - [alexibid/boilerplate](https://github.com/alexibid/boilerplate) (Angular template & showcase)
 - [alexibid/ibid-ui](https://github.com/alexibid/ibid-ui) (Design system and UI atoms)
 - [alexibid/services](https://github.com/alexibid/services) (Shared domain services)
@@ -349,12 +349,12 @@ A lightweight macOS menu bar plugin lives in `tools/xbar/ibid-runner.10s.sh` to 
 - **Minimal template icon**: Uses the `.i` design token favicon with dynamic status indicators (`⟳` building, `○` stopped, or clean icon when running).
 - **Background Runner Control**: Start, stop, restart, and inspect logs for the local GitHub Actions runner (auto-detects `actions.runner.*`, e.g. `actions.runner.alexibid-ibid-workspace.<runner-name>`).
 - **Workspace Actions**: Run fast affected checks (`check:fast`), full workspace builds (`check:build`), create isolated worktrees, trigger monorepo split, or deploy all web apps to Firebase Hosting.
-- **Product Actions (Oh Save Me!, Boilerplate, Camila)**:
+- **Product Actions (Oh Save Me!, Boilerplate, Papikapi)**:
   - 1-click native installer builds (`.dmg` + `.apk`).
   - Automatic mounting of macOS `.dmg` installers.
   - Direct USB installation to connected Android devices (`adb install -r`).
   - 1-click Firebase Hosting deployment per application.
-  - Direct links to live Web Apps (`https://ibid-ohsaveme.web.app`, `https://ibid-boilerplate.web.app`, `https://ibid-camila.web.app`).
+  - Direct links to live Web Apps (`https://ibid-ohsaveme.web.app`, `https://ibid-boilerplate.web.app`, `https://ibid-papikapi.web.app`).
 - **Live CLI Monitoring & Native Notifications**: 1-click launch of animated GitHub CLI monitor (`gh run watch`) or live local runner logs in Terminal, with automatic native macOS notification banners on job state transitions.
 - **Google Drive Sync**: Synchronizes all native installers (`.dmg`, `.apk`, `.exe`, `.msi`, `.deb`, `.rpm`, `.AppImage`) from `dist/` directly into the local Google Drive folder (`ibid-builds/`).
 

@@ -31,8 +31,8 @@
       ]
     },
     {
-      "target": "camila",
-      "public": "dist/camila/browser",
+      "target": "papikapi",
+      "public": "dist/papikapi/browser",
       "ignore": [
         "firebase.json",
         "**/.*",

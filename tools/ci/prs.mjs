@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 const KNOWN_REPOS = new Set([
   'ibid-workspace',
   'oh-save-me',
-  'camila',
+  'papikapi',
   'boilerplate',
   'ibid-ui',
   'services',

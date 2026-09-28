@@ -86,7 +86,7 @@ render_pipeline_flow() {
 
 validate_app() {
   case "$1" in
-    oh-save-me|camila|boilerplate|all) ;;
+    oh-save-me|papikapi|boilerplate|all) ;;
     *)
       echo "Error: Invalid project name '$1'" >&2
       exit 1
@@ -228,7 +228,7 @@ if [ "$1" = "action" ]; then
       read -p "Press Enter to close..."
       ;;
     auto-pr)
-      APP="${3:-camila}"
+      APP="${3:-papikapi}"
       validate_app "$APP"
       echo "=== IBID WORKSPACE · AUTO-PR & CI FOR $APP ==="
       cd "$WORKSPACE_DIR" || exit 1
@@ -502,13 +502,13 @@ echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=de
 echo "-- 🌐 Open Web (ibid-ohsaveme.web.app) | bash=/usr/bin/open param1=\"https://ibid-ohsaveme.web.app\" terminal=false"
 echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-save-me\" terminal=false"
 
-echo "Camila"
-echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
-echo "-- 🔀 Create PR to Monorepo (Auto-PR) | bash=\"$SELF\" param1=action param2=auto-pr param3=camila terminal=true refresh=true"
-echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=camila terminal=true refresh=true"
-echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=camila terminal=true refresh=true"
-echo "-- 🌐 Open Web (ibid-camila.web.app) | bash=/usr/bin/open param1=\"https://ibid-camila.web.app\" terminal=false"
-echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/camila\" terminal=false"
+echo "Papikapi"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/papikapi\" terminal=false"
+echo "-- 🔀 Create PR to Monorepo (Auto-PR) | bash=\"$SELF\" param1=action param2=auto-pr param3=papikapi terminal=true refresh=true"
+echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=papikapi terminal=true refresh=true"
+echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=papikapi terminal=true refresh=true"
+echo "-- 🌐 Open Web (ibid-papikapi.web.app) | bash=/usr/bin/open param1=\"https://ibid-papikapi.web.app\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/papikapi\" terminal=false"
 
 echo "Boilerplate"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/boilerplate\" terminal=false"
@@ -525,8 +525,8 @@ echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/libs/ibid
 
 echo "Papikapi Studio"
 echo "-- 🌐 Open Studio (http://localhost:4500) | bash=/usr/bin/open param1=\"http://localhost:4500\" terminal=false"
-echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/kirigami-studio\" terminal=false"
-echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/kirigami-studio\" terminal=false"
+echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/papikapi-studio\" terminal=false"
+echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/papikapi-studio\" terminal=false"
 
 echo "---"
 echo "Workspace"
