@@ -11,12 +11,6 @@
     "build:boilerplate": "nx build boilerplate",
     "build:papikapi": "nx build papikapi",
     "build:papikapi-studio": "nx build papikapi-studio",
-    "stage:0": "nx run papikapi-studio:stage:0",
-    "stage:0:step:1": "nx run papikapi-studio:stage:0:step:1",
-    "stage:0:step:2": "nx run papikapi-studio:stage:0:step:2",
-    "stage:1": "nx run papikapi-studio:stage:1",
-    "stage:1:step:1": "nx run papikapi-studio:stage:1:step:1",
-    "stage:1:step:2": "nx run papikapi-studio:stage:1:step:2",
     "server:papikapi-studio": "nx run papikapi-studio:server",
     "serve:papikapi-studio": "nx serve papikapi-studio",
     "build:ibid-ui": "nx build ibid-ui",
@@ -67,7 +61,7 @@
     "deploy:boilerplate": "firebase deploy --only hosting:boilerplate",
     "deploy:papikapi": "firebase deploy --only hosting:papikapi",
     "release": "commit-and-tag-version --config tools/release/.versionrc.json",
-    "prepare": "husky tools/husky",
+    "prepare": "husky tools/husky && node tools/workspace/attach-submodules.mjs",
     "mobile:apk": "nx mobile-apk oh-save-me",
     "storybook:product": "nx storybook oh-save-me",
     "storybook:product:build": "nx build-storybook oh-save-me",
@@ -90,7 +84,11 @@
     "@codetrix-studio/capacitor-google-auth": {
       "@capacitor/core": "$@capacitor/core"
     },
-    "qs": "^6.16.0"
+    "qs": "^6.16.0",
+    "axios": "^1.20.0",
+    "piscina": "^5.3.2",
+    "shell-quote": "^1.12.0",
+    "brace-expansion": "^5.0.12"
   },
   "dependencies": {
     "@angular/animations": "^22.1.4",
@@ -110,6 +108,7 @@
     "canvas": "^3.2.3",
     "clipper-lib": "^6.4.2",
     "paper": "^0.12.18",
+    "pdf-lib": "^1.17.1",
     "rxdb": "^17.4.0",
     "rxjs": "~7.8.0",
     "three": "^0.185.1",

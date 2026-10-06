@@ -1,9 +1,15 @@
 {
-  "failOn": ["critical", "high"],
+  "failOn": [
+    "critical",
+    "high"
+  ],
   "accepted": [
     {
       "package": "xlsx",
-      "advisories": [1108110, 1108111],
+      "advisories": [
+        1108110,
+        1108111
+      ],
       "reason": "SheetJS stopped publishing to the npm registry, so no registry version fixes these. The parser only reads spreadsheets the user picks themselves, never remote input. Getting out means the SheetJS CDN tarball or a different reader.",
       "reviewBy": "2026-12-31"
     },
@@ -24,7 +30,9 @@
     },
     {
       "package": "smol-toml",
-      "advisories": [1193945],
+      "advisories": [
+        1193945
+      ],
       "reason": "Dev-tooling only: parses Nx's own config TOML at build/CLI time, never a file the shipped app reads. The fix needs nx@22.6.5+, a breaking major bump across the whole @nx/* family — npm audit fix --force is not something to run unattended.",
       "reviewBy": "2026-10-31"
     },
@@ -71,6 +79,41 @@
     {
       "package": "@nx/vite",
       "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@angular/router",
+      "reason": "Denial of service in Angular server-side rendering. The workspace has no SSR (no @angular/ssr or platform-server), so the vulnerable path is never exercised. The fix is in 22.2.x, whose upgrade is currently blocked by an @angular/compiler peer conflict with build-angular 22.1.x.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "braces",
+      "reason": "No patched release exists; reached only through the build-angular dev server file watcher. Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "micromatch",
+      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "chokidar",
+      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "webpack-dev-server",
+      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "http-proxy-middleware",
+      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
+      "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "webpack-dev-middleware",
+      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
       "reviewBy": "2026-10-31"
     }
   ]
