@@ -5,9 +5,7 @@ export default defineConfig({
     silent: true,
     onConsoleLog: () => false,
     dangerouslyIgnoreUnhandledErrors: true,
-    poolOptions: {
-      threads: { singleThread: true },
-    },
+    maxWorkers: 1,
     hookTimeout: 30000,
     testTimeout: 30000,
     teardownTimeout: 10000,

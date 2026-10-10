@@ -132,7 +132,7 @@
       "options": {
         "watch": false,
         "isolate": true,
-        "runnerConfig": "tools/vitest/runner.config.ts"
+        "runnerConfig": "tools/vitest/runner.config.mts"
       }
     },
     "@angular/build:dev-server": {

@@ -192,7 +192,7 @@ bundle budgets.
 | File                                   | Defines                                                    |
 | -------------------------------------- | ---------------------------------------------------------- |
 | `tools/builder/tsconfig.app.base.json` | Compiler and Angular options common to the apps            |
-| `tools/vitest/runner.config.ts`        | Test isolation and single-threaded execution               |
+| `tools/vitest/runner.config.mts`        | Test isolation and single-threaded execution               |
 | `tools/playwright/playwright.base.ts`  | Device matrix (mobile/tablet/desktop) and execution policy |
 | `tools/storybook/create-config.ts`     | Addons, framework, and alias derivation                    |
 
