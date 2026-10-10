@@ -132,7 +132,10 @@
       "options": {
         "watch": false,
         "isolate": true,
-        "runnerConfig": "tools/vitest/runner.config.mts"
+        "runnerConfig": "tools/vitest/runner.config.mts",
+        "setupFiles": [
+          "tools/vitest/forbid-local-services.ts"
+        ]
       }
     },
     "@angular/build:dev-server": {
