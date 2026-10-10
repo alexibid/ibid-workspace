@@ -29,6 +29,7 @@ jobs:
       has_web: ${{ steps.target.outputs.has_web }}
       has_android: ${{ steps.target.outputs.has_android }}
       has_desktop: ${{ steps.target.outputs.has_desktop }}
+      has_hosting_target: ${{ steps.target.outputs.has_hosting_target }}
       has_drive: ${{ steps.capabilities.outputs.has_drive }}
       has_hosting: ${{ steps.capabilities.outputs.has_hosting }}
     steps:
@@ -223,14 +224,12 @@ jobs:
           echo "drive_url=$LINK" >> "$GITHUB_OUTPUT"
           rm -f ~/.config/rclone/rclone.conf
 
-      - name: Stop the release and say what was delivered
-        if: failure()
-        uses: ./.github/actions/stop-release
-
   hosting:
     name: Deliver · Firebase Hosting
     needs: [inspect, web]
-    if: needs.inspect.outputs.has_web == 'true' && needs.inspect.outputs.has_hosting == 'true'
+    if: >-
+      needs.inspect.outputs.has_web == 'true' && needs.inspect.outputs.has_hosting == 'true' &&
+      needs.inspect.outputs.has_hosting_target == 'true'
     timeout-minutes: 20
     runs-on: [self-hosted, macOS, ARM64]
     env:
@@ -248,10 +247,6 @@ jobs:
           channelId: live
           projectId: ibid-32cbe
           target: ${{ env.PROJECT }}
-
-      - name: Stop the release and say what was delivered
-        if: failure()
-        uses: ./.github/actions/stop-release
 
   storybook:
     name: Deliver · Storybook
@@ -277,10 +272,6 @@ jobs:
           channelId: live
           projectId: ibid-32cbe
           target: storybook
-
-      - name: Stop the release and say what was delivered
-        if: failure()
-        uses: ./.github/actions/stop-release
 
   verified:
     name: Release verified

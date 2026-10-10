@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { platformsOf } from './platforms.mjs';
@@ -11,6 +11,7 @@ const appRoot = join('apps', project);
 const isApp = existsSync(appRoot);
 
 const platforms = isApp ? platformsOf(project) : [];
+const hasHostingTarget = declaresHostingTarget(project);
 
 for (const line of [
   `project=${project}`,
@@ -19,8 +20,14 @@ for (const line of [
   `has_web=${platforms.includes('web')}`,
   `has_android=${platforms.includes('android')}`,
   `has_desktop=${platforms.includes('desktop')}`,
+  `has_hosting_target=${hasHostingTarget}`,
 ]) {
   console.log(line);
+}
+
+function declaresHostingTarget(name) {
+  const config = JSON.parse(readFileSync('firebase.json', 'utf8'));
+  return [config.hosting ?? []].flat().some((site) => site.target === name);
 }
 
 function parseTag(value) {

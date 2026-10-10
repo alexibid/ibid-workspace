@@ -23,6 +23,7 @@ const XBAR_COLORS = {
 };
 
 const XBAR_NEUTRAL = '#8b949e';
+const MAX_QUEUED_RELEASES = 6;
 
 const watching = process.argv.includes('--watch');
 const forXbar = process.argv.includes('--xbar');
@@ -447,6 +448,8 @@ function renderForXbar() {
     console.log(`-- ├─ · 3. Release · Package & Deploy (no runs) | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
   }
 
+  printReleaseQueue(runs, now);
+
   console.log(`-- └─ 4. Live Applications & Deliverables | font=Menlo size=11`);
   console.log(`--     ├─ 🌐 Papikapi:    https://ibid-papikapi.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-papikapi.web.app" terminal=false`);
   console.log(`--     ├─ 🌐 Oh Save Me:  https://ibid-ohsaveme.web.app | font=Menlo size=11 bash=/usr/bin/open param1="https://ibid-ohsaveme.web.app" terminal=false`);
@@ -478,6 +481,33 @@ function renderXbarUnavailable(error) {
 function printXbarRefreshRow() {
   const plugin = `${process.env.HOME || ''}/Projects/ibid-workspace/tools/xbar/ibid-runner.10s.sh`;
   console.log(`-- ↻ Refresh Pipeline Status | font=Menlo size=11 bash="${plugin}" param1=action param2=refresh-ci terminal=false refresh=true`);
+}
+
+function printReleaseQueue(runs, now) {
+  const pending = runs
+    .filter((run) => run.name === 'Release' && run.status !== 'completed')
+    .slice(0, MAX_QUEUED_RELEASES)
+    .reverse();
+  if (pending.length === 0) return;
+
+  const holder = pending.map((run) => ({ run, active: jobsOf(run).find((j) => j.status === 'in_progress') }));
+  const busy = holder.find((entry) => entry.active);
+  const runnerLine = busy
+    ? `${resolveTargetName(busy.run)} · ${shorten(busy.active.name)}`
+    : 'idle, waiting for the next job';
+  console.log(`-- ├─ ⛭ Runner MAC ALEX · ${runnerLine} | font=Menlo size=11 color=${XBAR_NEUTRAL}`);
+
+  holder.forEach(({ run, active }, index) => {
+    const prefix = index === holder.length - 1 ? '│   └─' : '│   ├─';
+    const jobs = jobsOf(run);
+    const finished = jobs.filter((job) => job.status === 'completed').length;
+    const mark = active ? '▸' : '…';
+    const detail = active ? shorten(active.name) : 'waiting for the runner';
+    const since = formatSeconds(elapsedSeconds(run.run_started_at || run.created_at, now));
+    const text = `${prefix} ${mark} ${resolveTargetName(run).padEnd(24)} ${finished}/${jobs.length} jobs · ${detail} · ${since}`;
+    const url = `https://github.com/${REPO}/actions/runs/${run.id}`;
+    console.log(`-- ${text} | font=Menlo size=11 color=${colorFor(mark)} bash=/usr/bin/open param1="${url}" terminal=false`);
+  });
 }
 
 function printTreeRow(prefix, mark, name, timeStr, url) {
