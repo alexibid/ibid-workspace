@@ -22,7 +22,7 @@ GDRIVE_DIR="${GDRIVE_DIR:-$HOME/Google Drive/My Drive/ibid-builds}"
 LOG_FILE="$HOME/Library/Logs/$SERVICE_LABEL/stdout.log"
 export PATH="$HOME/.n/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 CACHE_DIR="${TMPDIR:-/tmp}/ibid-xbar-$(id -u)"
-mkdir -p -m 700 "$CACHE_DIR" 2>/dev/null
+mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR"
 FLOW_CACHE="$CACHE_DIR/flow.txt"
 PR_CACHE="$CACHE_DIR/prs.txt"
 RUNPOD_CACHE="$CACHE_DIR/runpod.txt"
@@ -276,7 +276,8 @@ if [ "$1" = "action" ]; then
       export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
       export PATH="$HOME/Library/Android/sdk/platform-tools:/opt/homebrew/bin:/usr/local/bin:$PATH"
       if [ -z "$JAVA_HOME" ] && [ -x "/usr/libexec/java_home" ]; then
-        export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+        JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+        export JAVA_HOME
       fi
       npx nx desktop-build "$APP"
       npx nx mobile-apk "$APP"
@@ -341,7 +342,8 @@ if [ "$1" = "action" ]; then
       export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
       export PATH="$HOME/Library/Android/sdk/platform-tools:/opt/homebrew/bin:/usr/local/bin:$PATH"
       if [ -z "$JAVA_HOME" ] && [ -x "/usr/libexec/java_home" ]; then
-        export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+        JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+        export JAVA_HOME
       fi
       npx nx mobile-apk "$APP"
       APK_FILE=$(find "$WORKSPACE_DIR/dist/$APP" -name "*.apk" -type f 2>/dev/null | sort -V | tail -n 1)
@@ -358,7 +360,8 @@ if [ "$1" = "action" ]; then
       export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
       export PATH="$HOME/Library/Android/sdk/platform-tools:/opt/homebrew/bin:/usr/local/bin:$PATH"
       if [ -z "$JAVA_HOME" ] && [ -x "/usr/libexec/java_home" ]; then
-        export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+        JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+        export JAVA_HOME
       fi
       APK_FILE=$(find "$WORKSPACE_DIR/dist/$APP" -name "*.apk" -type f 2>/dev/null | sort -V | tail -n 1)
       if [ -z "$APK_FILE" ]; then
@@ -505,6 +508,11 @@ echo "-- 📁 Open Folder | bash=/usr/bin/open param1=\"$WORKSPACE_DIR/apps/oh-s
 echo "Papikapi"
 echo "-- 🖥 Open in GitHub Desktop | bash=/usr/bin/open param1=-a param2=\"GitHub Desktop\" param3=\"$WORKSPACE_DIR/apps/papikapi\" terminal=false"
 echo "-- 🔀 Create PR to Monorepo (Auto-PR) | bash=\"$SELF\" param1=action param2=auto-pr param3=papikapi terminal=true refresh=true"
+echo "-- ⚙ Build All (.dmg + .apk) | bash=\"$SELF\" param1=action param2=build-all param3=papikapi terminal=true refresh=true"
+echo "-- ⚙ Build Desktop (.dmg) | bash=\"$SELF\" param1=action param2=build-desktop param3=papikapi terminal=true refresh=true"
+echo "-- ⚙ Build Android (.apk) | bash=\"$SELF\" param1=action param2=build-apk param3=papikapi terminal=true refresh=true"
+echo "-- ↓ Install Desktop (.dmg) | bash=\"$SELF\" param1=action param2=install-desktop param3=papikapi terminal=true refresh=true"
+echo "-- ↓ Install APK on Device (USB) | bash=\"$SELF\" param1=action param2=install-mobile param3=papikapi terminal=true refresh=true"
 echo "-- ⚙ Build Web | bash=\"$SELF\" param1=action param2=build-web param3=papikapi terminal=true refresh=true"
 echo "-- ↑ Deploy to Firebase Hosting | bash=\"$SELF\" param1=action param2=deploy-web param3=papikapi terminal=true refresh=true"
 echo "-- 🌐 Open Web (ibid-papikapi.web.app) | bash=/usr/bin/open param1=\"https://ibid-papikapi.web.app\" terminal=false"

@@ -30,6 +30,14 @@ const expanded = process.argv.includes('--steps');
 const jobCache = new Map();
 let buffer = [];
 
+function withoutTemplate(name) {
+  return name.replace(/\s*\$\{\{.*$/, ' …').trimEnd();
+}
+
+function jobLabel(job) {
+  return withoutTemplate(job.name);
+}
+
 function out(text = '') {
   buffer.push(String(text));
 }
@@ -115,7 +123,7 @@ function printRun(run) {
     const subIndent = lastJob ? '    ' : '│   ';
 
     out(
-      `  ${jobPrefix} ${ICONS[jobState] ?? '?'} \x1b[1m${job.name.padEnd(38)}\x1b[0m ${elapsed(job).padStart(8)}  ${runner}`,
+      `  ${jobPrefix} ${ICONS[jobState] ?? '?'} \x1b[1m${jobLabel(job).padEnd(38)}\x1b[0m ${elapsed(job).padStart(8)}  ${runner}`,
     );
 
     const steps = (job.steps || []).filter(isMeaningfulStep);
@@ -230,7 +238,7 @@ function printPerformanceStats(chain, runs) {
   for (const job of jobs) {
     for (const step of (job.steps || []).filter(isMeaningfulStep)) {
       const sSec = step.completed_at && step.started_at ? elapsedSeconds(step.started_at, step.completed_at) : 0;
-      if (sSec > slowest.seconds) slowest = { name: step.name, seconds: sSec, job: job.name };
+      if (sSec > slowest.seconds) slowest = { name: step.name, seconds: sSec, job: jobLabel(job) };
     }
   }
 
@@ -474,7 +482,8 @@ function printXbarRefreshRow() {
 
 function printTreeRow(prefix, mark, name, timeStr, url) {
   const maxLen = 34;
-  const truncated = name.length > maxLen ? `${name.slice(0, maxLen - 1)}…` : name;
+  const label = withoutTemplate(name);
+  const truncated = label.length > maxLen ? `${label.slice(0, maxLen - 1)}…` : label;
   const paddedName = truncated.padEnd(maxLen);
   const paddedTime = (timeStr || '—').padStart(8);
   const lineText = `${prefix} ${mark} ${paddedName} ${paddedTime}`;
