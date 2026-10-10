@@ -47,6 +47,10 @@ jobs:
             echo "proceed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Discard what earlier jobs left in the persistent workspace
+        if: steps.guard.outputs.proceed == 'true'
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -fd --quiet'
+
       - name: Refuse to run against empty submodules
         if: steps.guard.outputs.proceed == 'true'
         run: node tools/ci/verify-submodules.mjs
