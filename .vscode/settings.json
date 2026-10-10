@@ -7,5 +7,7 @@
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "scss.validate": false
+  "scss.validate": false,
+  "editor.gotoLocation.multipleDefinitions": "goto",
+  "workbench.editor.enablePreviewFromCodeNavigation": false
 }

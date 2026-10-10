@@ -1,0 +1,45 @@
+{
+  "name": "nested-scss-definition",
+  "displayName": "Nested SCSS Definition",
+  "description": "Go to definition for nested SCSS and BEM selectors",
+  "version": "1.0.0",
+  "publisher": "ibid",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:svelte"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "esbuild test/scss-class-parser.test.ts --bundle --platform=node --format=cjs --outfile=.test/parser.test.js && node --test .test/parser.test.js",
+    "package": "npm run build && npx --yes @vscode/vsce@3.9.2 package --no-dependencies --allow-missing-repository --skip-license",
+    "install:local": "npm run package && code --install-extension nested-scss-definition-1.0.0.vsix --force"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.28.2",
+    "postcss": "^8.4.47",
+    "postcss-scss": "^4.0.9",
+    "typescript": "~6.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexibid/ibid-workspace.git",
+    "directory": "tools/vscode-scss-definition"
+  }
+}

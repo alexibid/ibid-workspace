@@ -7,6 +7,7 @@ export default [
   {
     ignores: [
       '**/dist',
+      '**/.test',
       '**/out-tsc',
       '.angular',
       '.nx',
