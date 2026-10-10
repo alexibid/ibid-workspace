@@ -99,7 +99,7 @@
     "@angular/forms": "^22.1.4",
     "@angular/material": "^22.1.4",
     "@angular/platform-browser": "^22.1.4",
-    "@angular/router": "^22.2.0",
+    "@angular/router": "^22.1.4",
     "@capacitor/android": "^8.4.2",
     "@capacitor/core": "^8.5.1",
     "@capacitor/ios": "^8.4.2",
