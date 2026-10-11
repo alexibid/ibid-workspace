@@ -1,4 +1,5 @@
-const STUDIO_SERVICES = /^https?:\/\/(localhost|127\.0\.0\.1):(4500|4502)(\/|$)/;
+const STUDIO_SERVICES =
+  /^https?:\/\/(localhost|127\.0\.0\.1):(4500|4502)(\/|$)|^https:\/\/ibid-assets\.web\.app(\/|$)/;
 
 const realFetch = globalThis.fetch;
 const reachedServices: string[] = [];

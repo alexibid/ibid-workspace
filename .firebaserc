@@ -16,6 +16,9 @@
         ],
         "storybook": [
           "ibid-storybook"
+        ],
+        "assets": [
+          "ibid-assets"
         ]
       }
     }

@@ -59,6 +59,35 @@
           "destination": "/index.html"
         }
       ]
+    },
+    {
+      "target": "assets",
+      "public": "dist/assets-site",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
+        },
+        {
+          "source": "**/index.json",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
