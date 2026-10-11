@@ -76,8 +76,6 @@ jobs:
         with:
           nx-cache-key: release
       - run: npx nx build "$APP"
-        env:
-          FIGURE_DRIVE_API_KEY: ${{ secrets.FIGURE_DRIVE_API_KEY }}
       - uses: actions/upload-artifact@v6
         with:
           name: web
@@ -121,7 +119,6 @@ jobs:
 
       - run: npx nx mobile-apk "$APP"
         env:
-          FIGURE_DRIVE_API_KEY: ${{ secrets.FIGURE_DRIVE_API_KEY }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
 
@@ -162,8 +159,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: npx nx desktop-build "$APP"
         shell: bash
-        env:
-          FIGURE_DRIVE_API_KEY: ${{ secrets.FIGURE_DRIVE_API_KEY }}
       - uses: actions/upload-artifact@v6
         with:
           name: desktop-${{ matrix.platform }}
