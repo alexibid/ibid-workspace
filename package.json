@@ -147,7 +147,7 @@
     "@storybook/addon-docs": "^10.5.7",
     "@storybook/addon-mcp": "^0.7.0",
     "@storybook/addon-onboarding": "^10.5.7",
-    "@storybook/addon-vitest": "^10.5.7",
+    "@storybook/addon-vitest": "^10.6.2",
     "@storybook/angular-vite": "^10.5.7",
     "@storybook/test-runner": "^0.24.4",
     "@swc-node/register": "1.11.1",
