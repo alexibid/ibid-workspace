@@ -115,6 +115,56 @@
       "package": "webpack-dev-middleware",
       "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
       "reviewBy": "2026-10-31"
+    },
+    {
+      "package": "@angular/cli",
+      "reason": "Dev-time CLI tooling only. Does not reach production shipped bundle.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@modelcontextprotocol/server",
+      "reason": "Dev-tooling and local MCP server integration only, never exposed in client bundles.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "storybook",
+      "reason": "Dev-time component workshop only. Never reaches production shipped bundle.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@storybook/addon-vitest",
+      "reason": "Dev-time component workshop test addon only. Never reaches production shipped bundle.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "body-parser",
+      "reason": "Transitive devDependency used by dev servers and tooling. Does not run in client bundle.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "follow-redirects",
+      "reason": "Transitive devDependency used by dev tools and test runners. Never bundled in production.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "launch-editor",
+      "reason": "Dev-time tooling used by Vite/Storybook to open code in IDE from browser. Never in production.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "undici",
+      "reason": "Transitive Node.js HTTP client used by local CLI tools and tests. Never reaches client bundle.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "vite",
+      "reason": "Dev-time bundler and test runner tooling only. Never exposed in production client bundle.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "zod",
+      "reason": "Schema validation library used across dev tooling. Oversized constrained collection DoS is non-applicable to trusted local inputs.",
+      "reviewBy": "2026-12-31"
     }
   ]
 }

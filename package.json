@@ -53,6 +53,8 @@
     "storybook:build": "nx build-storybook boilerplate",
     "desktop": "nx desktop oh-save-me",
     "desktop:build": "nx desktop-build oh-save-me",
+    "desktop:papikapi": "nx desktop papikapi",
+    "desktop:build:papikapi": "nx desktop-build papikapi",
     "mobile:sync": "nx mobile-sync oh-save-me",
     "mobile:ios": "nx mobile-ios oh-save-me",
     "mobile:android": "nx mobile-android oh-save-me",
