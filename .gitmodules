@@ -38,3 +38,8 @@
 	url = git@github.com:alexibid/papikapi-studio.git
 	branch = main
 	update = merge
+[submodule "apps/papikapi-api"]
+	path = apps/papikapi-api
+	url = https://github.com/alexibid/papikapi-api.git
+	branch = main
+	update = merge
