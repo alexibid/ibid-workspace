@@ -6,6 +6,7 @@
 # <xbar.author.github>alexibid</xbar.author.github>
 # <xbar.desc>Controls the macOS background runner and local Google Drive build delivery for ibid-workspace</xbar.desc>
 # <xbar.dependencies>bash,launchctl</xbar.dependencies>
+# <swiftbar.alwaysVisible>true</swiftbar.alwaysVisible>
 
 SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 RUNNER_DIR="${RUNNER_DIR:-$HOME/actions-runner}"
@@ -59,10 +60,10 @@ spawn_cache_refresh() {
   fi
   touch "$cache.lock"
   (
-    local pending="$cache.$$.tmp"
-    cd "$WORKSPACE_DIR" && node "$@" > "$pending" 2>/dev/null && mv "$pending" "$cache"
+    pending="$cache.$$.tmp"
+    cd "$WORKSPACE_DIR" && node "$@" </dev/null > "$pending" 2>/dev/null && mv "$pending" "$cache"
     rm -f "$pending" "$cache.lock"
-  ) >/dev/null 2>&1 &
+  ) </dev/null >/dev/null 2>&1 &
 }
 
 render_pipeline_flow() {

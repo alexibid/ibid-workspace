@@ -11,7 +11,7 @@
     "build:boilerplate": "nx build boilerplate",
     "build:papikapi": "nx build papikapi",
     "build:papikapi-studio": "nx build papikapi-studio",
-    "server:papikapi-studio": "nx run papikapi-studio:server",
+    "server:papikapi-studio": "nx serve papikapi-api",
     "serve:papikapi-studio": "nx serve papikapi-studio",
     "api:build": "nx build papikapi-api",
     "api:docker:build": "nx run papikapi-api:docker:build",

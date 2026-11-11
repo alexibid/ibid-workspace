@@ -15,106 +15,35 @@
     },
     {
       "package": "@angular-devkit/build-angular",
-      "reason": "Build-time only devDependency, pinned by Angular 22. Never reaches the shipped bundle. The fix arrives with the next Angular patch, not with npm audit fix.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "less",
-      "reason": "Reached only through @angular-devkit/build-angular, @angular/build, ng-packagr and vite. Build-time only, never in the shipped bundle.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "image-size",
-      "reason": "Reached only through less, which is itself build-time only. The advisories are denial of service on malformed images the build never reads.",
-      "reviewBy": "2026-10-31"
+      "reason": "Build-time only devDependency (22.1.6), never reaches the shipped bundle. Requires a coordinated Angular 22.2.x upgrade across the workspace rather than unattended npm audit fix.",
+      "reviewBy": "2026-12-31"
     },
     {
       "package": "smol-toml",
       "advisories": [
-        1193945
+        1193945,
+        1241205
       ],
-      "reason": "Dev-tooling only: parses Nx's own config TOML at build/CLI time, never a file the shipped app reads. The fix needs nx@22.6.5+, a breaking major bump across the whole @nx/* family — npm audit fix --force is not something to run unattended.",
-      "reviewBy": "2026-10-31"
+      "reason": "Dev-tooling only: pinned at 1.6.1 via nx@23.2.1 to parse Nx TOML configs at build/CLI time, never untrusted or shipped app inputs. Fixing requires upgrading Nx across the @nx/* family (npm audit fix suggests a breaking downgrade).",
+      "reviewBy": "2026-12-31"
     },
     {
       "package": "nx",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/workspace",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/js",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/angular",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/eslint",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/eslint-plugin",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/vitest",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/web",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "@nx/vite",
-      "reason": "Transitively depends on the vulnerable smol-toml (see that entry) — same dev-tooling-only reasoning, waiting on the same Nx release.",
-      "reviewBy": "2026-10-31"
+      "advisories": [
+        1241219
+      ],
+      "reason": "Dev/CLI tooling only (nx migrate path traversal and transitive smol-toml, follow-redirects, and minimatch). Never reaches shipped app bundles or runtime APIs; waiting on coordinated @nx/* major upgrade.",
+      "reviewBy": "2026-12-31"
     },
     {
       "package": "@angular/router",
-      "reason": "Denial of service in Angular server-side rendering. The workspace has no SSR (no @angular/ssr or platform-server), so the vulnerable path is never exercised. The fix is in 22.2.x, whose upgrade is currently blocked by an @angular/compiler peer conflict with build-angular 22.1.x.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "braces",
-      "reason": "No patched release exists; reached only through the build-angular dev server file watcher. Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "micromatch",
-      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "chokidar",
-      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "webpack-dev-server",
-      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
-      "reviewBy": "2026-10-31"
-    },
-    {
-      "package": "http-proxy-middleware",
-      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
-      "reviewBy": "2026-10-31"
+      "reason": "Denial of service in Angular Server-Side Rendering (SSR). The workspace has no SSR (no @angular/ssr or @angular/platform-server), so the vulnerable paths are never exercised. Locked at 22.1.4 alongside @angular/core 22.1.4.",
+      "reviewBy": "2026-12-31"
     },
     {
       "package": "webpack-dev-middleware",
-      "reason": "Reached only through @angular-devkit/build-angular's webpack dev server. Dev-time tooling that never reaches the shipped bundle; the fix arrives with the next @angular-devkit/build-angular release.",
-      "reviewBy": "2026-10-31"
+      "reason": "Reached only through @angular-devkit/build-angular's local webpack dev server (8.0.3). Dev-time tooling that never reaches the shipped bundle; addressed with a coordinated Angular build-tooling upgrade.",
+      "reviewBy": "2026-12-31"
     },
     {
       "package": "@angular/cli",
@@ -144,6 +73,14 @@
     {
       "package": "follow-redirects",
       "reason": "Transitive devDependency used by dev tools and test runners. Never bundled in production.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "joi",
+      "advisories": [
+        1244009
+      ],
+      "reason": "Dev-tooling only: reached solely via @storybook/test-runner -> jest-process-manager -> wait-on (17.13.8), never bundled in production apps or APIs. ReDoS in string().email({ multiple: true }) is not reachable via wait-on config validation.",
       "reviewBy": "2026-12-31"
     },
     {
