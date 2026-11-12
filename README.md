@@ -54,7 +54,7 @@ A selector's prefix says where the element comes from. `app-` is banned across t
 The personal and family finance assistant — **Oh Save Me!** in English, **Oh poupa-me!** in
 Portuguese, with the name varying by country through the `appName` translation key. It gives
 direct answers ("can I afford a holiday this month?") instead of spreadsheets, imports bank
-statements, and categorises them automatically. It was called SavvyJar until version 1.6.2.
+statements, and categorises them automatically.
 
 Layered DDD architecture under `src/app/`:
 
