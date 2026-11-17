@@ -119,7 +119,7 @@
     "pdf-lib": "^1.17.1",
     "rxdb": "^17.4.0",
     "rxjs": "~7.8.0",
-    "three": "^0.185.1",
+    "three": "^0.187.0",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5"
   },
@@ -161,7 +161,7 @@
     "@swc/helpers": "0.5.18",
     "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^24.0.0",
-    "@types/three": "^0.185.4",
+    "@types/three": "^0.187.0",
     "@typescript-eslint/utils": "^8.58.0",
     "@vitest/browser-playwright": "4.1.12",
     "@vitest/coverage-v8": "~4.1.12",
