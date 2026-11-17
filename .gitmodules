@@ -43,3 +43,8 @@
 	url = https://github.com/alexibid/papikapi-api.git
 	branch = main
 	update = merge
+[submodule "apps/ibid-website"]
+	path = apps/ibid-website
+	url = https://github.com/alexibid/ibid-website.git
+	branch = main
+	update = merge

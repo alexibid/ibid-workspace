@@ -9,6 +9,7 @@ fi
 # spent on the commits that can actually introduce one. Every lockfile counts, not just
 # the one at the root: the Capacitor platform carries its own.
 if printf '%s\n' "$STAGED" | grep -qE '(^|/)package(-lock)?\.json$'; then
+  node tools/ci/verify-lockfile.mjs || exit 1
   node tools/ci/audit.mjs
 fi
 

@@ -56,16 +56,6 @@
       "reviewBy": "2026-12-31"
     },
     {
-      "package": "storybook",
-      "reason": "Dev-time component workshop only. Never reaches production shipped bundle.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@storybook/addon-vitest",
-      "reason": "Dev-time component workshop test addon only. Never reaches production shipped bundle.",
-      "reviewBy": "2026-12-31"
-    },
-    {
       "package": "body-parser",
       "reason": "Transitive devDependency used by dev servers and tooling. Does not run in client bundle.",
       "reviewBy": "2026-12-31"
@@ -102,6 +92,64 @@
       "package": "zod",
       "reason": "Schema validation library used across dev tooling. Oversized constrained collection DoS is non-applicable to trusted local inputs.",
       "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@faker-js/faker",
+      "reason": "Dev-tooling test dependency used solely for generating mock test data in scripts.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@usebruno/cli",
+      "reason": "Dev-tooling CLI used only to run local Bruno API integration tests for papikapi-api. Never bundled in production.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@usebruno/converters",
+      "reason": "Transitive dependency of @usebruno/cli for local Bruno API tests.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@usebruno/js",
+      "reason": "Transitive dependency of @usebruno/cli for local Bruno API tests.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "@usebruno/requests",
+      "reason": "Transitive dependency of @usebruno/cli for local Bruno API tests.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "axios",
+      "reason": "Transitive dependency of @usebruno/cli for local Bruno API test requests. Never bundled in production.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "form-data",
+      "reason": "Transitive dependency of @usebruno/cli for local Bruno API test requests.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "js-yaml",
+      "reason": "Transitive dependency of @usebruno/cli for local Bruno API test definitions.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "drizzle-orm",
+      "reason": "SQLite ORM in papikapi-api. Identifier injection risk is non-applicable as queries use static schema mappings; to be upgraded with drizzle-kit in next coordinated update.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "sharp",
+      "reason": "Image processing library used in papikapi-api backend. Vulnerabilities in native libvips/libheif/librsvg prebuilt bindings to be updated with next major sharp release.",
+      "reviewBy": "2026-12-31"
+    },
+    {
+      "package": "picomatch",
+      "advisories": [
+        1247710
+      ],
+      "reason": "GHSA-fc5q-39xc-vjpf (ReDoS through repeated extglobs) covers every published version up to 4.0.7, the latest, so no registry version fixes it. Reached only through dev and build tooling (Nx, Jest, Vitest, Storybook, Angular CLI), never through production dependencies, and the globs it parses come from this repository's own configuration, not from outside input.",
+      "reviewBy": "2026-12-01"
     }
   ]
 }

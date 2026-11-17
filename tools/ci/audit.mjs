@@ -44,7 +44,21 @@ function audit(manifest) {
 
   return Object.values(report.vulnerabilities ?? {})
     .filter((vulnerability) => policy.failOn.includes(vulnerability.severity))
-    .map((vulnerability) => ({ ...vulnerability, manifest }));
+    .map((vulnerability) => ({
+      ...vulnerability,
+      manifest,
+      roots: [...new Set(failingRootsOf(vulnerability.name, report.vulnerabilities))],
+    }));
+}
+
+function failingRootsOf(name, vulnerabilities, visited = new Set()) {
+  const vulnerability = vulnerabilities[name];
+  if (vulnerability === undefined || visited.has(name)) return [];
+  visited.add(name);
+  return vulnerability.via.flatMap((via) => {
+    if (typeof via === 'string') return failingRootsOf(via, vulnerabilities, visited);
+    return policy.failOn.includes(via.severity) ? [name] : [];
+  });
 }
 
 function printCounts(manifest, counts) {
@@ -54,8 +68,13 @@ function printCounts(manifest, counts) {
   console.log(`  ${manifest}: ${shown}`);
 }
 
+function acceptanceOf(packageName) {
+  return policy.accepted.find((entry) => entry.package === packageName);
+}
+
 function isAccepted(finding) {
-  return policy.accepted.some((entry) => entry.package === finding.name);
+  if (acceptanceOf(finding.name) !== undefined) return true;
+  return finding.roots.length > 0 && finding.roots.every((root) => acceptanceOf(root) !== undefined);
 }
 
 function partition(items, predicate) {
@@ -67,7 +86,11 @@ function printAccepted(accepted) {
 
   console.log('\nKnowingly accepted:');
   for (const finding of accepted) {
-    const entry = policy.accepted.find((candidate) => candidate.package === finding.name);
+    const entry = acceptanceOf(finding.name);
+    if (entry === undefined) {
+      console.log(`  ${finding.name} (${finding.severity}) — only through ${finding.roots.join(', ')}`);
+      continue;
+    }
     console.log(`  ${finding.name} (${finding.severity}) — review by ${entry.reviewBy}`);
     console.log(`    ${entry.reason}`);
   }

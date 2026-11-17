@@ -1,0 +1,28 @@
+version: 2
+
+# The apps and libs are private submodules. Dependabot only reads them with a token kept as
+# a Dependabot secret; the Actions secret of the same name never reaches Dependabot.
+registries:
+  github-submodules:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: ${{secrets.RELEASE_TOKEN}}
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    registries:
+      - github-submodules
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "cargo"
+    directory: "/tools/workspace-menu/platforms/desktop/src-tauri"
+    registries:
+      - github-submodules
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "glib"
