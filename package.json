@@ -166,7 +166,7 @@
     "@vitest/browser-playwright": "4.1.12",
     "@vitest/coverage-v8": "~4.1.12",
     "angular-eslint": "^22.0.0",
-    "autoprefixer": "^10.4.0",
+    "autoprefixer": "^10.6.2",
     "axe-core": "^4.13.0",
     "chalk": "^6.0.0",
     "cli-diagram": "^0.3.0",
