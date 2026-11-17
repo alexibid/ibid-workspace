@@ -1,0 +1,43 @@
+@use 'tools';
+
+.o-page {
+  display: grid;
+  gap: var(--space-6);
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: var(--space-6) var(--space-4);
+}
+
+.o-stack {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.o-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.o-panel {
+  @include tools.panel;
+
+  overflow-x: auto;
+  padding: var(--space-4);
+}
+
+.o-empty {
+  @include tools.small-label;
+
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.o-columns {
+  align-items: start;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+}

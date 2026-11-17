@@ -1,0 +1,44 @@
+{
+  "name": "ci-runner",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "root": "tools/ci/runner",
+  "tags": ["type:tool", "scope:ci"],
+  "targets": {
+    "register": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash register.sh",
+        "cwd": "tools/ci/runner"
+      }
+    },
+    "docker:build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose build",
+        "cwd": "tools/ci/runner"
+      }
+    },
+    "docker:up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose up -d",
+        "cwd": "tools/ci/runner"
+      }
+    },
+    "docker:down": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose down",
+        "cwd": "tools/ci/runner"
+      }
+    },
+    "docker:logs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose logs -f",
+        "cwd": "tools/ci/runner"
+      }
+    }
+  }
+}

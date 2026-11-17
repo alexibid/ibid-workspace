@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "ibid workspace",
+  "version": "0.1.0",
+  "identifier": "com.ibid.workspace-menu",
+  "build": {
+    "frontendDist": "../../../../../dist/workspace-menu/browser",
+    "devUrl": "http://localhost:4520",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": ""
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "ibid workspace",
+        "width": 1080,
+        "height": 820,
+        "minWidth": 420,
+        "minHeight": 480,
+        "visible": false,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "dmg"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns"
+    ],
+    "resources": [],
+    "macOS": {
+      "minimumSystemVersion": "13.0"
+    }
+  }
+}

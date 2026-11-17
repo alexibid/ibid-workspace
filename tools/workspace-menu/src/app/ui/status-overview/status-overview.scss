@@ -1,0 +1,69 @@
+@use '../../../styles/tools';
+
+.status-list {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__row {
+    align-items: center;
+    display: flex;
+    gap: var(--space-3);
+
+    &--nested {
+      padding-inline-start: var(--space-4);
+    }
+  }
+
+  &__name {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    > * {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__row > ibid-tools-button {
+    flex: none;
+  }
+
+  &__meta {
+    @include tools.small-label;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__dot {
+    background: var(--color-muted);
+    block-size: 0.6rem;
+    border-radius: 50%;
+    flex: none;
+    inline-size: 0.6rem;
+
+    &--idle,
+    &--done {
+      background: var(--color-good);
+    }
+
+    &--busy,
+    &--running,
+    &--disconnected {
+      background: var(--color-warn);
+    }
+
+    &--off,
+    &--failed {
+      background: var(--color-bad);
+    }
+  }
+}

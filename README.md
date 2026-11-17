@@ -342,26 +342,35 @@ Every application, shared library, and tooling infrastructure is mirrored as an 
 
 Synchronization is automated via `.github/workflows/split.yml` on push to `main` and can be manually triggered locally with `npm run split`. Updates can be pulled back into the monorepo using `npm run split:pull`.
 
-## macOS Menu Bar Integration (xbar)
+## macOS menu bar app (`workspace`)
 
-A lightweight macOS menu bar plugin lives in `tools/xbar/ibid-runner.10s.sh` to manage workspace builds, local runner services, and deliveries:
+`tools/workspace-menu` is the `ibid workspace` app (Tauri + Angular). It lives in the menu bar as `.i` with
+`workspace` underneath. It starts with the Mac, and it does three things:
 
-- **Minimal template icon**: Uses the `.i` design token favicon with dynamic status indicators (`⟳` building, `○` stopped, or clean icon when running).
-- **Background Runner Control**: Start, stop, restart, and inspect logs for the local GitHub Actions runner (auto-detects `actions.runner.*`, e.g. `actions.runner.alexibid-ibid-workspace.<runner-name>`).
-- **Workspace Actions**: Run fast affected checks (`check:fast`), full workspace builds (`check:build`), create isolated worktrees, trigger monorepo split, or deploy all web apps to Firebase Hosting.
-- **Product Actions (Oh Save Me!, Boilerplate, Papikapi)**:
-  - 1-click native installer builds (`.dmg` + `.apk`).
-  - Automatic mounting of macOS `.dmg` installers.
-  - Direct USB installation to connected Android devices (`adb install -r`).
-  - 1-click Firebase Hosting deployment per application.
-  - Direct links to live Web Apps (`https://ibid-ohsaveme.web.app`, `https://ibid-boilerplate.web.app`, `https://ibid-papikapi.web.app`).
-- **Live CLI Monitoring & Native Notifications**: 1-click launch of animated GitHub CLI monitor (`gh run watch`) or live local runner logs in Terminal, with automatic native macOS notification banners on job state transitions.
-- **Google Drive Sync**: Synchronizes all native installers (`.dmg`, `.apk`, `.exe`, `.msi`, `.deb`, `.rpm`, `.AppImage`) from `dist/` directly into the local Google Drive folder (`ibid-builds/`).
-
-To install into [xbar](https://xbarapp.com/):
+- **Problems on top**: Docker off, a runner off or disconnected from GitHub, a stopped
+  container, or a failed build (with the failing job and step). Each problem has one button
+  that fixes it or opens its log, and each new problem raises a macOS notification once.
+- **Status**: both runners, Docker and its containers, the latest run of each workflow, open
+  pull requests and running RunPod pods, refreshed every 20 seconds.
+- **Actions**: everything the old SwiftBar plugin did (runners, checks, submodules, split,
+  builds, installs, Firebase deploys, Google Drive sync, links). Long actions open Terminal,
+  the same action cannot start twice, and each one ends with a passed or failed notification.
 
 ```bash
-ln -sf "$(pwd)/tools/xbar/ibid-runner.10s.sh" ~/Library/Application\ Support/xbar/plugins/
+npx nx run workspace-menu:install
+```
+
+### CI runners
+
+| Runner | Where | Runs |
+| ------ | ----- | ---- |
+| `docker-runner` (labels `self-hosted, Linux, docker`) | `tools/ci/runner`, always on, restarts by itself | CI, journeys, split, versioning, release inspect, web bundle, Firebase Hosting, Storybook |
+| Mac runner (labels `self-hosted, macOS, ARM64`) | launchd service | `.apk`, `.dmg`, Google Drive delivery |
+
+The Docker runner registers itself once with the GitHub CLI session already on the Mac:
+
+```bash
+npx nx run ci-runner:register
 ```
 
 ## Build output

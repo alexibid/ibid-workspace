@@ -1,0 +1,20 @@
+[package]
+name = "workspace-menu"
+version = "0.1.0"
+description = "Menu bar companion that runs and watches the ibid-workspace CI/CD"
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "workspace_menu_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tauri = { version = "2.11.3", features = ["tray-icon", "image-png"] }
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"

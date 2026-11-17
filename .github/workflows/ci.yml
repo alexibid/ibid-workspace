@@ -17,7 +17,7 @@ jobs:
   verify:
     name: Verify · Static, tests and build
     timeout-minutes: 45
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     if: >-
       github.event_name != 'push' ||
       !startsWith(github.event.head_commit.message, 'chore(release)')
@@ -87,7 +87,7 @@ jobs:
     needs: verify
     if: needs.verify.outputs.has_e2e == 'true'
     timeout-minutes: 90
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     steps:
       - uses: actions/checkout@v5
         with:

@@ -1,0 +1,49 @@
+@use '../../../styles/tools';
+
+.problems {
+  &--failing {
+    border-color: var(--color-bad);
+  }
+
+  &__summary {
+    color: var(--color-bad);
+
+    &--good {
+      color: var(--color-good);
+    }
+  }
+
+  &__list {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    align-items: center;
+    border-inline-start: 3px solid var(--color-bad);
+    display: flex;
+    gap: var(--space-3);
+    justify-content: space-between;
+    padding: var(--space-1) var(--space-3);
+
+    &--warning {
+      border-inline-start-color: var(--color-warn);
+    }
+  }
+
+  &__text {
+    display: grid;
+    min-width: 0;
+  }
+
+  &__detail {
+    @include tools.small-label;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

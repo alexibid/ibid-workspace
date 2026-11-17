@@ -19,7 +19,7 @@ jobs:
   split:
     name: Split · Sync standalone repositories
     timeout-minutes: 15
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     steps:
       - uses: actions/checkout@v5
         with:

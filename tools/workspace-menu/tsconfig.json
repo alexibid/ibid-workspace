@@ -1,0 +1,13 @@
+{
+  "extends": "../builder/tsconfig.app.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "ibid-ui": ["../../libs/ibid-ui/src/index.ts"],
+      "@ibid/services": ["../../libs/services/src/index.ts"],
+      "@ibid/utils": ["../../libs/utils/src/index.ts"]
+    }
+  },
+  "files": [],
+  "references": [{ "path": "./tsconfig.app.json" }]
+}

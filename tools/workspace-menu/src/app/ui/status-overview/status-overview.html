@@ -1,0 +1,96 @@
+<div class="o-columns">
+  <section class="o-panel o-stack">
+    <h2>{{ copy.sections.runners }}</h2>
+    <ul class="status-list">
+      @for (runner of status().runners; track runner.id) {
+        <li class="status-list__row">
+          <span [class]="'status-list__dot status-list__dot--' + runner.state"></span>
+          <span class="status-list__name">{{ copy.runners[runner.id] }}</span>
+          <span class="status-list__meta">{{ copy.runnerStates[runner.state] }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="o-panel o-stack">
+    <h2>{{ copy.sections.docker }}</h2>
+    <ul class="status-list">
+      <li class="status-list__row">
+        <span [class]="'status-list__dot status-list__dot--' + (status().docker.running ? 'idle' : 'off')"></span>
+        <span class="status-list__name">Docker</span>
+        <span class="status-list__meta">{{ status().docker.running ? copy.dockerOn : copy.dockerOff }}</span>
+      </li>
+      @for (container of status().docker.containers; track container.name) {
+        <li class="status-list__row status-list__row--nested">
+          <span [class]="'status-list__dot status-list__dot--' + (container.running ? 'idle' : 'off')"></span>
+          <span class="status-list__name u-code">{{ container.name }}</span>
+          <span class="status-list__meta">{{ container.health || container.state }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="o-panel o-stack">
+    <h2>{{ copy.sections.pipeline }}</h2>
+    <ul class="status-list">
+      @for (run of status().pipeline; track run.id) {
+        <li class="status-list__row">
+          <span [class]="'status-list__dot status-list__dot--' + runTone(run)"></span>
+          <span class="status-list__name" [title]="run.title">
+            <strong>{{ run.workflow }}</strong>
+            <span class="status-list__meta">{{ run.title }}</span>
+          </span>
+          <ibid-tools-button look="quiet" (click)="store.openLink(run.failedJob?.url ?? run.url)">
+            {{ runState(run) }}
+          </ibid-tools-button>
+        </li>
+      } @empty {
+        <li class="o-empty">{{ copy.none }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="o-panel o-stack">
+    <h2>{{ copy.sections.pullRequests }} · {{ status().pullRequests.length }}</h2>
+    <ul class="status-list">
+      @for (pullRequest of status().pullRequests; track pullRequest.url) {
+        <li class="status-list__row">
+          <span class="status-list__name" [title]="pullRequest.title">
+            <strong>{{ pullRequest.title }}</strong>
+            <span class="status-list__meta">
+              {{ pullRequest.repository }} #{{ pullRequest.number }}{{ pullRequest.draft ? ' · ' + copy.draft : '' }}
+            </span>
+          </span>
+          <ibid-tools-button look="quiet" (click)="store.openLink(pullRequest.url)">GitHub</ibid-tools-button>
+          <ibid-tools-button (click)="store.mergePullRequest(pullRequest)">{{ copy.merge }}</ibid-tools-button>
+        </li>
+      } @empty {
+        <li class="status-list__meta">{{ copy.none }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="o-panel o-stack">
+    <h2>{{ copy.sections.pods }}</h2>
+    @if (!status().pods.configured) {
+      <p class="status-list__meta">{{ copy.podsNotConfigured }}</p>
+    } @else {
+      <p class="status-list__meta">
+        {{ copy.balance(money(status().pods.balance), money(status().pods.spendPerHour)) }}
+      </p>
+      <ul class="status-list">
+        @for (pod of status().pods.runningPods; track pod.id) {
+          <li class="status-list__row">
+            <span class="status-list__dot status-list__dot--busy"></span>
+            <span class="status-list__name">{{ pod.name }} · {{ pod.gpu }}</span>
+            <ibid-tools-button look="quiet" (click)="store.openLink(pod.url)">
+              {{ money(pod.costPerHour) }}/h
+            </ibid-tools-button>
+          </li>
+        } @empty {
+          <li class="status-list__meta">{{ copy.noPods }}</li>
+        }
+      </ul>
+    }
+  </section>
+</div>

@@ -1,0 +1,23 @@
+name: ibid-ci-runner
+
+services:
+  runner:
+    build:
+      context: .
+    image: ibid-ci-runner:latest
+    container_name: ibid-ci-runner
+    restart: unless-stopped
+    environment:
+      RUNNER_URL: https://github.com/alexibid/ibid-workspace
+      RUNNER_NAME: docker-runner
+      RUNNER_LABELS: docker
+      RUNNER_TOKEN: ${RUNNER_TOKEN:-}
+    volumes:
+      - runner-state:/runner-state
+      - runner-work:/home/runner/_work
+      - runner-cache:/home/runner/.cache
+
+volumes:
+  runner-state:
+  runner-work:
+  runner-cache:

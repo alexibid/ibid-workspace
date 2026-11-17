@@ -1,0 +1,20 @@
+<header class="shell">
+  <strong class="shell__name">{{ copy.brand }}</strong>
+  <span class="shell__title" role="status">
+    {{ store.status() ? copy.updatedAgo(store.secondsSinceCheck()) : copy.loading }}
+  </span>
+  <ibid-tools-button (click)="store.refresh()">{{ copy.refresh }}</ibid-tools-button>
+  <ibid-tools-button look="quiet" (click)="store.quit()">{{ copy.quit }}</ibid-tools-button>
+</header>
+<main class="o-page">
+  @if (store.notice()) {
+    <p class="o-panel shell-notice" role="alert">{{ store.notice() }}</p>
+  }
+  @if (store.status(); as status) {
+    <ibid-tools-problems-panel [problems]="status.problems" [staleSeconds]="staleSeconds()" />
+    <ibid-tools-status-overview [status]="status" />
+  } @else {
+    <p class="o-panel o-empty">{{ copy.loading }}</p>
+  }
+  <ibid-tools-action-groups />
+</main>

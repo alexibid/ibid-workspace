@@ -1,0 +1,30 @@
+:root {
+  color-scheme: light dark;
+
+  --color-surface: light-dark(#f6f5f1, #16171a);
+  --color-panel: light-dark(#ffffff, #1f2125);
+  --color-line: light-dark(#dedbd2, #33363d);
+  --color-text: light-dark(#1d1e21, #ecebe6);
+  --color-muted: light-dark(#666a73, #9da1ab);
+  --color-accent: light-dark(#2f5fd0, #8fb0ff);
+  --color-claude: light-dark(#b8562e, #f0a37f);
+  --color-antigravity: light-dark(#2b7a5b, #7fd4ae);
+  --color-langgraph: light-dark(#6a46b8, #b9a0f2);
+  --color-good: light-dark(#2b7a5b, #7fd4ae);
+  --color-warn: light-dark(#a56a00, #f0c060);
+  --color-bad: light-dark(#b3261e, #ff9a92);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 0.5rem;
+  --font-text: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-code: ui-monospace, 'SF Mono', Menlo, monospace;
+  --size-small: 0.8125rem;
+  --size-text: 0.9375rem;
+  --size-title: 1.25rem;
+}

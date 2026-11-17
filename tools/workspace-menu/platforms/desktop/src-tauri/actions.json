@@ -1,0 +1,609 @@
+{
+  "groups": [
+    {
+      "title": "Entrega",
+      "actions": [
+        {
+          "key": "deploy-pipeline",
+          "label": "Deploy & release (PR automática e publicação)",
+          "run": "terminal",
+          "args": [
+            "deploy-pipeline"
+          ]
+        },
+        {
+          "key": "watch-ci",
+          "label": "Abrir o painel do CI (gráfico + registos)",
+          "run": "background",
+          "args": [
+            "watch-ci"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Runners e Docker",
+      "actions": [
+        {
+          "key": "docker-start",
+          "label": "Ligar o Docker",
+          "run": "background",
+          "args": [
+            "docker-start"
+          ]
+        },
+        {
+          "key": "runner-start:docker",
+          "label": "Ligar o runner do Docker",
+          "run": "background",
+          "args": [
+            "runner-start",
+            "docker"
+          ]
+        },
+        {
+          "key": "runner-stop:docker",
+          "label": "Desligar o runner do Docker",
+          "run": "background",
+          "args": [
+            "runner-stop",
+            "docker"
+          ]
+        },
+        {
+          "key": "runner-restart:docker",
+          "label": "Reiniciar o runner do Docker",
+          "run": "background",
+          "args": [
+            "runner-restart",
+            "docker"
+          ]
+        },
+        {
+          "key": "runner-register:docker",
+          "label": "Registar o runner do Docker no GitHub",
+          "run": "terminal",
+          "args": [
+            "runner-register"
+          ]
+        },
+        {
+          "key": "runner-log:docker",
+          "label": "Ver o registo do runner do Docker",
+          "run": "terminal",
+          "args": [
+            "runner-log",
+            "docker"
+          ]
+        },
+        {
+          "key": "runner-start:mac",
+          "label": "Ligar o runner do Mac",
+          "run": "background",
+          "args": [
+            "runner-start",
+            "mac"
+          ]
+        },
+        {
+          "key": "runner-stop:mac",
+          "label": "Desligar o runner do Mac",
+          "run": "background",
+          "args": [
+            "runner-stop",
+            "mac"
+          ]
+        },
+        {
+          "key": "runner-restart:mac",
+          "label": "Reiniciar o runner do Mac",
+          "run": "background",
+          "args": [
+            "runner-restart",
+            "mac"
+          ]
+        },
+        {
+          "key": "runner-log:mac",
+          "label": "Ver o registo do runner do Mac",
+          "run": "terminal",
+          "args": [
+            "runner-log",
+            "mac"
+          ]
+        },
+        {
+          "key": "container-start:ibid-ci-runner",
+          "label": "Ligar o contentor ibid-ci-runner",
+          "run": "background",
+          "args": [
+            "container-start",
+            "ibid-ci-runner"
+          ]
+        },
+        {
+          "key": "container-start:papikapi-api",
+          "label": "Ligar o contentor papikapi-api",
+          "run": "background",
+          "args": [
+            "container-start",
+            "papikapi-api"
+          ]
+        },
+        {
+          "key": "container-start:ibid-agents-database",
+          "label": "Ligar o contentor ibid-agents-database",
+          "run": "background",
+          "args": [
+            "container-start",
+            "ibid-agents-database"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Workspace",
+      "actions": [
+        {
+          "key": "check-fast",
+          "label": "Verificação rápida (check:fast)",
+          "run": "terminal",
+          "args": [
+            "check-fast"
+          ]
+        },
+        {
+          "key": "check-build",
+          "label": "Build do workspace (check:build)",
+          "run": "terminal",
+          "args": [
+            "check-build"
+          ]
+        },
+        {
+          "key": "submodule-update",
+          "label": "Puxar todos os submódulos",
+          "run": "terminal",
+          "args": [
+            "submodule-update"
+          ]
+        },
+        {
+          "key": "submodule-push",
+          "label": "Enviar todos os submódulos",
+          "run": "terminal",
+          "args": [
+            "submodule-push"
+          ]
+        },
+        {
+          "key": "submodule-status",
+          "label": "Estado dos submódulos",
+          "run": "terminal",
+          "args": [
+            "submodule-status"
+          ]
+        },
+        {
+          "key": "split-sync",
+          "label": "Sincronizar o monorepo com o GitHub (split)",
+          "run": "terminal",
+          "args": [
+            "split-sync"
+          ]
+        },
+        {
+          "key": "split-pull",
+          "label": "Puxar os repositórios para o monorepo",
+          "run": "terminal",
+          "args": [
+            "split-pull"
+          ]
+        },
+        {
+          "key": "deploy-web:all",
+          "label": "Deploy de todas as apps web no Firebase",
+          "run": "terminal",
+          "args": [
+            "deploy-web",
+            "all"
+          ]
+        },
+        {
+          "key": "sync-drive",
+          "label": "Enviar os instaladores para o Google Drive",
+          "run": "terminal",
+          "args": [
+            "sync-drive"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Oh Save Me!",
+      "actions": [
+        {
+          "key": "auto-pr:oh-save-me",
+          "label": "Criar PR para o monorepo",
+          "run": "terminal",
+          "args": [
+            "auto-pr",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "build-all:oh-save-me",
+          "label": "Build de tudo (.dmg + .apk)",
+          "run": "terminal",
+          "args": [
+            "build-all",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "build-desktop:oh-save-me",
+          "label": "Build desktop (.dmg)",
+          "run": "terminal",
+          "args": [
+            "build-desktop",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "build-apk:oh-save-me",
+          "label": "Build Android (.apk)",
+          "run": "terminal",
+          "args": [
+            "build-apk",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "install-desktop:oh-save-me",
+          "label": "Instalar no Mac (.dmg)",
+          "run": "terminal",
+          "args": [
+            "install-desktop",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "install-mobile:oh-save-me",
+          "label": "Instalar no telemóvel (USB)",
+          "run": "terminal",
+          "args": [
+            "install-mobile",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "deploy-web:oh-save-me",
+          "label": "Deploy no Firebase Hosting",
+          "run": "terminal",
+          "args": [
+            "deploy-web",
+            "oh-save-me"
+          ]
+        },
+        {
+          "key": "open-web:oh-save-me",
+          "label": "Abrir a versão online",
+          "run": "open",
+          "args": [
+            "https://ibid-ohsaveme.web.app"
+          ]
+        },
+        {
+          "key": "open-github-desktop:oh-save-me",
+          "label": "Abrir no GitHub Desktop",
+          "run": "open",
+          "args": [
+            "-a",
+            "GitHub Desktop",
+            "{workspace}/apps/oh-save-me"
+          ]
+        },
+        {
+          "key": "open-folder:oh-save-me",
+          "label": "Abrir a pasta",
+          "run": "open",
+          "args": [
+            "{workspace}/apps/oh-save-me"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Papikapi",
+      "actions": [
+        {
+          "key": "auto-pr:papikapi",
+          "label": "Criar PR para o monorepo",
+          "run": "terminal",
+          "args": [
+            "auto-pr",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "build-all:papikapi",
+          "label": "Build de tudo (.dmg + .apk)",
+          "run": "terminal",
+          "args": [
+            "build-all",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "build-desktop:papikapi",
+          "label": "Build desktop (.dmg)",
+          "run": "terminal",
+          "args": [
+            "build-desktop",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "build-apk:papikapi",
+          "label": "Build Android (.apk)",
+          "run": "terminal",
+          "args": [
+            "build-apk",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "build-web:papikapi",
+          "label": "Build web",
+          "run": "terminal",
+          "args": [
+            "build-web",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "install-desktop:papikapi",
+          "label": "Instalar no Mac (.dmg)",
+          "run": "terminal",
+          "args": [
+            "install-desktop",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "install-mobile:papikapi",
+          "label": "Instalar no telemóvel (USB)",
+          "run": "terminal",
+          "args": [
+            "install-mobile",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "deploy-web:papikapi",
+          "label": "Deploy no Firebase Hosting",
+          "run": "terminal",
+          "args": [
+            "deploy-web",
+            "papikapi"
+          ]
+        },
+        {
+          "key": "open-web:papikapi",
+          "label": "Abrir a versão online",
+          "run": "open",
+          "args": [
+            "https://ibid-papikapi.web.app"
+          ]
+        },
+        {
+          "key": "open-github-desktop:papikapi",
+          "label": "Abrir no GitHub Desktop",
+          "run": "open",
+          "args": [
+            "-a",
+            "GitHub Desktop",
+            "{workspace}/apps/papikapi"
+          ]
+        },
+        {
+          "key": "open-folder:papikapi",
+          "label": "Abrir a pasta",
+          "run": "open",
+          "args": [
+            "{workspace}/apps/papikapi"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Boilerplate",
+      "actions": [
+        {
+          "key": "auto-pr:boilerplate",
+          "label": "Criar PR para o monorepo",
+          "run": "terminal",
+          "args": [
+            "auto-pr",
+            "boilerplate"
+          ]
+        },
+        {
+          "key": "build-web:boilerplate",
+          "label": "Build web",
+          "run": "terminal",
+          "args": [
+            "build-web",
+            "boilerplate"
+          ]
+        },
+        {
+          "key": "deploy-web:boilerplate",
+          "label": "Deploy no Firebase Hosting",
+          "run": "terminal",
+          "args": [
+            "deploy-web",
+            "boilerplate"
+          ]
+        },
+        {
+          "key": "open-web:boilerplate",
+          "label": "Abrir a versão online",
+          "run": "open",
+          "args": [
+            "https://ibid-boilerplate.web.app"
+          ]
+        },
+        {
+          "key": "open-storybook:boilerplate",
+          "label": "Storybook (localhost:6006)",
+          "run": "open",
+          "args": [
+            "http://localhost:6006"
+          ]
+        },
+        {
+          "key": "open-github-desktop:boilerplate",
+          "label": "Abrir no GitHub Desktop",
+          "run": "open",
+          "args": [
+            "-a",
+            "GitHub Desktop",
+            "{workspace}/apps/boilerplate"
+          ]
+        },
+        {
+          "key": "open-folder:boilerplate",
+          "label": "Abrir a pasta",
+          "run": "open",
+          "args": [
+            "{workspace}/apps/boilerplate"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Papikapi Studio",
+      "actions": [
+        {
+          "key": "open-studio:papikapi-studio",
+          "label": "Abrir o Studio (localhost:4500)",
+          "run": "open",
+          "args": [
+            "http://localhost:4500"
+          ]
+        },
+        {
+          "key": "open-github-desktop:papikapi-studio",
+          "label": "Abrir no GitHub Desktop",
+          "run": "open",
+          "args": [
+            "-a",
+            "GitHub Desktop",
+            "{workspace}/apps/papikapi-studio"
+          ]
+        },
+        {
+          "key": "open-folder:papikapi-studio",
+          "label": "Abrir a pasta",
+          "run": "open",
+          "args": [
+            "{workspace}/apps/papikapi-studio"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ibid-ui (Design System)",
+      "actions": [
+        {
+          "key": "open-github-desktop:ibid-ui",
+          "label": "Abrir no GitHub Desktop",
+          "run": "open",
+          "args": [
+            "-a",
+            "GitHub Desktop",
+            "{workspace}/libs/ibid-ui"
+          ]
+        },
+        {
+          "key": "open-folder:ibid-ui",
+          "label": "Abrir a pasta",
+          "run": "open",
+          "args": [
+            "{workspace}/libs/ibid-ui"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Links e pastas",
+      "actions": [
+        {
+          "key": "open-folder:workspace",
+          "label": "Pasta do workspace",
+          "run": "open",
+          "args": [
+            "{workspace}"
+          ]
+        },
+        {
+          "key": "open-folder:dist",
+          "label": "Pasta dist (instaladores)",
+          "run": "open",
+          "args": [
+            "{workspace}/dist"
+          ]
+        },
+        {
+          "key": "open-folder:drive",
+          "label": "Google Drive (ibid-builds)",
+          "run": "open",
+          "args": [
+            "{home}/Google Drive/My Drive/ibid-builds"
+          ]
+        },
+        {
+          "key": "open-link:actions",
+          "label": "GitHub Actions",
+          "run": "open",
+          "args": [
+            "https://github.com/alexibid/ibid-workspace/actions"
+          ]
+        },
+        {
+          "key": "open-link:runners",
+          "label": "Runners no GitHub",
+          "run": "open",
+          "args": [
+            "https://github.com/alexibid/ibid-workspace/settings/actions/runners"
+          ]
+        },
+        {
+          "key": "open-link:github-billing",
+          "label": "Faturação do GitHub",
+          "run": "open",
+          "args": [
+            "https://github.com/settings/billing"
+          ]
+        },
+        {
+          "key": "open-link:runpod",
+          "label": "Consola RunPod (serverless)",
+          "run": "open",
+          "args": [
+            "https://console.runpod.io/serverless"
+          ]
+        },
+        {
+          "key": "open-link:runpod-billing",
+          "label": "Faturação e créditos RunPod",
+          "run": "open",
+          "args": [
+            "https://console.runpod.io/user/billing"
+          ]
+        }
+      ]
+    }
+  ]
+}

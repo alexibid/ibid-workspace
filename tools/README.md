@@ -27,10 +27,10 @@ hand. They are not build configuration, and they are not libraries either.
 | `ci/`         | GitHub Actions       | Release targets, platform declarations, lint ceiling, audit, split, execution graphs     |
 | `qa/`         | `npm run check`      | The tiered runner, its log slicing and reports                                          |
 | `workspace/`  | By hand              | Worktrees, sparse checkout, per-app `.gitignore` generation                              |
-| `xbar/`       | macOS menu bar       | The runner plugin                                                                        |
+| `workspace-menu/` | macOS menu bar   | The `workspace` app: CI/CD status, problems and actions                                 |
 
 Language follows the job, not the folder: `.mjs` where it talks to Node tooling, `.sh` for the
-menu bar, `.py` where the work is geometry and image comparison and the library exists there.
+menu bar actions, `.py` where the work is geometry and image comparison and the library exists there.
 
 ## What does NOT belong here
 

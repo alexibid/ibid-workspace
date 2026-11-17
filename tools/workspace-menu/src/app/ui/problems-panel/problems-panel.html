@@ -1,0 +1,30 @@
+<section class="o-panel o-stack problems" [class.problems--failing]="count() > 0">
+  <h2 class="problems__summary" [class.problems__summary--good]="count() === 0">
+    {{ count() === 0 ? '✔ ' + copy.allGood : copy.problemsCount(count()) }}
+  </h2>
+  @if (count() > 0) {
+    <ul class="problems__list">
+      @if (staleSeconds()) {
+        <li class="problems__item problems__item--warning">
+          <span class="problems__text">{{ copy.stale(staleSeconds()) }}</span>
+          <ibid-tools-button look="quiet" (click)="store.refresh()">{{ copy.refresh }}</ibid-tools-button>
+        </li>
+      }
+      @for (problem of problems(); track problem.id) {
+        <li class="problems__item" [class.problems__item--warning]="problem.level === 'warning'">
+          <span class="problems__text">
+            <strong>{{ problem.title }}</strong>
+            @if (problem.detail) {
+              <span class="problems__detail">{{ problem.detail }}</span>
+            }
+          </span>
+          @if (problem.action || problem.url) {
+            <ibid-tools-button look="quiet" (click)="resolve(problem)">
+              {{ problem.action ? copy.fix : copy.openLog }}
+            </ibid-tools-button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

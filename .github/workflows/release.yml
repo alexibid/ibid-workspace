@@ -21,7 +21,7 @@ jobs:
   inspect:
     name: Inspect · Tag and target
     timeout-minutes: 10
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     outputs:
       project: ${{ steps.target.outputs.project }}
       version: ${{ steps.target.outputs.version }}
@@ -64,7 +64,7 @@ jobs:
     needs: inspect
     if: needs.inspect.outputs.has_web == 'true'
     timeout-minutes: 30
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
@@ -231,7 +231,7 @@ jobs:
       needs.inspect.outputs.has_web == 'true' && needs.inspect.outputs.has_hosting == 'true' &&
       needs.inspect.outputs.has_hosting_target == 'true'
     timeout-minutes: 20
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     env:
       PROJECT: ${{ needs.inspect.outputs.project }}
     steps:
@@ -255,7 +255,7 @@ jobs:
       needs.inspect.outputs.has_hosting == 'true' &&
       (needs.inspect.outputs.project == 'boilerplate' || needs.inspect.outputs.project == 'ibid-ui')
     timeout-minutes: 30
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     steps:
       - uses: actions/checkout@v5
         with:
@@ -278,7 +278,7 @@ jobs:
     needs: [inspect, web, android, desktop, drive, hosting, storybook]
     if: always()
     timeout-minutes: 10
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: [self-hosted, Linux, docker]
     steps:
       - uses: actions/checkout@v5
       - name: Draw the execution graph

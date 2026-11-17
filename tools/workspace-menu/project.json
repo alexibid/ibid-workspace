@@ -1,0 +1,81 @@
+{
+  "name": "workspace-menu",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "ibid-tools",
+  "sourceRoot": "tools/workspace-menu/src",
+  "tags": [
+    "type:tool",
+    "scope:ci"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "defaultConfiguration": "production",
+      "options": {
+        "styles": [
+          "tools/workspace-menu/src/styles.scss"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "8kb",
+              "maximumError": "16kb"
+            }
+          ],
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            },
+            "fonts": true
+          }
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 4520
+      }
+    },
+    "desktop": {},
+    "desktop-build": {
+      "options": {
+        "commands": [
+          "tauri build --config platforms/desktop/src-tauri/tauri.conf.json",
+          "cd ../.. && node tools/builder/collect-artifact.mjs --project workspace-menu --from tools/workspace-menu/platforms/dist/workspace-menu/desktop/release/bundle --ext dmg"
+        ]
+      }
+    },
+    "install": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "desktop-build"
+      ],
+      "options": {
+        "commands": [
+          "rm -rf '/Applications/ibid workspace.app'",
+          "mv 'tools/workspace-menu/platforms/dist/workspace-menu/desktop/release/bundle/macos/ibid workspace.app' /Applications/",
+          "open '/Applications/ibid workspace.app'"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

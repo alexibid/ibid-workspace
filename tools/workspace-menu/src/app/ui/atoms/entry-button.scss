@@ -1,0 +1,28 @@
+@use '../../../styles/tools';
+
+.entry-button {
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--color-text);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  width: 100%;
+
+  &:hover:enabled {
+    background: var(--color-surface);
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    @include tools.focus-ring;
+  }
+
+  &:disabled {
+    color: var(--color-muted);
+    cursor: default;
+  }
+}
