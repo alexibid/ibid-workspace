@@ -181,7 +181,7 @@
     "nx": "23.2.1",
     "playwright": "^1.62.1",
     "polygon-clipping": "^0.15.7",
-    "postcss": "^8.4.5",
+    "postcss": "^8.5.33",
     "prettier": "^3.8.1",
     "secretlint": "^13.0.5",
     "storybook": "^10.6.7",
