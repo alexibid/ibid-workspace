@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
@@ -33,10 +33,18 @@ function stageCommittableFiles() {
   return destination;
 }
 
-function listCommittableFiles() {
+function listCommittableFiles(repository = '.') {
+  return listRepositoryEntries(repository).flatMap((entry) => {
+    const path = join(repository, entry);
+    if (!existsSync(path)) return [];
+    return lstatSync(path).isDirectory() ? listCommittableFiles(path) : [path];
+  });
+}
+
+function listRepositoryEntries(repository) {
   const output = execFileSync(
     'git',
-    ['ls-files', '--cached', '--others', '--exclude-standard', '-z'],
+    ['-C', repository, 'ls-files', '--cached', '--others', '--exclude-standard', '-z'],
     { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
   );
   return output.split('\0').filter(Boolean);

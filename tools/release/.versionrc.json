@@ -1,9 +1,9 @@
 {
-  "header": "# Changelog\n\nTodas as alterações relevantes ficam registadas aqui, geradas a partir das mensagens de commit convencionais.\n",
+  "header": "# Changelog\n\nAll notable changes are recorded here, generated from conventional commit messages.\n",
   "types": [
-    { "type": "feat", "section": "Funcionalidades" },
-    { "type": "fix", "section": "Correções" },
-    { "type": "perf", "section": "Desempenho" },
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
     { "type": "refactor", "section": "Refactor" },
     { "type": "docs", "hidden": true },
     { "type": "style", "hidden": true },

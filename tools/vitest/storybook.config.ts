@@ -16,7 +16,7 @@ export default defineConfig({
     },
     onConsoleLog: () => false,
     include: ['src/**/*.spec.ts'],
-    exclude: ['node_modules/**', '.claude/**', 'platforms/**'],
+    exclude: ['node_modules/**', 'platforms/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

@@ -1,463 +1,233 @@
 # ibid-workspace
 
-An Nx monorepo holding ibid's Angular products around a shared design system and a set of
-shared libraries.
+An Nx monorepo for ibid's products. The products and the libraries they share are separate
+repositories, mounted here as git submodules. Build configuration, CI/CD and workspace tooling
+live in this repository.
 
-The idea is simple: each product is an independent application under `apps/`, and anything
-generic enough to be reused by more than one product — visual components, utility functions,
-infrastructure services — lives under `libs/` and is consumed through imports.
+## Projects
 
-## Structure
+Every app and library under `apps/` and `libs/` is a submodule with its own repository and
+README.
 
-| Projeto / Ferramenta                  |  Tipo  | Descrição                                                      |
-| :------------------------------------ | :----: | :------------------------------------------------------------- |
-| **[boilerplate](./apps/boilerplate)** | `app`  | Minimal Angular skeleton, the starting point for new products. |
-| **[oh-save-me](./apps/oh-save-me)**   | `app`  | Personal and family finance assistant (PT: Oh poupa-me!).      |
-| **[papikapi](./apps/papikapi)**           | `app`  | Children's habits and positive reinforcement app.               |
-| **[ibid-ui](./libs/ibid-ui)**         | `lib`  | Design system: components, global styles, and icons.           |
-| **[services](./libs/services)**       | `lib`  | Infrastructure services (i18n, authentication, sync).          |
-| **[testing](./libs/testing)**         | `lib`  | Generic test engines (accessibility, screenshots, flows).      |
-| **[utils](./libs/utils)**             | `lib`  | Pure functions, no dependencies.                               |
-| **[builder](./tools/builder)**        | `tool` | Shared compilation base for the apps.                          |
-| **[vitest](./tools/vitest)**          | `tool` | Unit test runner configuration.                                |
-| **[playwright](./tools/playwright)**  | `tool` | Device matrix and execution policy.                            |
-| **[storybook](./tools/storybook)**    | `tool` | Addons, framework, and visual test runner.                     |
-| **[commitlint](./tools/commitlint)**  | `tool` | Commit message rules.                                          |
-| **[husky](./tools/husky)**            | `tool` | Git hooks.                                                     |
-| **[release](./tools/release)**        | `tool` | Versioning preset.                                             |
+| Project                                                  | Type | What it is                                                                           |
+| :------------------------------------------------------- | :--- | :----------------------------------------------------------------------------------- |
+| [oh-save-me](./apps/oh-save-me)                          | app  | Personal and family finance assistant (PT: _Oh poupa-me!_). Web, desktop and mobile. |
+| [papikapi](./apps/papikapi)                              | app  | Children's habits app whose rewards are printable papercraft figures.                |
+| [papikapi-studio](./apps/papikapi-studio)                | app  | Web studio that generates papikapi's 3D papercraft figures.                          |
+| [papikapi-api](./apps/papikapi-api)                      | app  | Node API and generation pipeline behind papikapi and the studio.                     |
+| [boilerplate](./apps/boilerplate)                        | app  | Angular starting point for new products, and the design system's Storybook host.     |
+| [ibid-website](./apps/ibid-website)                      | app  | ibid's public website (Angular SSR + PocketBase), outside the shared build.          |
+| [ibid-ui](./libs/ibid-ui)                                | lib  | Design system: Atomic Design components, ITCSS styles and icons.                     |
+| [services](./libs/services)                              | lib  | Infrastructure services: i18n, theme, translation, voice and Google Drive sync.      |
+| [testing](./libs/testing)                                | lib  | Product-agnostic test engines: accessibility audit, flow recording and screenshots.  |
+| [utils](./libs/utils)                                    | lib  | Pure functions with no dependencies.                                                 |
+| [workspace-menu](./tools/workspace-menu)                 | tool | macOS menu bar app with the state of CI/CD and the workspace.                        |
+| [ci-runner](./tools/ci/runner)                           | tool | The self-hosted Docker runner for GitHub Actions.                                    |
+| [nested-scss-definition](./tools/vscode-scss-definition) | tool | VS Code extension: go to definition for nested SCSS selectors.                       |
 
-### Dependency rule
+`tools/` holds everything else that serves the workspace rather than a product. See
+[tools/README.md](./tools/README.md).
 
-- An **app** may import from any **lib**.
-- A **lib** never imports from an **app**.
-- Between libs, the only allowed dependency is `utils` — the one with no dependencies of its
-  own.
+### Rules between projects
 
-The rule is enforced at lint time by `@nx/enforce-module-boundaries`, configured in
-`eslint.config.mjs`.
+- An app may import from any lib. A lib never imports from an app.
+- `services`, `testing` and `utils` import no other project. `ibid-ui` imports `@ibid/services`
+  and `@ibid/utils`.
+- Always import through the alias, never through a relative path between projects.
 
-### Selector prefixes
-
-A selector's prefix says where the element comes from. `app-` is banned across the workspace.
-
-| Origin             | Prefix         |
-| ------------------ | -------------- |
-| `libs/ibid-ui`     | `ibid-`        |
-| `apps/oh-save-me`  | `ohsaveme-`    |
-| `apps/boilerplate` | `boilerplate-` |
-| `apps/papikapi`      | `papikapi-`      |
-
-## Applications
-
-### `apps/oh-save-me`
-
-The personal and family finance assistant — **Oh Save Me!** in English, **Oh poupa-me!** in
-Portuguese, with the name varying by country through the `appName` translation key. It gives
-direct answers ("can I afford a holiday this month?") instead of spreadsheets, imports bank
-statements, and categorises them automatically.
-
-Layered DDD architecture under `src/app/`:
-
-```
-apps/oh-save-me/
-  src/app/
-    domain/           models, repository interfaces, rules, and domain services
-    application/      use cases, selectors, store, i18n and translations
-    infrastructure/   RxDB, SQLite, Google Drive sync, APIs
-    ui/               pages, templates, components, pipes, and directives
-  e2e/                18 Playwright journeys, including the accessibility audit
-  platforms/
-    desktop/          Tauri v2 (macOS, Windows, Linux)
-    mobile/           Capacitor (iOS, Android)
-  .storybook/         Storybook configuration
-  public/             static assets and manifest
-```
-
-Distribution: web through Firebase Hosting, desktop through Tauri, mobile through Capacitor.
-
-### `apps/boilerplate`
-
-An empty Angular application that serves as the mould for new products: routing configured,
-`styles.scss` already importing the design system, and the navigation shell assembled from
-`ibid-header` and `ibid-header-nav`. Copy this folder to start a new app instead of generating
-everything from scratch.
-
-### `apps/papikapi`
-
-Children's habits and positive reinforcement app, designed for mobile-first parent-child
-interaction with origami-style paper themes (`papikapi`), domain-based goal tracking, and
-on-device natural language classification. Published to Firebase Hosting at
-`https://ibid-papikapi.web.app`.
-
-## Libraries
-
-### `libs/ibid-ui` — imported as `ibid-ui`
-
-The design system. Components follow Atomic Design, organised by composition level:
-
-```
-src/lib/
-  atoms/        button, icon (+ icon-registry), icon-button, divider, select, scrim,
-                date-input, number-input, search-input, empty-state, drag-handle,
-                stack-dots, stat-icon, view-more-link, legend-item, currency-display,
-                chart-tooltip, chart-marker-dot, chart-bar-segment,
-                bottom-sheet-header / -body / -footer
-  molecules/    card, form-field, metric-card, stat-card, summary-row, progress-row,
-                segmented-control, info-balloon, bottom-sheet-dialog,
-                chart-headline, chart-legend
-  organisms/    bar-chart, line-chart, chart, header, header-nav
-  directives/   hand-drawn
-  models/       shared UI and chart series types
-```
-
-Global styles live in `src/styles/`, organised in ITCSS by increasing specificity:
-
-```
-src/styles/
-  settings/     colors, typography, spacing, elevation, breakpoints (no CSS output)
-  tools/        mixins (no CSS output)
-  generic/      reset, scrollbars
-  elements/     base, icons
-  objects/      layout, table, hand-drawn, bottom-sheet-dialog
-  components/   buttons, forms, cards, selects, menus, metrics-summary-card
-  trumps/       utilities
-```
-
-The entry point is `src/styles.scss`, which `@use`s every layer in the right order. An app
-consumes all of it with one line in its own `styles.scss`:
-
-```scss
-@use 'libs/ibid-ui/src/styles';
-```
-
-**Icons** live in `libs/ibid-ui/assets/icons/` — 132 SVGs at 512x512. They are copied into any
-app's build by the `targetDefaults` and served under `icons/`, which is where
-`IconRegistryService` fetches them. A new app gets them without configuring anything.
-
-### `libs/services` — imported as `@ibid/services`
-
-Infrastructure services, with no product business logic:
-
-- **i18n** — `I18nService` and the `appTranslate`, `appDate`, `appCurrency` pipes. Translation
-  dictionaries belong to each app, not to the library.
-- **sync** — `GoogleAuthService` (Capacitor authentication) and `ConflictResolverService`.
-
-### `libs/testing` — imported as `@ibid/testing`
-
-Test engines that know nothing about any product's domain: `A11yAuditor` (injects axe-core and
-fails on critical or serious WCAG 2.1 AA violations, plus text under 12px), `FlowRecorder`
-(captures a flow step by step), and the per-device screenshot path helpers.
-
-### `libs/utils` — imported as `@ibid/utils`
-
-Pure, stateless functions with no dependencies: `date`, `string`, `parsing`, `color-contrast`.
-Each file has its matching `.spec.ts`.
-
-### Aliases
-
-Defined in `tsconfig.base.json`:
+`@nx/enforce-module-boundaries` in `eslint.config.mjs` refuses relative imports between projects
+and imports of non-buildable libs from buildable ones. It has no tag constraints, so the
+direction between projects is kept by review, not by lint.
 
 | Alias            | Path                         |
-| ---------------- | ---------------------------- |
+| :--------------- | :--------------------------- |
 | `ibid-ui`        | `libs/ibid-ui/src/index.ts`  |
 | `@ibid/services` | `libs/services/src/index.ts` |
 | `@ibid/testing`  | `libs/testing/src/index.ts`  |
 | `@ibid/utils`    | `libs/utils/src/index.ts`    |
 
-Always import through the alias — never through a relative path between projects.
+A selector's prefix says where the element comes from. `app-` is not allowed.
 
-## The shared build engine
-
-A new app copies no configuration: it inherits it. The engine lives in two places, depending on
-what it is.
-
-**Targets live in the `targetDefaults` of `nx.json`** — build, serve, and test for any Angular
-app in the workspace, written with the `{projectRoot}` and `{projectName}` tokens:
-
-```json
-"@angular/build:application": {
-  "options": {
-    "outputPath": "dist/{projectName}",
-    "browser": "{projectRoot}/src/main.ts",
-    "tsConfig": "{projectRoot}/tsconfig.app.json"
-  }
-}
-```
-
-Each app's `project.json` declares only what makes it different — its styles list and its
-bundle budgets.
-
-**Configuration extended by files lives in `tools/`:**
-
-| File                                   | Defines                                                    |
-| -------------------------------------- | ---------------------------------------------------------- |
-| `tools/builder/tsconfig.app.base.json` | Compiler and Angular options common to the apps            |
-| `tools/vitest/runner.config.mts`        | Test isolation and single-threaded execution               |
-| `tools/playwright/playwright.base.ts`  | Device matrix (mobile/tablet/desktop) and execution policy |
-| `tools/storybook/create-config.ts`     | Addons, framework, and alias derivation                    |
-
-`tools/` sits outside the Nx project graph on purpose. The rule that separates the two folders:
-**if a `.spec.ts` imports it, it is a lib; if a configuration file extends it, it is `tools/`.**
-A library enters the graph — gaining an alias, caching, `affected`, and boundary checks; a
-`tools/` folder gains none of that.
+| Origin                 | Prefix         |
+| :--------------------- | :------------- |
+| `libs/ibid-ui`         | `ibid-`        |
+| `apps/oh-save-me`      | `ohsaveme-`    |
+| `apps/papikapi`        | `papikapi-`    |
+| `apps/papikapi-studio` | `papikapi-`    |
+| `apps/boilerplate`     | `boilerplate-` |
+| `tools/workspace-menu` | `ibid-tools-`  |
 
 ## Stack
 
-- **Angular 22** with standalone components and the `@angular/build` builder
-- **Nx 23** for the project graph, caching, and task execution
-- **TypeScript 6** in strict mode
-- **Vitest** with jsdom for unit tests
-- **Playwright** for E2E journeys and accessibility audits
-- **Storybook** for the component catalogue and visual regression
-- **ESLint** flat config, enforcing project boundaries and selector prefixes
-- **ng-packagr** for packaging the libraries
-- **Capacitor** and **Tauri** for mobile and desktop builds
+- Angular 22 with standalone components and the `@angular/build` builder
+- Nx 23 for the project graph, caching and task execution
+- TypeScript 6 in strict mode
+- Vitest for unit tests, Playwright for journeys and accessibility audits
+- Storybook 10 for the component catalogues
+- ESLint flat config, with a warning ceiling in CI
+- Capacitor 8 for iOS and Android, Tauri 2 for desktop
+- Firebase Hosting for the web builds
 
-## Commands
+`ibid-website` and `papikapi-api` keep their own `package.json` and dependencies.
 
-Install dependencies:
+## Getting started
+
+```bash
+git clone --recurse-submodules https://github.com/alexibid/ibid-workspace.git
+```
 
 ```bash
 npm install
 ```
 
-Serve the application in development:
+`npm install` also installs the git hooks from `tools/husky` and puts every submodule on its
+`main` branch (`tools/workspace/attach-submodules.mjs`), so work there never starts on a
+detached HEAD.
 
-```bash
-npm start
-```
+## Commands
 
-Production build:
+| For                                             | Command                                                                          |
+| :---------------------------------------------- | :------------------------------------------------------------------------------- |
+| Serve Oh Save Me! (port 4200)                   | `npm start`                                                                      |
+| Serve any app                                   | `npx nx serve <project>`                                                         |
+| Everything: lint, tests, build and journeys     | `npm run check`                                                                  |
+| Only what your changes affect                   | `npm run check:affected`                                                         |
+| One tier across every project                   | `npm run check:lint` · `check:test` · `check:build` · `check:e2e` · `check:a11y` |
+| One project                                     | `npm run check:<project>`                                                        |
+| The same check CI runs, in a clean clone        | `npm run check:clean`                                                            |
+| Secrets, vulnerabilities, platform declarations | `npm run check:secrets` · `check:audit` · `check:platforms`                      |
+| Journeys of one app                             | `npx nx e2e <project>`                                                           |
+| Design system Storybook (port 6006)             | `npm run storybook:start`                                                        |
+| Oh Save Me! Storybook (port 6007)               | `npm run storybook:product`                                                      |
+| Desktop app in development                      | `npm run desktop`                                                                |
+| iOS / Android                                   | `npm run mobile:ios` · `mobile:android`                                          |
+| Dependency graph                                | `npx nx graph`                                                                   |
+| Clear every cache and `dist/`                   | `npm run clean`                                                                  |
 
-```bash
-npm run build
-```
+`tools/qa/check.mjs` runs the tiers in order and keeps the logs of the last ten runs in
+`test-results/qa/`.
 
-Tests across every project:
+### Ports
 
-```bash
-npm test
-```
+| Project           | Serve | E2E  | Storybook |
+| :---------------- | :---- | :--- | :-------- |
+| `oh-save-me`      | 4200  | 4201 | 6007      |
+| `boilerplate`     | 4300  | 4301 | 6006      |
+| `papikapi`        | 4400  | 4401 | 6008      |
+| `papikapi-studio` | 4500  | 4501 | —         |
+| `workspace-menu`  | 4520  | —    | —         |
 
-Only what your changes affect:
+### Submodules
 
-```bash
-npm run affected
-```
+| For                                     | Command                     |
+| :-------------------------------------- | :-------------------------- |
+| Pull every submodule's `main`           | `npm run submodules:update` |
+| See the commit each submodule points at | `npm run submodules:status` |
+| Push every submodule's `main`           | `npm run submodules:push`   |
 
-Playwright journeys:
+A change inside a submodule is committed in that submodule first. This repository then commits
+the new pointer.
 
-```bash
-npm run e2e
-```
+## The shared build engine
 
-Accessibility audit:
+A new app inherits its configuration instead of copying it.
 
-```bash
-npm run test:a11y
-```
+- **Targets** — build, serve, unit tests, lint, desktop and mobile — are the `targetDefaults` of
+  `nx.json`, written with the `{projectRoot}` and `{projectName}` tokens. Each `project.json`
+  declares only what is its own: styles, budgets, ports.
+- **Configuration that files extend** lives in `tools/`: the `tsconfig` base in
+  `tools/builder`, the Vitest runner in `tools/vitest`, the Playwright device matrix in
+  `tools/playwright` and the Storybook factory in `tools/storybook`.
 
-Storybook — the design system (port 6007):
+The icons in `libs/ibid-ui/assets/icons/` are copied into every app's build by the
+`targetDefaults` and served under `icons/`.
 
-```bash
-npm run storybook:ui
-```
+Everything lands in `dist/<project>/`, native installers included, with the version in the
+name: `dist/oh-save-me/oh-save-me.1.2.3.apk`, `oh-save-me.1.2.3.dmg`.
+`tools/builder/collect-artifact.mjs` brings them there from `platforms/`.
 
-Storybook — the product, with the design system composed into its sidebar (port 6006):
+## CI/CD
 
-```bash
-npm run storybook:start
-```
+Every job runs on a self-hosted runner, except the two summary jobs of CI.
 
-Storybook — the boilerplate showcase (port 6008):
+| Workflow           | Runs on                            | Does                                                                                                                                                                                                                                                  |
+| :----------------- | :--------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ci.yml`           | Pull requests and pushes to `main` | Platform declarations, lint against the warning ceiling, types, unit tests and build — every project on `main`, the affected ones on a pull request — then the journeys of each affected app. Merges `bump/` pull requests once every group is green. |
+| `auto-version.yml` | CI green on `main`                 | `tools/ci/release.mjs`: reads each submodule's conventional commits, lets Nx resolve the versions, then commits, tags and pushes them in the submodule and here.                                                                                      |
+| `release.yml`      | A `<project>-v<version>` tag       | Web bundle, Android APK and macOS installer; uploads the installers to Google Drive and publishes to Firebase Hosting and the design system Storybook. A failing job names the step that broke, lists what was already delivered, and stops the rest. |
+| `dependencies.yml` | Mondays at 05:00 UTC, or by hand   | `npm update` within each range, then audit, lint, types, tests and build, and pushes the new lockfile to `main`.                                                                                                                                      |
+| `split.yml`        | By hand                            | Mirrors `tools/` to [alexibid/tools](https://github.com/alexibid/tools). It refuses any path that is a submodule.                                                                                                                                     |
 
-```bash
-npm run storybook:boilerplate
-```
+Dependabot (`.github/dependabot.yml`) only raises alerts; it opens no pull requests.
 
-Desktop and mobile:
+Nx cannot drive git for the release, because the files it versions are inside submodules.
+`nx.json` keeps `release.version.git` off, and `tools/ci/release.mjs` does the git work in
+both repositories.
 
-```bash
-npm run desktop:dev
-```
+### Runners
 
-```bash
-npm run mobile:ios
-```
+| Runner                                | Where                                 | Runs                                                                   |
+| :------------------------------------ | :------------------------------------ | :--------------------------------------------------------------------- |
+| Docker (`self-hosted, Linux, docker`) | `tools/ci/runner`, restarts by itself | CI, journeys, versioning, dependencies, split, web, hosting, Storybook |
+| Mac (`self-hosted, macOS, ARM64`)     | launchd service                       | Android APK, macOS installer, Google Drive                             |
 
-Publish the site:
-
-```bash
-npm run deploy
-```
-
-See the dependency graph:
-
-```bash
-npx nx graph
-```
-
-Worktree management (isolated development per component):
-
-```bash
-node tools/workspace/worktree.mjs create-all    # Creates isolated worktrees for all 8 components
-node tools/workspace/worktree.mjs list          # Lists active worktrees and branches
-```
-
-Standalone repository synchronization (Monorepo Split):
-
-```bash
-npm run split                 # Sync all standalone repositories to GitHub
-npm run split:dry             # Dry-run simulation
-npm run split:pull            # Pull updates from standalone repositories into monorepo
-```
-
-## Isolated Worktrees & Focused Workflow
-
-To work on an application, library, or tooling without monorepo noise (avoiding mixed `git status` in GitHub Desktop or seeing other projects in your IDE):
-
-```bash
-node tools/workspace/worktree.mjs create <name>  # e.g. oh-save-me, papikapi, ibid-ui, tools
-node tools/workspace/worktree.mjs create-all     # Set up all 8 isolated worktrees at once
-```
-
-Under the hood, `tools/workspace/worktree.mjs`:
-1. Creates a linked Git worktree on its own dedicated branch (matching the component name: `oh-save-me`, `papikapi`, `ibid-ui`, etc.).
-2. Configures Git **Cone-mode Sparse-Checkout** so that other projects do not exist on disk in that folder.
-3. Symlinks `node_modules` from the monorepo root for instantaneous readiness without extra disk space.
-4. Allows opening each component in **GitHub Desktop** (`File -> Add Local Repository`) and **VS Code** (`code ~/Projects/<name>`) as a completely isolated project.
-
-## Standalone Repositories on GitHub (Monorepo Split)
-
-Every application, shared library, and tooling infrastructure is mirrored as an independent, private repository on GitHub under `alexibid`:
-
-- [alexibid/oh-save-me](https://github.com/alexibid/oh-save-me) (Personal finance app)
-- [alexibid/papikapi](https://github.com/alexibid/papikapi) (Children's habits app)
-- [alexibid/boilerplate](https://github.com/alexibid/boilerplate) (Angular template & showcase)
-- [alexibid/ibid-ui](https://github.com/alexibid/ibid-ui) (Design system and UI atoms)
-- [alexibid/services](https://github.com/alexibid/services) (Shared domain services)
-- [alexibid/testing](https://github.com/alexibid/testing) (Testing utilities & engines)
-- [alexibid/utils](https://github.com/alexibid/utils) (Shared base helpers)
-- [alexibid/tools](https://github.com/alexibid/tools) (Build, CI, and automation infrastructure)
-
-Synchronization is automated via `.github/workflows/split.yml` on push to `main` and can be manually triggered locally with `npm run split`. Updates can be pulled back into the monorepo using `npm run split:pull`.
-
-## macOS menu bar app (`workspace`)
-
-`tools/workspace-menu` is the `ibid workspace` app (Tauri + Angular). It lives in the menu bar as `.i` with
-`workspace` underneath. It starts with the Mac, and it does three things:
-
-- **Problems on top**: Docker off, a runner off or disconnected from GitHub, a stopped
-  container, or a failed build (with the failing job and step). Each problem has one button
-  that fixes it or opens its log, and each new problem raises a macOS notification once.
-- **Status**: both runners, Docker and its containers, the latest run of each workflow, open
-  pull requests and running RunPod pods, refreshed every 20 seconds.
-- **Actions**: everything the old SwiftBar plugin did (runners, checks, submodules, split,
-  builds, installs, Firebase deploys, Google Drive sync, links). Long actions open Terminal,
-  the same action cannot start twice, and each one ends with a passed or failed notification.
-
-```bash
-npx nx run workspace-menu:install
-```
-
-### CI runners
-
-| Runner | Where | Runs |
-| ------ | ----- | ---- |
-| `docker-runner` (labels `self-hosted, Linux, docker`) | `tools/ci/runner`, always on, restarts by itself | CI, journeys, split, versioning, release inspect, web bundle, Firebase Hosting, Storybook |
-| Mac runner (labels `self-hosted, macOS, ARM64`) | launchd service | `.apk`, `.dmg`, Google Drive delivery |
-
-The Docker runner registers itself once with the GitHub CLI session already on the Mac:
+The Docker runner registers itself with the GitHub CLI session already on the Mac:
 
 ```bash
 npx nx run ci-runner:register
 ```
 
-## Build output
+### Firebase Hosting
 
-Everything lands in `dist/<project>/`, native artifacts included:
+Project `ibid-32cbe`. The targets are in `firebase.json` and `.firebaserc`.
 
-```
-dist/oh-save-me/
-  browser/                    web build
-  oh-save-me.0.0.0.apk        Android, collected from Gradle
-  oh-save-me.0.0.0.dmg        desktop, collected from Tauri
-```
+| Target        | Site               | Serves                       |
+| :------------ | :----------------- | :--------------------------- |
+| `oh-save-me`  | `ibid-ohsaveme`    | `dist/oh-save-me/browser`    |
+| `papikapi`    | `ibid-papikapi`    | `dist/papikapi/browser`      |
+| `boilerplate` | `ibid-boilerplate` | `dist/boilerplate/browser`   |
+| `storybook`   | `ibid-storybook`   | `dist/storybook/boilerplate` |
+| `assets`      | `ibid-assets`      | `dist/assets-site`           |
 
-`tools/builder/collect-artifact.mjs` does the collecting: Gradle and Tauri write generic
-filenames inside `platforms/`, and this step brings each one next to the web builds under a
-name that identifies project and version.
+The design system Storybook is published whenever `boilerplate` or `ibid-ui` is released.
+`IBID_DESIGN_SYSTEM_STORYBOOK_URL` points the product Storybooks at it; without it they compose
+the local one on port 6006.
 
-## Code conventions
+### Secrets and variables
 
-- **SCSS** — ITCSS for the layers and BEM for class names (`.block`, `.block__element`,
-  `.block--modifier`). No overrides outside the `trumps` layer.
-- **TypeScript** — no `any`; `unknown` or generics instead. `readonly` for immutability,
-  optional chaining and nullish coalescing for null-safety, type guards instead of assertions.
-- **Structure** — small single-responsibility functions with one level of abstraction, files up
-  to 200–300 lines, names that reveal intent.
-- **No comments.** Code explains itself through its names; if a lint rule demands a non-empty
-  block, configure the rule rather than writing a comment.
-- **Formatting** — Prettier and ESLint are the authority.
+| Name                                                                        | Type     | For                                                                                          |
+| :-------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------- |
+| `RELEASE_TOKEN`                                                             | Secret   | Checking out the private submodules, pushing versions and tags, and triggering `release.yml` |
+| `FIREBASE_SERVICE_ACCOUNT`                                                  | Secret   | Publishing to Firebase Hosting                                                               |
+| `RCLONE_CONF_BASE64`                                                        | Secret   | The Google Drive upload                                                                      |
+| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` | Secret   | Signing the release APK                                                                      |
+| `DRIVE_FOLDER`                                                              | Variable | Destination folder on Drive (defaults to `ibid-builds`)                                      |
 
-## Publishing
+Dependabot reads the submodules with its own `RELEASE_TOKEN`, kept as a Dependabot secret. A
+step whose secret is missing is skipped with a note in the run summary.
 
-Three workflows, chained, plus one kept for manual use:
-
-| Workflow           | Triggered by                    | Does                                                                                                                                |
-| ------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `ci.yml`           | Pull request and push to `main` | Lint, tests, and build, only on affected projects                                                                                   |
-| `auto-version.yml` | Push to `main` (after CI green) | Runs `tools/ci/release.mjs`: reads each submodule's own conventional commits, lets Nx write the versions, publishes each submodule and tags the container |
-| `release.yml`      | A `{project}-v*` tag            | Builds web, Android APK, and desktop installers; attaches them to the release, uploads them to Google Drive, and publishes the site. The first job to fail names itself and the step that broke, lists what was already delivered, and cancels everything still to come |
-| `split.yml`        | Manual dispatch only            | Subtree split of the paths that are still plain folders. It refuses any path that is a submodule, since the split would resolve to the pre-migration snapshot |
-
-Every app and library is a **git submodule**, so their files are not in this repository's
-history — only a pointer to a commit. That is why `nx release` cannot drive git here: it writes
-`package.json` and `CHANGELOG.md` inside the submodules, which the container cannot stage. Nx
-still resolves the versions and the dependent ranges; `tools/ci/release.mjs` supplies the
-specifier read from each submodule's own history, and does the git work in both repositories.
-
-The design system Storybook is published on its own Firebase site, `ibid-storybook`, whenever
-`boilerplate` or `ibid-ui` is released — those are the only two projects whose changes reach it.
-It is the page to consult for the published components, and the value
-`IBID_DESIGN_SYSTEM_STORYBOOK_URL` should point at for the product Storybooks to compose.
-
-Installers come out with the version already in the name — `oh-save-me.1.2.3.apk`,
-`oh-save-me.1.2.3.dmg` — because `tools/builder/collect-artifact.mjs` renames them as it
-collects them into `dist/`.
-
-### Secrets and variables to configure on GitHub
-
-| Name                       | Type     | Purpose                                                                                                                             |
-| -------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `RELEASE_TOKEN`            | Secret   | Personal token with `contents:write`. Without it the tag is published with `GITHUB_TOKEN`, which does **not** trigger `release.yml` |
-| `RCLONE_CONF_BASE64`       | Secret   | Base64 rclone configuration, for the Google Drive upload                                                                            |
-| `FIREBASE_SERVICE_ACCOUNT` | Secret   | Firebase service account, for publishing the site                                                                                   |
-| `DRIVE_FOLDER`             | Variable | Destination folder on Drive (defaults to `ibid-builds`)                                                                            |
-
-Every step depending on a missing secret is skipped with a note in the run summary, rather than
-failing the whole release.
-
-### Preparing the Google Drive upload
-
-`rclone` is used with **your** account, not a service account: a service account has no storage
-in My Drive and the upload would fail. On your machine:
+The Google Drive upload uses rclone with a personal account, because a service account has no
+storage in My Drive:
 
 ```bash
 rclone config create gdrive drive scope drive
 ```
 
-That opens a browser to authorise access. Then encode the configuration and store the result in
-the `RCLONE_CONF_BASE64` secret:
-
 ```bash
 base64 -i ~/.config/rclone/rclone.conf | pbcopy
 ```
 
-Files land in `<DRIVE_FOLDER>/oh-save-me/v<version>/`, and only the ones carrying the version in
-their name — the web build and Cargo intermediates are left out.
+Paste the result into the `RCLONE_CONF_BASE64` secret. Installers land in
+`<DRIVE_FOLDER>/<project>/v<version>/`.
 
-## Continuous integration
+## Code conventions
 
-`.github/workflows/ci.yml` runs on every push to `main` and every pull request, executing lint,
-tests, and build across the affected projects.
+- **SCSS** — ITCSS layers and BEM class names (`.block`, `.block__element`, `.block--modifier`).
+  Overrides only in the `trumps` layer.
+- **TypeScript** — no `any`; `readonly`, optional chaining and nullish coalescing; type guards
+  instead of assertions.
+- **Structure** — small single-responsibility functions, files up to 200–300 lines, names that
+  reveal intent, no comments in place of names.
+- **Commits** — conventional commits (`tools/commitlint`), `type(scope): subject`, where the
+  scope is the Nx project. They drive the automatic versioning.
+- **Formatting** — Prettier and ESLint are the authority.

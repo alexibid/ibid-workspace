@@ -84,7 +84,15 @@ function attach({ path, branch }) {
   }
 }
 
-for (const submodule of readSubmodules()) {
-  keepOnBranchDuringUpdate(submodule.name);
-  attach(submodule);
+function attachEverySubmodule() {
+  if (!existsSync(join(rootDir, '.git'))) {
+    console.log('not a git checkout, so there is no submodule to attach');
+    return;
+  }
+  for (const submodule of readSubmodules()) {
+    keepOnBranchDuringUpdate(submodule.name);
+    attach(submodule);
+  }
 }
+
+attachEverySubmodule();

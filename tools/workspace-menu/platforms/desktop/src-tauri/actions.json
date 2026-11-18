@@ -129,15 +129,6 @@
             "container-start",
             "papikapi-api"
           ]
-        },
-        {
-          "key": "container-start:ibid-agents-database",
-          "label": "Ligar o contentor ibid-agents-database",
-          "run": "background",
-          "args": [
-            "container-start",
-            "ibid-agents-database"
-          ]
         }
       ]
     },

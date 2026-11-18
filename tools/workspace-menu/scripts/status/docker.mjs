@@ -1,6 +1,6 @@
 import { run, succeeds } from './shell.mjs';
 
-export const WATCHED_CONTAINERS = ['ibid-ci-runner', 'papikapi-api', 'ibid-agents-database'];
+export const WATCHED_CONTAINERS = ['ibid-ci-runner', 'papikapi-api'];
 
 function readContainer(name) {
   try {

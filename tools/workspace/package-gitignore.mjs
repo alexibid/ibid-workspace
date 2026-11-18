@@ -1,6 +1,6 @@
 import { basename, dirname } from 'node:path';
 
-const AGENT_ARTIFACTS = [
+const LOCAL_ARTIFACTS = [
   'AGENTS.md',
   'CLAUDE.md',
   'GEMINI.md',
@@ -75,7 +75,7 @@ const APPLICATIONS_DIRECTORY = 'apps';
 
 export function buildPackageGitignore(packagePath) {
   const blocks = [
-    AGENT_ARTIFACTS,
+    LOCAL_ARTIFACTS,
     BUILD_OUTPUT,
     EDITOR_STATE,
     OPERATING_SYSTEM,

@@ -37,7 +37,7 @@
     },
     {
       "package": "@angular/router",
-      "reason": "Denial of service in Angular Server-Side Rendering (SSR). The workspace has no SSR (no @angular/ssr or @angular/platform-server), so the vulnerable paths are never exercised. Locked at 22.1.4 alongside @angular/core 22.1.4.",
+      "reason": "Denial of service in Angular Server-Side Rendering (SSR). The only SSR app, ibid-website, runs @angular/router 21.2, outside the vulnerable range (>=22.0.0 <22.2.1); the Angular 22 apps are client-only, so the vulnerable paths are never exercised. Locked at 22.1.4 alongside @angular/core 22.1.4.",
       "reviewBy": "2026-12-31"
     },
     {

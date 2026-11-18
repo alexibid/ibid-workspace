@@ -43,8 +43,6 @@ export default [
           enforceBuildableLibDependency: true,
           allow: [
             '^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$',
-            // tools/ é configuração base partilhada, não um projeto do grafo: os ficheiros
-            // de config das apps estendem-na por caminho relativo, e é assim que deve ser.
             '^.*/tools/.*$',
           ],
           depConstraints: [
