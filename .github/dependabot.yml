@@ -9,6 +9,8 @@ registries:
     username: x-access-token
     password: ${{secrets.RELEASE_TOKEN}}
 
+# No pull requests: the Dependency refresh workflow updates the lockfile within each range and
+# pushes it to main once CI's checks pass. Dependabot only keeps the alerts.
 updates:
   - package-ecosystem: "npm"
     directory: "/"
@@ -16,7 +18,7 @@ updates:
       - github-submodules
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "cargo"
     directory: "/tools/workspace-menu/platforms/desktop/src-tauri"
@@ -24,5 +26,6 @@ updates:
       - github-submodules
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
     ignore:
       - dependency-name: "glib"

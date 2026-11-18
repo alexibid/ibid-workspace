@@ -1,0 +1,84 @@
+name: Dependency refresh
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependency-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh · Dependencies within their ranges
+    timeout-minutes: 60
+    runs-on: [self-hosted, Linux, docker]
+    env:
+      GIT_AUTHOR_NAME: github-actions[bot]
+      GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+      GIT_COMMITTER_NAME: github-actions[bot]
+      GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          submodules: recursive
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Discard what earlier jobs left in the persistent workspace
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -fd --quiet'
+
+      - name: Refuse to run against empty submodules
+        run: node tools/ci/verify-submodules.mjs
+
+      - uses: ./.github/actions/setup-workspace
+        with:
+          nx-cache-key: dependencies
+
+      - name: Update every package within the range its manifest allows
+        id: update
+        run: |
+          npm update --no-audit --no-fund --loglevel=error
+          git submodule foreach --recursive 'git diff --quiet || { echo "npm update changed $name"; exit 1; }'
+          OTHERS="$(git status --porcelain --ignore-submodules=all | grep -v ' package-lock.json$' || true)"
+          if [ -n "$OTHERS" ]; then
+            echo "npm update changed more than package-lock.json:"
+            echo "$OTHERS"
+            exit 1
+          fi
+          if git diff --quiet -- package-lock.json; then
+            echo "Every dependency is already at the newest version its range allows."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install exactly what the new lockfile describes
+        if: steps.update.outputs.changed == 'true'
+        run: npm ci --no-audit --no-fund --loglevel=error
+
+      - name: Vulnerabilities against the accepted list
+        if: steps.update.outputs.changed == 'true'
+        run: node tools/ci/audit.mjs
+
+      - name: Lint against the warning ceiling
+        if: steps.update.outputs.changed == 'true'
+        run: node tools/ci/lint-budget.mjs
+
+      - name: Types, unit tests and build
+        if: steps.update.outputs.changed == 'true'
+        run: npx nx run-many --all -t typecheck test build --parallel=3
+
+      - name: Push the refreshed lockfile to main
+        if: steps.update.outputs.changed == 'true'
+        env:
+          HUSKY: 0
+        run: |
+          git add package-lock.json
+          git commit -m "fix(workspace): refresh dependencies within their ranges"
+          git push origin HEAD:main

@@ -34,21 +34,54 @@ function keepOnBranchDuringUpdate(name) {
   git(rootDir, 'config', `submodule.${name}.update`, 'merge');
 }
 
+function moveBranchToPinned(directory, path, branch) {
+  git(directory, 'checkout', '-B', branch, 'HEAD');
+  console.log(`attached ${path} to ${branch} at the pinned commit`);
+}
+
+function returnToBranchAhead(directory, path, branch) {
+  git(directory, 'checkout', branch);
+  console.log(`attached ${path} to ${branch}, which is ahead of the pinned commit: bump it in the workspace`);
+}
+
+function mergePinnedIntoBranch(directory, path, branch) {
+  const pinned = git(directory, 'rev-parse', 'HEAD');
+  git(directory, 'checkout', branch);
+  try {
+    git(directory, 'merge', '--no-edit', pinned);
+    console.log(`attached ${path} to ${branch} and merged the pinned commit ${pinned.slice(0, 7)}`);
+  } catch {
+    git(directory, 'merge', '--abort');
+    console.warn(
+      `attached ${path} to ${branch}, but merging the pinned commit ${pinned.slice(0, 7)} conflicts: ` +
+        `run "git merge ${pinned.slice(0, 7)}" in ${path} and resolve it`
+    );
+  }
+}
+
+function reattach(directory, path, branch) {
+  if (!succeeds(directory, 'rev-parse', '--verify', `refs/heads/${branch}`)) {
+    git(directory, 'checkout', '-b', branch);
+    console.log(`attached ${path} to new branch ${branch}`);
+  } else if (succeeds(directory, 'merge-base', '--is-ancestor', branch, 'HEAD')) {
+    moveBranchToPinned(directory, path, branch);
+  } else if (succeeds(directory, 'merge-base', '--is-ancestor', 'HEAD', branch)) {
+    returnToBranchAhead(directory, path, branch);
+  } else {
+    mergePinnedIntoBranch(directory, path, branch);
+  }
+}
+
 function attach({ path, branch }) {
   const directory = join(rootDir, path);
   if (!existsSync(join(directory, '.git'))) return;
   if (succeeds(directory, 'symbolic-ref', '-q', 'HEAD')) return;
-  if (!succeeds(directory, 'rev-parse', '--verify', `refs/heads/${branch}`)) {
-    git(directory, 'checkout', '-b', branch);
-    console.log(`attached ${path} to new branch ${branch}`);
-    return;
+  try {
+    reattach(directory, path, branch);
+  } catch (error) {
+    console.error(`${path} is still detached: ${error.stderr?.trim() || error.message}`);
+    process.exitCode = 1;
   }
-  if (succeeds(directory, 'merge-base', '--is-ancestor', branch, 'HEAD')) {
-    git(directory, 'checkout', '-B', branch, 'HEAD');
-    console.log(`attached ${path} to ${branch}`);
-    return;
-  }
-  console.warn(`${path} is detached and ${branch} has diverged: left untouched`);
 }
 
 for (const submodule of readSubmodules()) {

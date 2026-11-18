@@ -75,7 +75,13 @@
       "inputs": [
         "default",
         "^production"
-      ]
+      ],
+      "options": {
+        "setupFiles": [
+          "tools/vitest/forbid-network.ts",
+          "tools/vitest/mock-icon-assets.ts"
+        ]
+      }
     },
     "@angular/build:application": {
       "cache": true,
@@ -134,7 +140,8 @@
         "isolate": true,
         "runnerConfig": "tools/vitest/runner.config.mts",
         "setupFiles": [
-          "tools/vitest/forbid-local-services.ts"
+          "tools/vitest/forbid-network.ts",
+          "tools/vitest/mock-icon-assets.ts"
         ]
       }
     },
