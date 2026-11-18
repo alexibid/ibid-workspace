@@ -255,7 +255,8 @@
     "projectsRelationship": "independent",
     "projects": [
       "apps/*",
-      "libs/*"
+      "libs/*",
+      "tools/workspace-menu"
     ],
     "releaseTag": {
       "pattern": "{projectName}-v{version}"

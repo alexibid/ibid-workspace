@@ -23,6 +23,14 @@ jobs:
       GIT_COMMITTER_NAME: github-actions[bot]
       GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           ref: main

@@ -30,8 +30,10 @@ function readSubmodules() {
   });
 }
 
-function keepOnBranchDuringUpdate(name) {
-  git(rootDir, 'config', `submodule.${name}.update`, 'merge');
+function clearSubmoduleUpdateMode(name) {
+  if (succeeds(rootDir, 'config', '--local', '--get', `submodule.${name}.update`)) {
+    git(rootDir, 'config', '--local', '--unset-all', `submodule.${name}.update`);
+  }
 }
 
 function moveBranchToPinned(directory, path, branch) {
@@ -89,8 +91,13 @@ function attachEverySubmodule() {
     console.log('not a git checkout, so there is no submodule to attach');
     return;
   }
-  for (const submodule of readSubmodules()) {
-    keepOnBranchDuringUpdate(submodule.name);
+  const submodules = readSubmodules();
+  for (const submodule of submodules) {
+    clearSubmoduleUpdateMode(submodule.name);
+  }
+  if (process.env['CI']) return;
+  git(rootDir, 'config', '--local', 'push.recurseSubmodules', 'on-demand');
+  for (const submodule of submodules) {
     attach(submodule);
   }
 }

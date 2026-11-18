@@ -22,6 +22,14 @@ jobs:
       github.event_name != 'push' ||
       !startsWith(github.event.head_commit.message, 'chore(release)')
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
@@ -89,6 +97,14 @@ jobs:
     timeout-minutes: 90
     runs-on: [self-hosted, Linux, docker]
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive

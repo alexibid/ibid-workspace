@@ -205,11 +205,23 @@ function readReleasableProjects() {
     const { nodes } = JSON.parse(readFileSync(file, 'utf8')).graph;
     return Object.values(nodes)
       .map((node) => ({ name: node.name, root: node.data.root }))
-      .filter((project) => existsSync(join(project.root, 'package.json')))
+      .filter(
+        (project) =>
+          existsSync(join(project.root, 'package.json')) &&
+          existsSync(join(project.root, 'project.json')) &&
+          !isNestedInsideSubmodule(project.root),
+      )
       .sort((a, b) => a.name.localeCompare(b.name));
   } finally {
     rmSync(file, { force: true });
   }
+}
+
+function isNestedInsideSubmodule(root) {
+  for (const submodulePath of submodulePaths) {
+    if (root.startsWith(`${submodulePath}/`)) return true;
+  }
+  return false;
 }
 
 function readSubmodulePaths() {

@@ -33,6 +33,14 @@ jobs:
       has_drive: ${{ steps.capabilities.outputs.has_drive }}
       has_hosting: ${{ steps.capabilities.outputs.has_hosting }}
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -68,6 +76,14 @@ jobs:
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -80,6 +96,7 @@ jobs:
         with:
           name: web
           path: dist/${{ env.APP }}/browser
+          if-no-files-found: ignore
 
       - name: Stop the release and say what was delivered
         if: failure()
@@ -94,6 +111,14 @@ jobs:
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -149,6 +174,14 @@ jobs:
     env:
       APP: ${{ needs.inspect.outputs.project }}
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -235,7 +268,18 @@ jobs:
     env:
       PROJECT: ${{ needs.inspect.outputs.project }}
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          token: ${{ secrets.RELEASE_TOKEN }}
       - uses: actions/download-artifact@v7
         with:
           name: web
@@ -247,6 +291,20 @@ jobs:
           channelId: live
           projectId: ibid-32cbe
           target: ${{ env.PROJECT }}
+      - uses: ./.github/actions/setup-workspace
+        if: env.PROJECT == 'ibid-website'
+        with:
+          nx-cache-key: release
+      - name: Deploy Firebase Functions
+        if: env.PROJECT == 'ibid-website'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+            GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json" npx firebase-tools deploy --only functions --project ibid-32cbe --non-interactive
+            rm -f "$RUNNER_TEMP/firebase-sa.json"
+          fi
 
   storybook:
     name: Deliver · Storybook
@@ -257,6 +315,14 @@ jobs:
     timeout-minutes: 30
     runs-on: [self-hosted, Linux, docker]
     steps:
+      - name: Clear persisted submodule update mode
+        run: |
+          if [ -d .git ]; then
+            for key in $(git config --local --name-only --get-regexp '^submodule\..*\.update$' 2>/dev/null || true); do
+              git config --local --unset-all "$key" || true
+            done
+          fi
+
       - uses: actions/checkout@v5
         with:
           submodules: recursive

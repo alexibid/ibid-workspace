@@ -19,6 +19,9 @@
         ],
         "assets": [
           "ibid-assets"
+        ],
+        "ibid-website": [
+          "ibid-website"
         ]
       }
     }
