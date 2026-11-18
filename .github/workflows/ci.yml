@@ -112,6 +112,7 @@ jobs:
           path: |
             apps/*/.playwright-artifacts
             test-results
+          include-hidden-files: true
           if-no-files-found: ignore
 
   verified:
