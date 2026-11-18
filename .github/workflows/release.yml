@@ -291,20 +291,6 @@ jobs:
           channelId: live
           projectId: ibid-32cbe
           target: ${{ env.PROJECT }}
-      - uses: ./.github/actions/setup-workspace
-        if: env.PROJECT == 'ibid-website'
-        with:
-          nx-cache-key: release
-      - name: Deploy Firebase Functions
-        if: env.PROJECT == 'ibid-website'
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
-            echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
-            GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json" npx firebase-tools deploy --only functions --project ibid-32cbe --non-interactive
-            rm -f "$RUNNER_TEMP/firebase-sa.json"
-          fi
 
   storybook:
     name: Deliver · Storybook
