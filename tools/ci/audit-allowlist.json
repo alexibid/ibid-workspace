@@ -94,46 +94,6 @@
       "reviewBy": "2026-12-31"
     },
     {
-      "package": "@faker-js/faker",
-      "reason": "Dev-tooling test dependency used solely for generating mock test data in scripts.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@usebruno/cli",
-      "reason": "Dev-tooling CLI used only to run local Bruno API integration tests for papikapi-api. Never bundled in production.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@usebruno/converters",
-      "reason": "Transitive dependency of @usebruno/cli for local Bruno API tests.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@usebruno/js",
-      "reason": "Transitive dependency of @usebruno/cli for local Bruno API tests.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@usebruno/requests",
-      "reason": "Transitive dependency of @usebruno/cli for local Bruno API tests.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "axios",
-      "reason": "Transitive dependency of @usebruno/cli for local Bruno API test requests. Never bundled in production.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "form-data",
-      "reason": "Transitive dependency of @usebruno/cli for local Bruno API test requests.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "js-yaml",
-      "reason": "Transitive dependency of @usebruno/cli for local Bruno API test definitions.",
-      "reviewBy": "2026-12-31"
-    },
-    {
       "package": "drizzle-orm",
       "reason": "SQLite ORM in papikapi-api. Identifier injection risk is non-applicable as queries use static schema mappings; to be upgraded with drizzle-kit in next coordinated update.",
       "reviewBy": "2026-12-31"
