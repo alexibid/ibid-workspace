@@ -14,11 +14,6 @@
       "reviewBy": "2026-12-31"
     },
     {
-      "package": "@angular-devkit/build-angular",
-      "reason": "Build-time only devDependency (22.1.6), never reaches the shipped bundle. Requires a coordinated Angular 22.2.x upgrade across the workspace rather than unattended npm audit fix.",
-      "reviewBy": "2026-12-31"
-    },
-    {
       "package": "smol-toml",
       "advisories": [
         1193945,
@@ -33,21 +28,6 @@
         1241219
       ],
       "reason": "Dev/CLI tooling only (nx migrate path traversal and transitive smol-toml, follow-redirects, and minimatch). Never reaches shipped app bundles or runtime APIs; waiting on coordinated @nx/* major upgrade.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@angular/router",
-      "reason": "Denial of service in Angular Server-Side Rendering (SSR). The only SSR app, ibid-website, runs @angular/router 21.2, outside the vulnerable range (>=22.0.0 <22.2.1); the Angular 22 apps are client-only, so the vulnerable paths are never exercised. Locked at 22.1.4 alongside @angular/core 22.1.4.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "webpack-dev-middleware",
-      "reason": "Reached only through @angular-devkit/build-angular's local webpack dev server (8.0.3). Dev-time tooling that never reaches the shipped bundle; addressed with a coordinated Angular build-tooling upgrade.",
-      "reviewBy": "2026-12-31"
-    },
-    {
-      "package": "@angular/cli",
-      "reason": "Dev-time CLI tooling only. Does not reach production shipped bundle.",
       "reviewBy": "2026-12-31"
     },
     {
