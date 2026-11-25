@@ -44,6 +44,11 @@ jobs:
       - name: Refuse to run against empty submodules
         run: node tools/ci/verify-submodules.mjs
 
+      - name: Warn about Dependabot findings
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: node tools/ci/verify-dependabot.mjs
+
       - uses: ./.github/actions/setup-workspace
         with:
           nx-cache-key: dependencies

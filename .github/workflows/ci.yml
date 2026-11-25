@@ -145,6 +145,10 @@ jobs:
           JOB_RESULTS: ${{ toJson(needs) }}
           GH_TOKEN: ${{ github.token }}
         run: node tools/ci/execution-graph.mjs >> "$GITHUB_STEP_SUMMARY"
+      - name: Warn about Dependabot findings
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+        run: node tools/ci/verify-dependabot.mjs
       - name: Fail when any group did not pass
         env:
           JOB_RESULTS: ${{ toJson(needs) }}

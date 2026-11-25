@@ -6,7 +6,7 @@ ARG PLAYWRIGHT_VERSION=1.62.1
 USER root
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates curl git gnupg jq unzip rclone \
+  && apt-get install -y --no-install-recommends build-essential ca-certificates curl git gnupg jq python3 unzip rclone \
   && curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
   && apt-get install -y --no-install-recommends nodejs \
   && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \

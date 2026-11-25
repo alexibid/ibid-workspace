@@ -3,6 +3,19 @@ set -euo pipefail
 
 STATE_DIR=/runner-state
 CREDENTIAL_FILES=(.runner .credentials .credentials_rsaparams)
+NATIVE_BUILD_TOOLS=(make g++ python3)
+
+require_native_build_tools() {
+  local missing=()
+  for tool in "${NATIVE_BUILD_TOOLS[@]}"; do
+    command -v "$tool" > /dev/null || missing+=("$tool")
+  done
+  if [ "${#missing[@]}" -gt 0 ]; then
+    echo "The runner image lacks ${missing[*]}; npm ci cannot build native modules." >&2
+    echo "Rebuild it: npx nx run ci-runner:docker:build" >&2
+    exit 1
+  fi
+}
 
 restore_credentials() {
   for file in "${CREDENTIAL_FILES[@]}"; do
@@ -28,6 +41,7 @@ register_runner() {
   done
 }
 
+require_native_build_tools
 restore_credentials
 if [ ! -f .runner ]; then
   register_runner
