@@ -39,10 +39,10 @@ jobs:
           token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Discard what earlier jobs left in the persistent workspace
-        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -fd --quiet'
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
 
-      - name: Refuse to run against empty submodules
-        run: node tools/ci/verify-submodules.mjs
+      - name: Refuse to run against empty or dirty submodules
+        run: node tools/ci/verify-submodules.mjs --clean
 
       - name: Warn about Dependabot findings
         env:

@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync } from 'node:fs';
 
+const requireClean = process.argv.includes('--clean');
 const paths = readSubmodulePaths();
 const missing = paths.filter(isNotCheckedOut);
 const mergeModes = readMergeUpdateSubmodules();
@@ -19,7 +20,39 @@ if (mergeModes.length > 0) {
   process.exit(1);
 }
 
-console.log(`All ${paths.length} submodule(s) are checked out.`);
+if (requireClean) {
+  const dirty = findDirtySubmodules(paths);
+  if (dirty.length > 0) {
+    console.error(`${dirty.length} submodule(s) contain leftover modified, untracked or gitignored files:\n`);
+    for (const { path, entries } of dirty) {
+      console.error(`  ${path} (${entries.length} entries, showing up to 10):`);
+      for (const entry of entries.slice(0, 10)) console.error(`    ${entry}`);
+    }
+    console.error("\nRun `git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'` after checkout.");
+    process.exit(1);
+  }
+}
+
+console.log(
+  requireClean
+    ? `All ${paths.length} submodule(s) are checked out and clean.`
+    : `All ${paths.length} submodule(s) are checked out.`,
+);
+
+function findDirtySubmodules(submodulePaths) {
+  return submodulePaths
+    .map((path) => ({ path, entries: readDirtyEntries(path) }))
+    .filter((item) => item.entries.length > 0);
+}
+
+function readDirtyEntries(path) {
+  const output = execFileSync(
+    'git',
+    ['-C', path, 'status', '--porcelain', '--ignored'],
+    { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+  );
+  return output.split('\n').filter(Boolean);
+}
 
 function readMergeUpdateSubmodules() {
   try {

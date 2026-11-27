@@ -46,6 +46,12 @@ jobs:
           submodules: recursive
           token: ${{ secrets.RELEASE_TOKEN }}
 
+      - name: Discard what earlier jobs left in the submodules
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
+
+      - name: Refuse to run against empty or dirty submodules
+        run: node tools/ci/verify-submodules.mjs --clean
+
       - name: Resolve what the tag releases
         id: target
         env:
@@ -88,6 +94,13 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Discard what earlier jobs left in the submodules
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
+
+      - name: Refuse to run against empty or dirty submodules
+        run: node tools/ci/verify-submodules.mjs --clean
+
       - uses: ./.github/actions/setup-workspace
         with:
           nx-cache-key: release
@@ -123,6 +136,10 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Discard what earlier jobs left in the submodules
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
+
       - uses: ./.github/actions/setup-workspace
         with:
           nx-cache-key: release
@@ -186,6 +203,10 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Discard what earlier jobs left in the submodules
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
+
       - uses: ./.github/actions/setup-workspace
         with:
           nx-cache-key: release-${{ matrix.platform }}
@@ -280,6 +301,13 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Discard what earlier jobs left in the submodules
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
+
+      - name: Refuse to run against empty or dirty submodules
+        run: node tools/ci/verify-submodules.mjs --clean
+
       - uses: actions/download-artifact@v7
         with:
           name: web
@@ -313,6 +341,13 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Discard what earlier jobs left in the submodules
+        run: git submodule foreach --recursive 'git reset --hard --quiet && git clean -ffdx --quiet'
+
+      - name: Refuse to run against empty or dirty submodules
+        run: node tools/ci/verify-submodules.mjs --clean
+
       - uses: ./.github/actions/setup-workspace
         with:
           nx-cache-key: release

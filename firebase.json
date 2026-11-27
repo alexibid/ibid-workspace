@@ -99,6 +99,47 @@
           ]
         }
       ]
+    },
+    {
+      "target": "ibid-website",
+      "public": "dist/ibid-website/browser",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "/api/v1/contact",
+          "function": {
+            "functionId": "sendContactMessage",
+            "region": "europe-west1"
+          }
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "source": "apps/ibid-website/functions",
+      "codebase": "ibid-website",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.spec.ts",
+        "src/**/*.spec.ts",
+        "vitest.config.mts",
+        "eslint.config.mjs"
+      ],
+      "predeploy": [
+        "npx nx build ibid-website-functions"
+      ]
     }
   ]
 }
