@@ -83,6 +83,10 @@ jobs:
         if: steps.update.outputs.changed == 'true'
         run: node tools/ci/lint-budget.mjs
 
+      - name: Install the browser that measures critical CSS
+        if: steps.update.outputs.changed == 'true'
+        run: npx playwright install chromium
+
       - name: Types, unit tests and build
         if: steps.update.outputs.changed == 'true'
         run: npx nx run-many --all -t typecheck test build --parallel=3

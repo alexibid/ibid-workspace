@@ -83,6 +83,9 @@ jobs:
           NX_HEAD: ${{ steps.shas.outputs.head }}
         run: npx nx ${{ steps.scope.outputs.nx }} -t test --parallel=3
 
+      - name: Install the browser that measures critical CSS
+        run: npx playwright install chromium
+
       - name: Build
         env:
           NX_BASE: ${{ steps.shas.outputs.base }}

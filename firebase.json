@@ -103,10 +103,25 @@
     {
       "target": "ibid-website",
       "public": "dist/ibid-website/browser",
+      "trailingSlash": false,
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
+      ],
+      "headers": [
+        {
+          "regex": "^/[\\w.]+-[A-Za-z0-9_-]{8}\\.(?:js|css)$",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        },
+        {
+          "regex": "^/(?:[^.]*|service-worker\\.js|.*\\.(?:html|json|txt|xml|webmanifest|webp|avif|jpe?g|png|gif|svg))$",
+          "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        },
+        {
+          "regex": "^/favicon\\.ico$",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+        }
       ],
       "rewrites": [
         {
@@ -117,7 +132,7 @@
           }
         },
         {
-          "source": "**",
+          "regex": "^/(?:.*/)?[^/.]*$",
           "destination": "/index.html"
         }
       ]
